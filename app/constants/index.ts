@@ -1,32 +1,76 @@
 // Claves de almacenamiento local
 export const STORAGE_KEY = 'electricity-consumption-data';
 
-// Configuración de tarifas por defecto (basada en factura real JUL/2025 - Energisa)
-// Desglose detallado de la factura brasileña:
+// Banderas Tarifarias Brasileñas (Sistema ANEEL 2025)
+export const TARIFF_FLAGS = {
+  GREEN: {
+    name: 'Verde',
+    description: 'Condiciones favorables de generación',
+    surcharge: 0.0, // Sin recargo
+    color: '#10b981'
+  },
+  YELLOW: {
+    name: 'Amarilla',
+    description: 'Condiciones menos favorables',
+    surcharge: 0.01885, // R$ 0,01885 por kWh
+    color: '#f59e0b'
+  },
+  RED_LEVEL_1: {
+    name: 'Roja Nivel 1',
+    description: 'Condiciones más costosas',
+    surcharge: 0.04463, // R$ 0,04463 por kWh
+    color: '#ef4444'
+  },
+  RED_LEVEL_2: {
+    name: 'Roja Nivel 2',
+    description: 'Condiciones muy costosas',
+    surcharge: 0.07877, // R$ 0,07877 por kWh
+    color: '#dc2626'
+  }
+};
+
+// Tarifas base São Paulo (Enel SP) - Julio 2025
+export const SAO_PAULO_TARIFF = {
+  // Componentes ANEEL oficiales
+  TUSD: 0.43244, // Tarifa de Uso do Sistema de Distribuição
+  TE: 0.29274,   // Tarifa de Energia
+  
+  // Impuestos São Paulo
+  ICMS_RATE: 0.18, // 18% ICMS São Paulo
+  PIS_COFINS_RATE: 0.0925, // PIS (1,65%) + COFINS (7,6%)
+  
+  // Tarifa base (TUSD + TE)
+  baseRate: 0.72518,
+  
+  // Contribución iluminación pública (variable por municipio)
+  publicLightingFee: 41.12
+};
+
+// Configuración de tarifas por defecto (compatible con versiones anteriores)
 export const DEFAULT_TARIFF = {
   // Componentes del costo por kWh
-  baseConsumption: 0.795530, // Tarifa base de consumo
-  redBandAddition: 0.057, // Adicional banda roja (33.50/588)
-  transmission: 0.0687, // Servicio de transmisión (40.40/588)
-  sectorCharges: 0.1255, // Encargos sectoriales (73.78/588)
-  taxes: 0.2547, // Impuestos directos y encargos (149.74/588)
+  baseConsumption: SAO_PAULO_TARIFF.baseRate,
+  transmission: 0.0687,
+  sectorCharges: 0.1255,
+  taxes: 0.2547,
   
-  // Tarifa efectiva total por kWh
-  pricePerKwh: 0.8524, // Total sin contribución iluminación: 501.27/588
+  // Tarifa efectiva total por kWh (sin bandera)
+  pricePerKwh: SAO_PAULO_TARIFF.baseRate,
   
   // Tarifas fijas
-  publicLightingFee: 41.12, // Contribución iluminación pública
+  publicLightingFee: SAO_PAULO_TARIFF.publicLightingFee,
   
-  // Método de cálculo mejorado
-  calculateCost: (kwh: number) => {
-    const baseCost = kwh * 0.795530; // Consumo base
-    const redBandCost = kwh * 0.057; // Banda roja
-    const transmissionCost = kwh * 0.0687; // Transmisión
-    const sectorChargesCost = kwh * 0.1255; // Encargos sectoriales
-    const taxesCost = kwh * 0.2547; // Impuestos
-    const publicLighting = 41.12; // Fijo
+  // Método de cálculo con banderas tarifarias
+  calculateCost: (kwh: number, flagType: keyof typeof TARIFF_FLAGS = 'GREEN') => {
+    const baseCost = kwh * SAO_PAULO_TARIFF.baseRate;
+    const flagSurcharge = kwh * TARIFF_FLAGS[flagType].surcharge;
+    const subtotal = baseCost + flagSurcharge;
     
-    return baseCost + redBandCost + transmissionCost + sectorChargesCost + taxesCost + publicLighting;
+    // Aplicar impuestos "por dentro" (método brasileño)
+    const taxRate = SAO_PAULO_TARIFF.ICMS_RATE + SAO_PAULO_TARIFF.PIS_COFINS_RATE;
+    const finalCost = subtotal / (1 - taxRate);
+    
+    return finalCost + SAO_PAULO_TARIFF.publicLightingFee;
   }
 };
 

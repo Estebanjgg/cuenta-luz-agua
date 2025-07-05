@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { createSupabaseBrowserClient } from '../lib/supabase'
 import { useAuth } from '../contexts/AuthContext'
-import { MonthData, TariffConfig, Reading, ConsumptionStats, ValidationResult } from '../types'
+import { MonthData, TariffConfig, Reading, ConsumptionStats, ValidationResult, TariffFlagType } from '../types'
 import { validateReading, calculateConsumptionStats } from '../utils/calculations'
 
 const DEFAULT_TARIFF: TariffConfig = {
@@ -17,7 +17,8 @@ const DEFAULT_MONTH_DATA: MonthData = {
   initialReading: 0,
   readings: [],
   totalConsumption: 0,
-  estimatedCost: DEFAULT_TARIFF.additionalFees || 0
+  estimatedCost: DEFAULT_TARIFF.additionalFees || 0,
+  tariffFlag: 'GREEN'
 }
 
 export const useSupabaseEnergyData = () => {
@@ -71,7 +72,8 @@ export const useSupabaseEnergyData = () => {
           initialReading: record.initial_reading,
           readings: record.readings || [],
           totalConsumption: record.total_consumption,
-          estimatedCost: record.estimated_cost
+          estimatedCost: record.estimated_cost,
+          tariffFlag: record.tariff_flag || 'GREEN'
         }
       })
 
@@ -124,6 +126,7 @@ export const useSupabaseEnergyData = () => {
           readings: monthData.readings,
           total_consumption: monthData.totalConsumption,
           estimated_cost: monthData.estimatedCost,
+          tariff_flag: monthData.tariffFlag || 'GREEN',
           updated_at: new Date().toISOString()
         }, {
           onConflict: 'user_id,month,year'
@@ -182,7 +185,8 @@ export const useSupabaseEnergyData = () => {
     const stats = calculateConsumptionStats(
       updatedReadings,
       currentMonth.initialReading,
-      tariff
+      tariff,
+      currentMonth.tariffFlag
     )
 
     const updatedMonthData = {
@@ -210,7 +214,8 @@ export const useSupabaseEnergyData = () => {
     const stats = calculateConsumptionStats(
       updatedReadings,
       currentMonth.initialReading,
-      tariff
+      tariff,
+      currentMonth.tariffFlag
     )
 
     const updatedMonthData = {
@@ -253,7 +258,8 @@ export const useSupabaseEnergyData = () => {
         initialReading,
         readings: [],
         totalConsumption: 0,
-        estimatedCost: tariff.publicLightingFee || tariff.additionalFees || 0
+        estimatedCost: tariff.publicLightingFee || tariff.additionalFees || 0,
+        tariffFlag: 'GREEN'
       }
       
       setMonthsData({
@@ -275,7 +281,8 @@ export const useSupabaseEnergyData = () => {
       ...currentMonth,
       readings: [],
       totalConsumption: 0,
-      estimatedCost: tariff.publicLightingFee || tariff.additionalFees || 0
+      estimatedCost: tariff.publicLightingFee || tariff.additionalFees || 0,
+      tariffFlag: currentMonth.tariffFlag || 'GREEN'
     }
     
     setMonthsData({
@@ -293,6 +300,33 @@ export const useSupabaseEnergyData = () => {
     await saveTariffConfig(newTariff)
   }
 
+  // Cambiar bandera tarifaria del mes actual
+  const changeTariffFlag = async (flagType: TariffFlagType): Promise<void> => {
+    const updatedMonthData = {
+      ...currentMonth,
+      tariffFlag: flagType
+    }
+
+    // Recalcular costos con la nueva bandera
+    const stats = calculateConsumptionStats(
+      currentMonth.readings,
+      currentMonth.initialReading,
+      tariff,
+      flagType
+    )
+
+    updatedMonthData.estimatedCost = stats.estimatedCost
+    updatedMonthData.totalConsumption = stats.totalConsumption
+
+    setMonthsData({
+      ...monthsData,
+      [currentMonthKey]: updatedMonthData
+    })
+
+    // Guardar en Supabase
+    await saveMonthData(updatedMonthData)
+  }
+
   // Obtener lectura actual
   const getCurrentReading = (): number => {
     if (currentMonth.readings.length === 0) {
@@ -306,7 +340,8 @@ export const useSupabaseEnergyData = () => {
     return calculateConsumptionStats(
       currentMonth.readings,
       currentMonth.initialReading,
-      tariff
+      tariff,
+      currentMonth.tariffFlag
     )
   }
 
@@ -324,6 +359,7 @@ export const useSupabaseEnergyData = () => {
     hasMonthData,
     resetMonth,
     updateTariff,
+    changeTariffFlag,
     
     // Utilidades
     getCurrentReading,

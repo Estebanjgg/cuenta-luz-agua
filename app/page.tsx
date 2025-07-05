@@ -10,7 +10,8 @@ import {
   CostBreakdown,
   MonthSelector,
   ConsumptionChart,
-  Navbar
+  Navbar,
+  TariffFlagSelector
 } from './components';
 import { APP_CONFIG } from './constants';
 
@@ -27,7 +28,8 @@ export default function Home() {
     resetMonth,
     getCurrentReading,
     getConsumptionStats,
-    tariff
+    tariff,
+    changeTariffFlag
   } = useSupabaseEnergyData();
 
   // Si no hay usuario autenticado, mostrar componente de autenticación
@@ -64,6 +66,12 @@ export default function Home() {
           hasMonthData={hasMonthData}
         />
 
+        {/* Selector de Bandera Tarifaria */}
+        <TariffFlagSelector 
+          selectedFlag={currentMonth.tariffFlag || 'GREEN'}
+          onFlagChange={changeTariffFlag}
+        />
+
         {/* Formulario para agregar lectura */}
         <ReadingForm 
           onAddReading={addReading}
@@ -95,6 +103,7 @@ export default function Home() {
         <CostBreakdown 
           consumption={stats.totalConsumption}
           tariff={tariff}
+          flagType={currentMonth.tariffFlag}
         />
 
         {/* Acciones adicionales */}

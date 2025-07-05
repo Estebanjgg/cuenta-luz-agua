@@ -8,6 +8,7 @@ CREATE TABLE IF NOT EXISTS user_energy_data (
   readings JSONB DEFAULT '[]'::jsonb,
   total_consumption DECIMAL(10,2) DEFAULT 0,
   estimated_cost DECIMAL(10,2) DEFAULT 0,
+  tariff_flag VARCHAR(20) DEFAULT 'GREEN' CHECK (tariff_flag IN ('GREEN', 'YELLOW', 'RED_LEVEL_1', 'RED_LEVEL_2')),
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   UNIQUE(user_id, month, year)

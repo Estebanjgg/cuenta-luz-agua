@@ -1,4 +1,4 @@
-import { Reading, TariffConfig, ConsumptionStats, ValidationResult } from '../types';
+import { Reading, TariffConfig, ConsumptionStats, ValidationResult, TariffFlagType } from '../types';
 
 /**
  * Calcula las estadísticas de consumo basadas en las lecturas
@@ -6,7 +6,8 @@ import { Reading, TariffConfig, ConsumptionStats, ValidationResult } from '../ty
 export const calculateConsumptionStats = (
   readings: Reading[],
   initialReading: number,
-  tariff: TariffConfig
+  tariff: TariffConfig,
+  flagType: TariffFlagType = 'GREEN'
 ): ConsumptionStats => {
   if (readings.length === 0) {
     return {
@@ -35,7 +36,7 @@ export const calculateConsumptionStats = (
   
   // Usar el método de cálculo detallado si está disponible
   const estimatedCost = tariff.calculateCost 
-    ? tariff.calculateCost(totalConsumption)
+    ? tariff.calculateCost(totalConsumption, flagType)
     : (totalConsumption * tariff.pricePerKwh) + (tariff.publicLightingFee || tariff.additionalFees || 0);
 
   return {

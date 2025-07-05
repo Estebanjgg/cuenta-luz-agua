@@ -1,45 +1,42 @@
 'use client';
 
-import { TariffConfig } from '../../types';
+import { TariffConfig, TariffFlagType } from '../../types';
 import { formatCurrency, formatNumber } from '../../utils/calculations';
+import { TARIFF_FLAGS } from '../../constants';
 
 interface CostBreakdownProps {
   consumption: number;
   tariff: TariffConfig;
+  flagType?: TariffFlagType;
 }
 
-export default function CostBreakdown({ consumption, tariff }: CostBreakdownProps) {
+export default function CostBreakdown({ consumption, tariff, flagType = 'GREEN' }: CostBreakdownProps) {
   if (consumption === 0) {
     return null;
   }
 
   // Calcular cada componente del costo
-  const baseCost = consumption * tariff.pricePerKwh;
-  const redBandCost = consumption * (tariff.redBandAddition || 0);
+  const baseCost = consumption * (tariff.baseConsumption || tariff.pricePerKwh);
   const transmissionCost = consumption * (tariff.transmission || 0);
   const sectorChargesCost = consumption * (tariff.sectorCharges || 0);
   const taxesCost = consumption * (tariff.taxes || 0);
   const publicLightingCost = tariff.publicLightingFee || tariff.additionalFees || 0;
   
+  const flagSurcharge = consumption * TARIFF_FLAGS[flagType].surcharge;
+  
   const totalCost = tariff.calculateCost 
-    ? tariff.calculateCost(consumption)
-    : baseCost + redBandCost + transmissionCost + sectorChargesCost + taxesCost + publicLightingCost;
+    ? tariff.calculateCost(consumption, flagType)
+    : baseCost + transmissionCost + sectorChargesCost + taxesCost + publicLightingCost + flagSurcharge;
 
   const costItems = [
     {
       label: 'Consumo Base',
-      description: `${formatNumber(consumption)} kWh × ${formatCurrency(tariff.baseConsumption || 0)}`,
+      description: `${formatNumber(consumption)} kWh × ${formatCurrency(tariff.baseConsumption || tariff.pricePerKwh)}`,
       value: baseCost,
       percentage: (baseCost / totalCost) * 100,
       color: 'bg-blue-50 text-blue-700'
     },
-    {
-      label: 'Adicional Banda Roja',
-      description: `${formatNumber(consumption)} kWh × ${formatCurrency(tariff.redBandAddition || 0)}`,
-      value: redBandCost,
-      percentage: (redBandCost / totalCost) * 100,
-      color: 'bg-red-50 text-red-700'
-    },
+
     {
       label: 'Servicio de Transmisión',
       description: `${formatNumber(consumption)} kWh × ${formatCurrency(tariff.transmission || 0)}`,
@@ -67,6 +64,15 @@ export default function CostBreakdown({ consumption, tariff }: CostBreakdownProp
       value: publicLightingCost,
       percentage: (publicLightingCost / totalCost) * 100,
       color: 'bg-green-50 text-green-700'
+    },
+    {
+      label: `Bandera Tarifaria (${TARIFF_FLAGS[flagType].name})`,
+      description: `${formatNumber(consumption)} kWh × ${formatCurrency(TARIFF_FLAGS[flagType].surcharge)}`,
+      value: flagSurcharge,
+      percentage: (flagSurcharge / totalCost) * 100,
+      color: flagType === 'GREEN' ? 'bg-emerald-50 text-emerald-700' : 
+             flagType === 'YELLOW' ? 'bg-amber-50 text-amber-700' : 
+             'bg-red-50 text-red-700'
     }
   ].filter(item => item.value > 0);
 

@@ -1,14 +1,9 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { MonthData, Reading, TariffConfig, ConsumptionStats, ValidationResult } from '../types';
+import { MonthData, Reading, TariffConfig, ConsumptionStats, ValidationResult, TariffFlagType } from '../types';
 import { calculateConsumptionStats, validateReading } from '../utils/calculations';
-import { STORAGE_KEY } from '../constants';
-
-const DEFAULT_TARIFF: TariffConfig = {
-  pricePerKwh: 0.795,
-  additionalFees: 41.12
-};
+import { STORAGE_KEY, DEFAULT_TARIFF } from '../constants';
 
 const DEFAULT_MONTH_DATA: MonthData = {
   month: 'julio',
@@ -16,7 +11,8 @@ const DEFAULT_MONTH_DATA: MonthData = {
   initialReading: 65788,
   readings: [],
   totalConsumption: 0,
-  estimatedCost: DEFAULT_TARIFF.publicLightingFee || DEFAULT_TARIFF.additionalFees || 0
+  estimatedCost: DEFAULT_TARIFF.publicLightingFee || 0,
+  tariffFlag: 'GREEN' // Bandera verde por defecto
 };
 
 // Tipo para almacenar datos de múltiples meses
@@ -99,7 +95,8 @@ export const useEnergyData = () => {
     const stats = calculateConsumptionStats(
       updatedReadings,
       currentMonth.initialReading,
-      tariff
+      tariff,
+      currentMonth.tariffFlag
     );
 
     const updatedMonthData = {
@@ -124,7 +121,8 @@ export const useEnergyData = () => {
     const stats = calculateConsumptionStats(
       updatedReadings,
       currentMonth.initialReading,
-      tariff
+      tariff,
+      currentMonth.tariffFlag
     );
 
     const updatedMonthData = {
@@ -164,7 +162,8 @@ export const useEnergyData = () => {
         initialReading,
         readings: [],
         totalConsumption: 0,
-        estimatedCost: tariff.publicLightingFee || tariff.additionalFees || 0
+        estimatedCost: tariff.publicLightingFee || 0,
+        tariffFlag: 'GREEN' // Bandera verde por defecto
       };
       
       setMonthsData({
@@ -177,13 +176,38 @@ export const useEnergyData = () => {
     setCurrentMonthKey(newMonthKey);
   };
 
+  // Cambiar bandera tarifaria del mes actual
+  const changeTariffFlag = (flagType: TariffFlagType): void => {
+    const updatedMonthData = {
+      ...currentMonth,
+      tariffFlag: flagType
+    };
+
+    // Recalcular costos con la nueva bandera
+    const stats = calculateConsumptionStats(
+      currentMonth.readings,
+      currentMonth.initialReading,
+      tariff,
+      flagType
+    );
+
+    updatedMonthData.estimatedCost = stats.estimatedCost;
+    updatedMonthData.totalConsumption = stats.totalConsumption;
+
+    setMonthsData({
+      ...monthsData,
+      [currentMonthKey]: updatedMonthData
+    });
+  };
+
   // Reiniciar mes actual
   const resetMonth = (): void => {
     const resetMonthData = {
       ...currentMonth,
       readings: [],
       totalConsumption: 0,
-      estimatedCost: tariff.publicLightingFee || tariff.additionalFees || 0
+      estimatedCost: tariff.publicLightingFee || 0,
+      tariffFlag: currentMonth.tariffFlag || 'GREEN' // Mantener la bandera actual
     };
     
     setMonthsData({
@@ -205,7 +229,8 @@ export const useEnergyData = () => {
     return calculateConsumptionStats(
       currentMonth.readings,
       currentMonth.initialReading,
-      tariff
+      tariff,
+      currentMonth.tariffFlag
     );
   };
 
@@ -222,6 +247,7 @@ export const useEnergyData = () => {
     resetMonth,
     getCurrentReading,
     getConsumptionStats,
-    setTariff
+    setTariff,
+    changeTariffFlag
   };
 };
