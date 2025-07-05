@@ -1,8 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { MONTHS, APP_CONFIG } from '../constants';
-import { ValidationResult } from '../types';
+import { MONTHS, APP_CONFIG } from '../../constants';
+import { ValidationResult } from '../../types';
 
 interface MonthSelectorProps {
   currentMonth: string;

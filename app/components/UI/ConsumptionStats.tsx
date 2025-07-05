@@ -1,9 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { ConsumptionStats as StatsType } from '../types';
-import { formatNumber, formatCurrency, getReadingDateRange } from '../utils/calculations';
-import { Reading } from '../types';
+import { Reading, ConsumptionStats as StatsType } from '../../types';
+import { formatNumber, formatCurrency, getReadingDateRange } from '../../utils/calculations';
 
 interface ConsumptionStatsProps {
   stats: StatsType;

@@ -1,11 +1,11 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { ValidationResult } from '../types';
-import { formatDate } from '../utils/calculations';
+import { ValidationResult } from '../../types';
+import { formatNumber } from '../../utils/calculations';
 
 interface ReadingFormProps {
-  onAddReading: (date: string, value: number) => ValidationResult;
+  onAddReading: (date: string, value: number) => Promise<ValidationResult> | ValidationResult;
   currentReading: number;
 }
 
@@ -33,13 +33,17 @@ export default function ReadingForm({ onAddReading, currentReading }: ReadingFor
       return;
     }
 
-    const result = onAddReading(date, readingValue);
-    
-    if (result.isValid) {
-      setReading('');
-      setDate(new Date().toISOString().split('T')[0]);
-    } else {
-      setError(result.message || 'Error al agregar la lectura');
+    try {
+      const result = await onAddReading(date, readingValue);
+      
+      if (result.isValid) {
+        setReading('');
+        setDate(new Date().toISOString().split('T')[0]);
+      } else {
+        setError(result.message || 'Error al agregar la lectura');
+      }
+    } catch (error) {
+      setError('Error al agregar la lectura');
     }
     
     setIsSubmitting(false);

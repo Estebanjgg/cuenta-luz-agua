@@ -1,15 +1,21 @@
 'use client';
 
-import { useEnergyData } from './hooks/useEnergyData';
-import ConsumptionChart from './components/ConsumptionChart';
-import MonthSelector from './components/MonthSelector';
-import ReadingForm from './components/ReadingForm';
-import ConsumptionStats from './components/ConsumptionStats';
-import ReadingsList from './components/ReadingsList';
-import CostBreakdown from './components/CostBreakdown';
+import { useAuth } from './contexts/AuthContext';
+import { useSupabaseEnergyData } from './hooks/useSupabaseEnergyData';
+import { 
+  AuthComponent,
+  ReadingForm,
+  ReadingsList,
+  ConsumptionStats,
+  CostBreakdown,
+  MonthSelector,
+  ConsumptionChart,
+  Navbar
+} from './components';
 import { APP_CONFIG } from './constants';
 
 export default function Home() {
+  const { user, loading: authLoading, signOut } = useAuth();
   const {
     currentMonth,
     isLoading,
@@ -21,10 +27,15 @@ export default function Home() {
     resetMonth,
     getCurrentReading,
     getConsumptionStats,
-    tariffConfig
-  } = useEnergyData();
+    tariff
+  } = useSupabaseEnergyData();
 
-  if (isLoading) {
+  // Si no hay usuario autenticado, mostrar componente de autenticación
+  if (!user && !authLoading) {
+    return <AuthComponent />;
+  }
+
+  if (authLoading || isLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
         <div className="text-center">
@@ -38,20 +49,11 @@ export default function Home() {
   const stats = getConsumptionStats();
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
-      <div className="max-w-6xl mx-auto">
-        {/* Header */}
-        <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-gray-800 mb-2">
-            ⚡ {APP_CONFIG.name}
-          </h1>
-          <p className="text-gray-600">
-            Monitorea tu consumo de electricidad y controla tus gastos
-          </p>
-          <p className="text-sm text-gray-500 mt-1">
-            Versión {APP_CONFIG.version}
-          </p>
-        </div>
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+      {/* Navbar */}
+      <Navbar onLogout={signOut} />
+      
+      <div className="max-w-6xl mx-auto p-4">
 
         {/* Selector de Mes */}
         <MonthSelector 
@@ -92,7 +94,7 @@ export default function Home() {
         {/* Desglose detallado de costos */}
         <CostBreakdown 
           consumption={stats.totalConsumption}
-          tariff={tariffConfig}
+          tariff={tariff}
         />
 
         {/* Acciones adicionales */}

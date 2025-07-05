@@ -1,13 +1,13 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Reading } from '../types';
-import { formatNumber, formatDate, calculateConsumptionBetween } from '../utils/calculations';
+import { Reading } from '../../types';
+import { formatNumber, formatDate, calculateConsumptionBetween } from '../../utils/calculations';
 
 interface ReadingsListProps {
   readings: Reading[];
   initialReading: number;
-  onDeleteReading: (id: string) => void;
+  onDeleteReading: (id: string) => Promise<void> | void;
 }
 
 export default function ReadingsList({ readings, initialReading, onDeleteReading }: ReadingsListProps) {
@@ -124,7 +124,13 @@ export default function ReadingsList({ readings, initialReading, onDeleteReading
                 </div>
                 
                 <button
-                  onClick={() => onDeleteReading(reading.id)}
+                  onClick={async () => {
+                    try {
+                      await onDeleteReading(reading.id);
+                    } catch (error) {
+                      console.error('Error al eliminar lectura:', error);
+                    }
+                  }}
                   className="ml-4 p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
                   title="Eliminar lectura"
                 >

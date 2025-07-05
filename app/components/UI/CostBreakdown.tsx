@@ -1,7 +1,7 @@
 'use client';
 
-import { TariffConfig } from '../types';
-import { formatCurrency, formatNumber } from '../utils/calculations';
+import { TariffConfig } from '../../types';
+import { formatCurrency, formatNumber } from '../../utils/calculations';
 
 interface CostBreakdownProps {
   consumption: number;
