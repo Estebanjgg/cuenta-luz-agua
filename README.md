@@ -1,36 +1,129 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# ⚡ Control de Consumo Eléctrico
 
-## Getting Started
+Aplicación web moderna para monitorear y controlar el consumo de energía eléctrica de forma diaria, desarrollada con Next.js, TypeScript y Tailwind CSS.
 
-First, run the development server:
+## 🚀 Características
 
+- **Seguimiento diario**: Registra lecturas del medidor cuando quieras
+- **Cálculos automáticos**: Calcula consumo acumulado y costos estimados
+- **Gráficos visuales**: Visualiza la evolución de tu consumo
+- **Proyecciones**: Obtén estimaciones de consumo mensual
+- **Múltiples meses**: Cambia entre diferentes períodos
+- **Almacenamiento local**: Tus datos se guardan en el navegador
+- **Interfaz moderna**: Diseño responsivo y fácil de usar
+
+## 📊 Funcionalidades
+
+### 1. Resumen del Mes
+- Lectura inicial del medidor
+- Consumo total acumulado
+- Costo estimado basado en tarifas reales
+
+### 2. Registro de Lecturas
+- Agrega lecturas con fecha personalizada
+- Validación automática (debe ser mayor a la lectura anterior)
+- Cálculo instantáneo del consumo
+
+### 3. Análisis Visual
+- Gráfico de evolución de lecturas
+- Consumo promedio diario
+- Proyección mensual basada en el consumo actual
+
+### 4. Gestión de Períodos
+- Selector de mes y año
+- Configuración de lectura inicial por período
+- Reinicio de datos por mes
+
+## 🛠️ Instalación y Uso
+
+### Prerrequisitos
+- Node.js 18+ instalado
+- npm o yarn
+
+### Instalación
+
+1. Clona o descarga el proyecto
+2. Instala las dependencias:
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+3. Inicia el servidor de desarrollo:
+```bash
+npm run dev
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+4. Abre [http://localhost:3000](http://localhost:3000) en tu navegador
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 📋 Cómo Usar la Aplicación
 
-## Learn More
+### Primer Uso
+1. **Configura el mes actual**: La aplicación viene preconfigurada con julio 2025 y la lectura inicial de tu factura (65,788 kWh)
+2. **Cambia el mes si es necesario**: Usa el selector de mes para configurar el período actual
+3. **Ingresa la lectura inicial**: Al cambiar de mes, se te pedirá la lectura inicial del medidor
 
-To learn more about Next.js, take a look at the following resources:
+### Registro Diario
+1. **Selecciona la fecha**: Elige el día de la lectura
+2. **Ingresa la lectura**: Escribe el valor actual del medidor (debe ser mayor a la lectura anterior)
+3. **Haz clic en "Agregar Lectura"**: El sistema calculará automáticamente el consumo
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Interpretación de Datos
+- **Consumo Total**: kWh consumidos desde el inicio del mes
+- **Costo Estimado**: Basado en la tarifa de R$ 0.795 por kWh + R$ 41.12 de tasas adicionales
+- **Consumo Promedio Diario**: Promedio de consumo por día registrado
+- **Proyección Mensual**: Estimación del consumo total del mes
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 💰 Cálculo de Costos
 
-## Deploy on Vercel
+La aplicación utiliza las tarifas reales de tu factura:
+- **Tarifa por kWh**: R$ 0.795 (promedio de las facturas analizadas)
+- **Tasas adicionales**: R$ 41.12 (contribución de iluminación pública y otros)
+- **Fórmula**: `(Consumo × Tarifa) + Tasas Adicionales`
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 📱 Características Técnicas
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- **Framework**: Next.js 15.3.5 con Turbopack
+- **Lenguaje**: TypeScript
+- **Estilos**: Tailwind CSS 4
+- **Almacenamiento**: LocalStorage del navegador
+- **Gráficos**: Canvas HTML5 nativo
+- **Responsivo**: Funciona en móviles y escritorio
+
+## 🔧 Personalización
+
+### Cambiar Tarifas
+Edita las constantes en `app/page.tsx`:
+```typescript
+const TARIFF_PER_KWH = 0.795; // Tu tarifa por kWh
+const ADDITIONAL_FEES = 41.12; // Tasas adicionales
+```
+
+### Agregar Nuevos Meses
+Los meses están definidos en `app/components/MonthSelector.tsx`
+
+## 📊 Datos de Ejemplo
+
+Basado en tus facturas reales:
+- **Junio 2025**: 349 kWh → R$ 314.43
+- **Julio 2025**: 588 kWh → R$ 542.39
+
+## 🚀 Próximas Mejoras
+
+- [ ] Exportar datos a Excel/CSV
+- [ ] Comparación entre meses
+- [ ] Alertas de consumo alto
+- [ ] Múltiples medidores
+- [ ] Backup en la nube
+- [ ] Notificaciones de lectura
+
+## 🤝 Contribuciones
+
+Este proyecto fue desarrollado específicamente para el control de consumo eléctrico residencial. Si tienes sugerencias o mejoras, ¡son bienvenidas!
+
+## 📄 Licencia
+
+Proyecto de uso personal para control de consumo eléctrico.
+
+---
+
+**¡Controla tu consumo, controla tus gastos! ⚡💰**
