@@ -13,6 +13,7 @@ import {
   Navbar,
   TariffFlagSelector
 } from './components';
+import SessionStatus from './components/UI/SessionStatus';
 import { APP_CONFIG } from './constants';
 
 export default function Home() {
@@ -130,6 +131,9 @@ export default function Home() {
           <p className="mt-1">Desarrollado con Next.js, TypeScript y Tailwind CSS</p>
         </div>
       </div>
+      
+      {/* Componente de estado de sesión (solo en desarrollo) */}
+      <SessionStatus compact={true} position="bottom-right" />
     </div>
   );
 }
