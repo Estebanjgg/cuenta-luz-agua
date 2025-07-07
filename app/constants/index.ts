@@ -1,3 +1,5 @@
+import { TariffFlagType } from '../types';
+
 // Claves de almacenamiento local
 export const STORAGE_KEY = 'electricity-consumption-data';
 
@@ -61,7 +63,7 @@ export const DEFAULT_TARIFF = {
   publicLightingFee: SAO_PAULO_TARIFF.publicLightingFee,
   
   // Método de cálculo con banderas tarifarias
-  calculateCost: (kwh: number, flagType: keyof typeof TARIFF_FLAGS = 'GREEN') => {
+  calculateCost: (kwh: number, flagType: TariffFlagType = 'GREEN') => {
     const baseCost = kwh * SAO_PAULO_TARIFF.baseRate;
     const flagSurcharge = kwh * TARIFF_FLAGS[flagType].surcharge;
     const subtotal = baseCost + flagSurcharge;

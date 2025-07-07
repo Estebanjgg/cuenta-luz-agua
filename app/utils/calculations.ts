@@ -35,9 +35,23 @@ export const calculateConsumptionStats = (
   }
   
   // Usar el método de cálculo detallado si está disponible
-  const estimatedCost = tariff.calculateCost 
-    ? tariff.calculateCost(totalConsumption, flagType)
-    : (totalConsumption * tariff.pricePerKwh) + (tariff.publicLightingFee || tariff.additionalFees || 0);
+  let estimatedCost: number;
+  try {
+    if (tariff.calculateCost && typeof tariff.calculateCost === 'function') {
+      estimatedCost = tariff.calculateCost(totalConsumption, flagType);
+    } else {
+      // Cálculo básico de respaldo
+      const baseCost = totalConsumption * tariff.pricePerKwh;
+      const additionalCosts = (tariff.publicLightingFee || 0) + (tariff.additionalFees || 0);
+      estimatedCost = baseCost + additionalCosts;
+    }
+  } catch (error) {
+    console.error('Error calculating cost:', error);
+    // Cálculo de respaldo en caso de error
+    const baseCost = totalConsumption * tariff.pricePerKwh;
+    const additionalCosts = (tariff.publicLightingFee || 0) + (tariff.additionalFees || 0);
+    estimatedCost = baseCost + additionalCosts;
+  }
 
   return {
     totalConsumption,
