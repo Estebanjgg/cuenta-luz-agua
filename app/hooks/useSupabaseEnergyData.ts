@@ -101,11 +101,24 @@ export const useSupabaseEnergyData = () => {
       }
 
       if (data) {
-        setTariff({
+        const loadedTariff: TariffConfig = {
           pricePerKwh: data.price_per_kwh,
           additionalFees: data.additional_fees,
           publicLightingFee: data.public_lighting_fee
-        })
+        }
+        
+        // Detectar si es tarifa de Energisa y aplicar configuración específica
+        if (Math.abs(data.price_per_kwh - 0.795530) < 0.001) {
+          loadedTariff.calculateCost = (kwh: number, flagType?: TariffFlagType) => {
+            // Valores baseados na factura real de 588 kWh = R$ 542,39
+            const baseCost = kwh * 0.795530;
+            const publicLighting = 41.12;
+            const taxesAndFees = (kwh / 588) * 33.50;
+            return Math.round((baseCost + publicLighting + taxesAndFees) * 100) / 100;
+          };
+        }
+        
+        setTariff(loadedTariff)
       }
     } catch (error) {
       console.error('Error loading user tariff:', error)
@@ -349,6 +362,7 @@ export const useSupabaseEnergyData = () => {
     // Estado
     currentMonth,
     tariff,
+    userTariff: tariff, // Alias para compatibilidad
     isLoading,
     
     // Acciones
@@ -359,6 +373,7 @@ export const useSupabaseEnergyData = () => {
     hasMonthData,
     resetMonth,
     updateTariff,
+    saveTariffConfig,
     changeTariffFlag,
     
     // Utilidades

@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import { useAuth } from './contexts/AuthContext';
 import { useSupabaseEnergyData } from './hooks/useSupabaseEnergyData';
 import { 
@@ -14,7 +15,68 @@ import {
   TariffFlagSelector
 } from './components';
 import SessionStatus from './components/UI/SessionStatus';
+import TariffConfig from './components/UI/TariffConfig';
 import { APP_CONFIG } from './constants';
+import { TariffConfig as TariffConfigType, ExtendedTariffConfig } from './types';
+
+// Función para determinar el origen de la tarifa
+const getTariffSourceDescription = (tariff: any): string => {
+  // Verificar si es una tarifa con método calculateCost específico (como Energisa)
+  if (tariff?.calculateCost && typeof tariff.calculateCost === 'function') {
+    // Detectar Energisa por su precio específico
+    if (Math.abs(tariff.pricePerKwh - 0.795530) < 0.001) {
+      return 'Tarifa Energisa Sul-Sudeste (Bragança Paulista, SP)';
+    }
+    return `Tarifa personalizada (R$ ${tariff.pricePerKwh?.toFixed(3)}/kWh)`;
+  }
+  
+  // Verificar si tiene información de compañía desde source
+  if (tariff?.source?.company_name) {
+    const location = tariff.source.city && tariff.source.state ? ` (${tariff.source.city}, ${tariff.source.state})` : '';
+    return `Tarifa ${tariff.source.company_name}${location}`;
+  }
+  
+  // Verificar si tiene información de compañía directa
+  if (tariff?.company_name) {
+    const location = tariff.city && tariff.state ? ` (${tariff.city}, ${tariff.state})` : '';
+    return `Tarifa ${tariff.company_name}${location}`;
+  }
+  
+  // Verificar por tipo de fuente desde source
+  if (tariff?.source?.type) {
+    switch (tariff.source.type) {
+      case 'invoice':
+        return 'Tarifa basada en factura';
+      case 'aneel':
+        const company = tariff.source.company_name || 'ANEEL';
+        const state = tariff.source.state ? ` (${tariff.source.state})` : '';
+        return `Tarifa ${company}${state}`;
+      case 'saved':
+        return 'Tarifa guardada';
+      case 'manual':
+        const manualCompany = tariff.source.company_name || 'Compañía personalizada';
+        const manualLocation = tariff.source.city && tariff.source.state ? ` (${tariff.source.city}, ${tariff.source.state})` : '';
+        return `Tarifa ${manualCompany}${manualLocation}`;
+    }
+  }
+  
+  // Verificar por tipo de fuente directo
+  if (tariff?.source_type) {
+    switch (tariff.source_type) {
+      case 'invoice':
+        return 'Tarifa basada en factura';
+      case 'aneel':
+        return 'Tarifa ANEEL';
+      case 'saved':
+        return 'Tarifa guardada';
+      case 'manual':
+        return 'Tarifa configurada manualmente';
+    }
+  }
+  
+  // Fallback
+  return `Tarifa configurada manualmente (R$ ${tariff?.pricePerKwh?.toFixed(3) || '0.000'}/kWh)`;
+};
 
 export default function Home() {
   const { user, loading: authLoading, signOut } = useAuth();
@@ -30,8 +92,13 @@ export default function Home() {
     getCurrentReading,
     getConsumptionStats,
     tariff,
-    changeTariffFlag
+    changeTariffFlag,
+    saveTariffConfig,
+    userTariff,
+    updateTariff
   } = useSupabaseEnergyData();
+  
+  const [showTariffConfig, setShowTariffConfig] = useState(false);
 
   // Si no hay usuario autenticado, mostrar componente de autenticación
   if (!user && !authLoading) {
@@ -54,7 +121,10 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
       {/* Navbar */}
-      <Navbar onLogout={signOut} />
+      <Navbar 
+        onLogout={signOut} 
+        onOpenTariffConfig={() => setShowTariffConfig(true)}
+      />
       
       <div className="max-w-6xl mx-auto p-4">
 
@@ -105,6 +175,7 @@ export default function Home() {
           consumption={stats.totalConsumption}
           tariff={tariff}
           flagType={currentMonth.tariffFlag}
+          tariffSource={getTariffSourceDescription(tariff)}
         />
 
         {/* Acciones adicionales */}
@@ -131,6 +202,32 @@ export default function Home() {
           <p className="mt-1">Desarrollado con Next.js, TypeScript y Tailwind CSS</p>
         </div>
       </div>
+      
+      {/* Modal de Configuración de Tarifas */}
+      <TariffConfig
+        isOpen={showTariffConfig}
+        onClose={() => setShowTariffConfig(false)}
+        currentConfig={userTariff || {
+          pricePerKwh: 0.795,
+          additionalFees: 41.12,
+          publicLightingFee: 0
+        }}
+        onSave={async (config: ExtendedTariffConfig) => {
+          // Convertir ExtendedTariffConfig a TariffConfig
+          const tariffConfig: TariffConfigType = {
+            pricePerKwh: config.pricePerKwh,
+            additionalFees: config.additionalFees,
+            publicLightingFee: config.publicLightingFee,
+            // Preservar propiedades adicionales si existen
+            ...(config.source && { source: config.source }),
+            ...(config.calculateCost && { calculateCost: config.calculateCost })
+          };
+          
+          // Usar updateTariff para actualizar inmediatamente el estado
+          await updateTariff(tariffConfig);
+          setShowTariffConfig(false);
+        }}
+      />
       
       {/* Componente de estado de sesión (solo en desarrollo) */}
       <SessionStatus compact={true} position="bottom-right" />

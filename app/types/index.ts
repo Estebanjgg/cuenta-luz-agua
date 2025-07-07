@@ -65,3 +65,62 @@ export interface ValidationResult {
   isValid: boolean;
   message?: string;
 }
+
+// Tipos para tarifas guardadas
+export interface SavedTariff {
+  id: string;
+  name: string;
+  company_name: string;
+  company_code?: string;
+  city?: string;
+  state: string;
+  price_per_kwh: number;
+  public_lighting_fee?: number;
+  additional_fees?: number;
+  source_type: 'manual' | 'aneel' | 'invoice';
+  is_predefined: boolean;
+  user_id?: string;
+  created_at: string;
+  updated_at: string;
+}
+
+// Tipo extendido de TariffConfig con información de origen
+export interface ExtendedTariffConfig extends TariffConfig {
+  source?: {
+    type: 'automatic' | 'manual' | 'saved';
+    company_name?: string;
+    company_code?: string;
+    city?: string;
+    state?: string;
+    saved_tariff_id?: string;
+  };
+}
+
+// Interfaz para la tabla saved_tariffs de la base de datos
+export interface SavedTariffDB {
+  id: string;
+  name: string;
+  company_name: string;
+  company_code?: string;
+  city?: string;
+  state: string;
+  price_per_kwh: number;
+  public_lighting_fee?: number;
+  additional_fees?: number;
+  source_type?: string;
+  is_predefined?: boolean;
+  user_id?: string;
+  created_at?: string;
+  updated_at?: string;
+}
+
+// Interfaz para la tabla user_tariff_config de la base de datos
+export interface UserTariffConfigDB {
+  id: string;
+  user_id?: string;
+  price_per_kwh: number;
+  additional_fees?: number;
+  public_lighting_fee?: number;
+  created_at?: string;
+  updated_at?: string;
+}

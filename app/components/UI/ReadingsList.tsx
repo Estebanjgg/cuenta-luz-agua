@@ -12,9 +12,11 @@ interface ReadingsListProps {
 
 export default function ReadingsList({ readings, initialReading, onDeleteReading }: ReadingsListProps) {
   const [monthStartTime, setMonthStartTime] = useState(0);
+  const [isClient, setIsClient] = useState(false);
 
   // Establecer el tiempo de inicio del mes solo en el cliente
   useEffect(() => {
+    setIsClient(true);
     const now = new Date();
     setMonthStartTime(new Date(now.getFullYear(), now.getMonth(), 1).getTime());
   }, []);
@@ -117,7 +119,7 @@ export default function ReadingsList({ readings, initialReading, onDeleteReading
                     <div className="px-3 py-2 rounded-lg bg-gray-50 text-gray-600">
                       <p className="text-xs font-medium opacity-75">Días desde inicio</p>
                       <p className="font-bold">
-                        {monthStartTime > 0 ? Math.ceil((new Date(reading.date).getTime() - monthStartTime) / (1000 * 60 * 60 * 24)) : '-'}
+                        {isClient && monthStartTime > 0 ? Math.ceil((new Date(reading.date).getTime() - monthStartTime) / (1000 * 60 * 60 * 24)) : '-'}
                       </p>
                     </div>
                   </div>

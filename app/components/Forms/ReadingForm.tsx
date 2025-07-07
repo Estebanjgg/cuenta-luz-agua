@@ -14,9 +14,11 @@ export default function ReadingForm({ onAddReading, currentReading }: ReadingFor
   const [reading, setReading] = useState('');
   const [error, setError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isClient, setIsClient] = useState(false);
 
   // Establecer fecha actual solo en el cliente para evitar errores de hidratación
   useEffect(() => {
+    setIsClient(true);
     setDate(new Date().toISOString().split('T')[0]);
   }, []);
 
@@ -38,7 +40,9 @@ export default function ReadingForm({ onAddReading, currentReading }: ReadingFor
       
       if (result.isValid) {
         setReading('');
-        setDate(new Date().toISOString().split('T')[0]);
+        if (isClient) {
+          setDate(new Date().toISOString().split('T')[0]);
+        }
       } else {
         setError(result.message || 'Error al agregar la lectura');
       }

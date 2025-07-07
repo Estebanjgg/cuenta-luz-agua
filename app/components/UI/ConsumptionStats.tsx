@@ -14,12 +14,14 @@ interface ConsumptionStatsProps {
 export default function ConsumptionStats({ stats, readings, currentMonth, currentYear }: ConsumptionStatsProps) {
   const [currentDay, setCurrentDay] = useState(1);
   const [daysInMonth, setDaysInMonth] = useState(30);
+  const [isClient, setIsClient] = useState(false);
   
   const dateRange = getReadingDateRange(readings);
   const progressPercentage = (currentDay / daysInMonth) * 100;
 
   // Establecer valores de fecha solo en el cliente
   useEffect(() => {
+    setIsClient(true);
     const now = new Date();
     setCurrentDay(now.getDate());
     setDaysInMonth(new Date(currentYear, now.getMonth() + 1, 0).getDate());

@@ -8,9 +8,10 @@ interface CostBreakdownProps {
   consumption: number;
   tariff: TariffConfig;
   flagType?: TariffFlagType;
+  tariffSource?: string; // Información sobre el origen de la tarifa
 }
 
-export default function CostBreakdown({ consumption, tariff, flagType = 'GREEN' }: CostBreakdownProps) {
+export default function CostBreakdown({ consumption, tariff, flagType = 'GREEN', tariffSource }: CostBreakdownProps) {
   if (consumption === 0) {
     return null;
   }
@@ -20,13 +21,14 @@ export default function CostBreakdown({ consumption, tariff, flagType = 'GREEN' 
   const transmissionCost = consumption * (tariff.transmission || 0);
   const sectorChargesCost = consumption * (tariff.sectorCharges || 0);
   const taxesCost = consumption * (tariff.taxes || 0);
-  const publicLightingCost = tariff.publicLightingFee || tariff.additionalFees || 0;
+  const publicLightingCost = tariff.publicLightingFee || 0;
+  const additionalFeesCost = tariff.additionalFees || 0;
   
   const flagSurcharge = consumption * TARIFF_FLAGS[flagType].surcharge;
   
   const totalCost = tariff.calculateCost 
     ? tariff.calculateCost(consumption, flagType)
-    : baseCost + transmissionCost + sectorChargesCost + taxesCost + publicLightingCost + flagSurcharge;
+    : baseCost + transmissionCost + sectorChargesCost + taxesCost + publicLightingCost + additionalFeesCost + flagSurcharge;
 
   const costItems = [
     {
@@ -66,6 +68,13 @@ export default function CostBreakdown({ consumption, tariff, flagType = 'GREEN' 
       color: 'bg-green-50 text-green-700'
     },
     {
+      label: 'Taxas Adicionales',
+      description: 'Tarifa fija mensual',
+      value: additionalFeesCost,
+      percentage: (additionalFeesCost / totalCost) * 100,
+      color: 'bg-indigo-50 text-indigo-700'
+    },
+    {
       label: `Bandera Tarifaria (${TARIFF_FLAGS[flagType].name})`,
       description: `${formatNumber(consumption)} kWh × ${formatCurrency(TARIFF_FLAGS[flagType].surcharge)}`,
       value: flagSurcharge,
@@ -83,9 +92,19 @@ export default function CostBreakdown({ consumption, tariff, flagType = 'GREEN' 
           💰 Desglose de Costos
         </h2>
         <div className="text-sm text-gray-600">
-          Basado en factura Energisa
+          {tariffSource || 'Basado en factura Energisa'}
         </div>
       </div>
+      
+      {/* Información del tipo de tarifa */}
+      {tariffSource && (
+        <div className="mb-4 p-3 bg-blue-50 rounded-lg border border-blue-200">
+          <div className="flex items-center space-x-2">
+            <span className="text-blue-600 font-medium">📋 Tipo de Tarifa:</span>
+            <span className="text-blue-800 font-semibold">{tariffSource}</span>
+          </div>
+        </div>
+      )}
 
       <div className="space-y-4">
         {costItems.map((item, index) => (

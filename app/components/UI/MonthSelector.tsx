@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { MONTHS, APP_CONFIG } from '../../constants';
 import { ValidationResult } from '../../types';
 
@@ -13,14 +13,21 @@ interface MonthSelectorProps {
 }
 
 export default function MonthSelector({ currentMonth, currentYear, onMonthChange, onSwitchToMonth, hasMonthData }: MonthSelectorProps) {
+  const [isOpen, setIsOpen] = useState(false);
   const [selectedMonth, setSelectedMonth] = useState(currentMonth);
   const [selectedYear, setSelectedYear] = useState(currentYear);
-  const [initialReading, setInitialReading] = useState(APP_CONFIG.defaultInitialReading);
-  const [isOpen, setIsOpen] = useState(false);
+  const [initialReading, setInitialReading] = useState<number>(0);
   const [error, setError] = useState<string>('');
+  const [currentYearNow, setCurrentYearNow] = useState(2025); // Default fallback
+  const [isClient, setIsClient] = useState(false);
+  
+  // Establecer año actual solo en el cliente para evitar errores de hidratación
+  useEffect(() => {
+    setIsClient(true);
+    setCurrentYearNow(new Date().getFullYear());
+  }, []);
   
   // Generar años dinámicamente (año actual - 1 hasta año actual + 2)
-  const currentYearNow = new Date().getFullYear();
   const availableYears = Array.from({ length: 4 }, (_, i) => currentYearNow - 1 + i);
 
   const validateInitialReading = (value: number): ValidationResult => {
