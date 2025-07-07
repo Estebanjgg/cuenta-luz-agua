@@ -112,7 +112,7 @@ export const VALIDATION_LIMITS = {
 export const APP_CONFIG = {
   name: 'Control de Consumo Eléctrico',
   version: '1.0.0',
-  defaultYear: new Date().getFullYear(),
+  defaultYear: 2025, // Año fijo para evitar problemas de hidratación
   defaultMonth: 'julio',
   defaultInitialReading: 65788
 };

@@ -8,6 +8,46 @@ export interface TariffFlag {
   color: string;
 }
 
+// Nuevos tipos para el sistema de tarifas avanzado
+export interface Tariff {
+  id: string;
+  user_id?: string; // null para tarifas públicas del sistema
+  city: string;
+  state: string;
+  company_name: string;
+  price_per_kwh_green: number;
+  price_per_kwh_yellow: number;
+  price_per_kwh_red_1: number;
+  price_per_kwh_red_2: number;
+  additional_fees: number;
+  public_lighting_fee: number;
+  is_public: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface UserMonthlyTariff {
+  id: string;
+  user_id: string;
+  energy_data_id: string;
+  tariff_id: string;
+  created_at: string;
+  tariff?: Tariff; // Relación con la tarifa
+}
+
+export interface TariffFormData {
+  city: string;
+  state: string;
+  company_name: string;
+  price_per_kwh_green: number;
+  price_per_kwh_yellow: number;
+  price_per_kwh_red_1: number;
+  price_per_kwh_red_2: number;
+  additional_fees: number;
+  public_lighting_fee: number;
+  is_public?: boolean;
+}
+
 // Tipos principales de la aplicación
 export interface Reading {
   id: string;

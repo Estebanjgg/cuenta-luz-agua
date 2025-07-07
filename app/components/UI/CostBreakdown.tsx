@@ -1,6 +1,6 @@
 'use client';
 
-import { TariffConfig, TariffFlagType } from '../../types';
+import { TariffConfig, TariffFlagType, Tariff } from '../../types';
 import { formatCurrency, formatNumber } from '../../utils/calculations';
 import { TARIFF_FLAGS } from '../../constants';
 
@@ -8,9 +8,10 @@ interface CostBreakdownProps {
   consumption: number;
   tariff: TariffConfig;
   flagType?: TariffFlagType;
+  selectedTariff?: Tariff | null; // Información de la tarifa específica seleccionada para el mes
 }
 
-export default function CostBreakdown({ consumption, tariff, flagType = 'GREEN' }: CostBreakdownProps) {
+export default function CostBreakdown({ consumption, tariff, flagType = 'GREEN', selectedTariff }: CostBreakdownProps) {
   if (consumption === 0) {
     return null;
   }
@@ -78,14 +79,54 @@ export default function CostBreakdown({ consumption, tariff, flagType = 'GREEN' 
 
   return (
     <div className="bg-white rounded-xl shadow-lg p-6">
-      <div className="flex items-center justify-between mb-6">
-        <h2 className="text-xl font-bold text-gray-800 flex items-center">
+      <div className="mb-6">
+        <h2 className="text-xl font-bold text-gray-800 flex items-center mb-2">
           💰 Desglose de Costos
+          {selectedTariff && (
+            <span className="ml-2 text-base font-medium text-blue-600">
+              - {selectedTariff.company_name}
+            </span>
+          )}
         </h2>
-        <div className="text-sm text-gray-600">
-          Basado en factura Energisa
-        </div>
+        {selectedTariff && (
+          <p className="text-sm text-gray-600">
+            Tarifa aplicada: <span className="font-medium text-gray-800">{selectedTariff.company_name}</span>
+            {selectedTariff.city && selectedTariff.state && (
+              <span> • {selectedTariff.city}, {selectedTariff.state}</span>
+            )}
+          </p>
+        )}
       </div>
+
+      {/* Información de la tarifa seleccionada */}
+      {selectedTariff && (
+        <div className="mb-6 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg border border-blue-200">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="font-semibold text-blue-800 flex items-center">
+                ⚡ Tarifa Activa
+              </h3>
+              <p className="text-sm text-blue-700 mt-1">
+                <span className="font-medium">{selectedTariff.company_name}</span>
+                {selectedTariff.city && selectedTariff.state && (
+                  <span className="text-blue-600"> • {selectedTariff.city}, {selectedTariff.state}</span>
+                )}
+              </p>
+            </div>
+            <div className="text-right">
+              <p className="text-xs text-blue-600 uppercase tracking-wide font-medium">Bandera {TARIFF_FLAGS[flagType].name}</p>
+              <p className="text-lg font-bold text-blue-800">
+                {formatCurrency(
+                  flagType === 'GREEN' ? selectedTariff.price_per_kwh_green :
+                  flagType === 'YELLOW' ? selectedTariff.price_per_kwh_yellow :
+                  flagType === 'RED_LEVEL_1' ? selectedTariff.price_per_kwh_red_1 :
+                  selectedTariff.price_per_kwh_red_2
+                )}/kWh
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="space-y-4">
         {costItems.map((item, index) => (
@@ -131,7 +172,17 @@ export default function CostBreakdown({ consumption, tariff, flagType = 'GREEN' 
       {/* Nota informativa */}
       <div className="mt-4 p-3 bg-blue-50 rounded-lg">
         <p className="text-xs text-blue-700">
-          💡 <strong>Nota:</strong> Este desglose está basado en la estructura tarifaria de Energisa Sul-Sudeste 
+          💡 <strong>Nota:</strong> Este desglose está basado en la estructura tarifaria de{' '}
+          {selectedTariff ? (
+            <span className="font-medium">
+              {selectedTariff.company_name}
+              {selectedTariff.city && selectedTariff.state && (
+                <span> ({selectedTariff.city}, {selectedTariff.state})</span>
+              )}
+            </span>
+          ) : (
+            'la empresa distribuidora seleccionada'
+          )}{' '}
           y puede variar según la región, tipo de conexión y período de facturación.
         </p>
       </div>
