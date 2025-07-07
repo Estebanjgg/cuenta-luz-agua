@@ -27,16 +27,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [user, setUser] = useState<User | null>(null)
   const [session, setSession] = useState<Session | null>(null)
   const [loading, setLoading] = useState(true)
-  const [isClient, setIsClient] = useState(false)
+  const [mounted, setMounted] = useState(false)
   const supabase = createSupabaseBrowserClient()
 
   useEffect(() => {
-    setIsClient(true)
-  }, [])
-
-  useEffect(() => {
-    if (!isClient) return
-
+    setMounted(true)
+    
     // Obtener sesión inicial
     const getInitialSession = async () => {
       const { data: { session } } = await supabase.auth.getSession()
@@ -57,7 +53,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     )
 
     return () => subscription.unsubscribe()
-  }, [isClient])
+  }, [])
 
   const signIn = async (email: string, password: string) => {
     const { error } = await supabase.auth.signInWithPassword({
@@ -82,7 +78,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const value = {
     user,
     session,
-    loading: loading || !isClient,
+    loading: loading || !mounted,
     signIn,
     signUp,
     signOut,
