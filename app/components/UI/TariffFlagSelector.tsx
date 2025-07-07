@@ -19,7 +19,12 @@ const getFlagExplanation = (flagType: TariffFlagType): { explanation: string; ti
         tips: [
           "Aprovecha para usar electrodomésticos de alto consumo",
           "Es un buen momento para cargar dispositivos electrónicos",
-          "Puedes usar el aire acondicionado sin preocupaciones adicionales"
+          "Puedes usar el aire acondicionado sin preocupaciones adicionales",
+          "Ideal para usar la secadora de ropa y lavavajillas",
+          "Buen momento para planchar ropa acumulada",
+          "Puedes usar el horno eléctrico para cocinar sin restricciones",
+          "Aprovecha para cargar vehículos eléctricos si los tienes",
+          "Es seguro usar calentadores eléctricos de agua"
         ]
       };
     case 'YELLOW':
@@ -29,7 +34,12 @@ const getFlagExplanation = (flagType: TariffFlagType): { explanation: string; ti
           "Evita usar varios electrodomésticos al mismo tiempo",
           "Prefiere usar la lavadora y lavavajillas en horarios fuera de pico (evita 18h-21h)",
           "Ajusta el aire acondicionado a 23°C o más",
-          "Apaga luces innecesarias y usa iluminación LED"
+          "Apaga luces innecesarias y usa iluminación LED",
+          "Reduce el tiempo de ducha en 2-3 minutos",
+          "Usa la función 'eco' en electrodomésticos cuando esté disponible",
+          "Evita abrir la puerta del refrigerador innecesariamente",
+          "Planifica mejor el uso de la plancha (plancha varias piezas juntas)",
+          "Considera secar ropa al sol en lugar de usar secadora"
         ]
       };
     case 'RED_LEVEL_1':
@@ -40,7 +50,12 @@ const getFlagExplanation = (flagType: TariffFlagType): { explanation: string; ti
           "Evita usar electrodomésticos en horario de pico (18h-21h)",
           "Desconecta aparatos en standby de la tomada",
           "Usa ventiladores en lugar de aire acondicionado cuando sea posible",
-          "Planifica el uso de lavadora y secadora para días con menor consumo"
+          "Planifica el uso de lavadora y secadora para días con menor consumo",
+          "Ajusta la temperatura del refrigerador a 3-4°C (no más frío)",
+          "Usa microondas en lugar del horno eléctrico para calentar comida",
+          "Apaga el calentador eléctrico cuando no lo uses",
+          "Reduce el brillo de pantallas de TV y computadoras",
+          "Evita usar múltiples dispositivos electrónicos simultáneamente"
         ]
       };
     case 'RED_LEVEL_2':
@@ -53,7 +68,14 @@ const getFlagExplanation = (flagType: TariffFlagType): { explanation: string; ti
           "Desconecta todos los aparatos que no sean esenciales",
           "Usa iluminación natural siempre que sea posible",
           "Considera postponer actividades que requieran mucha energía",
-          "Ajusta la temperatura del refrigerador a niveles menos fríos"
+          "Ajusta la temperatura del refrigerador a niveles menos fríos",
+          "Evita usar secadora de ropa - seca al aire libre",
+          "No uses aire acondicionado - opta por ventiladores",
+          "Cocina con gas en lugar de electrodomésticos eléctricos",
+          "Carga dispositivos móviles solo cuando sea necesario",
+          "Apaga completamente la TV cuando no la veas",
+          "Usa agua fría para lavar ropa cuando sea posible",
+          "Evita usar plancha eléctrica - considera alternativas"
         ]
       };
     default:
@@ -67,6 +89,7 @@ export default function TariffFlagSelector({
   className = '' 
 }: TariffFlagSelectorProps) {
   const [showDetails, setShowDetails] = useState(false);
+  const [showMoreTips, setShowMoreTips] = useState(false);
   const [selectedForDetails, setSelectedForDetails] = useState<TariffFlagType>(selectedFlag);
   
   const flagOptions = Object.entries(TARIFF_FLAGS) as [TariffFlagType, typeof TARIFF_FLAGS[TariffFlagType]][];
@@ -204,12 +227,9 @@ export default function TariffFlagSelector({
                   <p className="mb-1">{currentFlagInfo.tips[0]}</p>
                   {currentFlagInfo.tips.length > 1 && (
                     <>
-                      {!showDetails ? (
+                      {!showMoreTips ? (
                         <button
-                          onClick={() => {
-                            setSelectedForDetails(selectedFlag);
-                            setShowDetails(true);
-                          }}
+                          onClick={() => setShowMoreTips(true)}
                           className="text-yellow-600 hover:text-yellow-800 underline cursor-pointer font-medium"
                         >
                           (y {currentFlagInfo.tips.length - 1} más...)
@@ -223,7 +243,7 @@ export default function TariffFlagSelector({
                             </p>
                           ))}
                           <button
-                            onClick={() => setShowDetails(false)}
+                            onClick={() => setShowMoreTips(false)}
                             className="text-yellow-600 hover:text-yellow-800 underline cursor-pointer font-medium mt-2"
                           >
                             (mostrar menos)
