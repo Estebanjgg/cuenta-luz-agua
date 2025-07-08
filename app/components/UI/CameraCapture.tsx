@@ -15,6 +15,7 @@ export default function CameraCapture({ onReadingExtracted, isProcessing = false
   const [isLoadingCamera, setIsLoadingCamera] = useState(false);
   const [isProcessingOCR, setIsProcessingOCR] = useState(false);
   const [capturedImage, setCapturedImage] = useState<string | null>(null);
+  const [isCameraReady, setIsCameraReady] = useState(false);
   const [stream, setStream] = useState<MediaStream | null>(null);
   const [error, setError] = useState<string>('');
   const [ocrProgress, setOcrProgress] = useState<number>(0);
@@ -45,11 +46,21 @@ export default function CameraCapture({ onReadingExtracted, isProcessing = false
       console.log('Solicitando acceso a la cámara...');
       
       // Configuración optimizada para móviles
+      const isMobile = window.innerWidth <= 768;
       const constraints: MediaStreamConstraints = {
         video: {
           facingMode: 'environment', // Usar cámara trasera en móviles
-          width: { ideal: 1920, max: 1920 },
-          height: { ideal: 1080, max: 1080 },
+          width: { 
+            min: 640,
+            ideal: isMobile ? 1024 : 1920, 
+            max: isMobile ? 1280 : 1920 
+          },
+          height: { 
+            min: 480,
+            ideal: isMobile ? 768 : 1080, 
+            max: isMobile ? 960 : 1080 
+          },
+          aspectRatio: { ideal: 4/3 }, // Mejor para captura de documentos
           frameRate: { ideal: 30, max: 30 }
         }
       };
@@ -85,6 +96,14 @@ export default function CameraCapture({ onReadingExtracted, isProcessing = false
       setTimeout(() => {
         if (videoRef.current) {
           videoRef.current.srcObject = mediaStream;
+          
+          // Configurar eventos del video
+          videoRef.current.onloadedmetadata = () => {
+            console.log('Video metadata cargada');
+            setTimeout(() => {
+              setIsCameraReady(true);
+            }, 1000); // Dar tiempo para que la cámara se estabilice
+          };
           
           // Reproducir video directamente
           console.log('Iniciando reproducción del video...');
@@ -139,6 +158,7 @@ export default function CameraCapture({ onReadingExtracted, isProcessing = false
       setStream(null);
     }
     setIsCapturing(false);
+    setIsCameraReady(false);
     setCapturedImage(null);
   }, [stream]);
 
@@ -177,7 +197,7 @@ export default function CameraCapture({ onReadingExtracted, isProcessing = false
     return canvas.toDataURL('image/jpeg', 0.85);
   };
 
-  // Capturar foto
+  // Capturar foto con mejor calidad
   const capturePhoto = useCallback(() => {
     if (!videoRef.current || !canvasRef.current) return;
     
@@ -188,33 +208,57 @@ export default function CameraCapture({ onReadingExtracted, isProcessing = false
     if (!context) return;
     
     try {
-      // Configurar canvas con las dimensiones del video
-      canvas.width = video.videoWidth;
-      canvas.height = video.videoHeight;
-      
-      // Verificar que el video tiene dimensiones válidas
-      if (canvas.width === 0 || canvas.height === 0) {
-        setError(t('cameraCapture.cameraError'));
-        return;
-      }
-      
-      // Dibujar el frame actual del video en el canvas
-      context.drawImage(video, 0, 0, canvas.width, canvas.height);
-      
-      // Optimizar imagen para OCR
-      const imageDataUrl = optimizeImageForOCR(canvas, context);
-      setCapturedImage(imageDataUrl);
-      
-      // Detener la cámara después de capturar
-      stopCamera();
-      
-      // Procesar la imagen con OCR
-      processImageWithOCR(imageDataUrl);
+      // Esperar un momento para que el video se estabilice
+      setTimeout(() => {
+        // Configurar canvas con las dimensiones del video
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        
+        // Verificar que el video tiene dimensiones válidas
+        if (canvas.width === 0 || canvas.height === 0) {
+          setError(t('cameraCapture.cameraError'));
+          return;
+        }
+        
+        console.log(`Capturando foto: ${canvas.width}x${canvas.height}`);
+        
+        // Configurar contexto para mejor calidad
+        context.imageSmoothingEnabled = true;
+        context.imageSmoothingQuality = 'high';
+        
+        // Dibujar el frame actual del video en el canvas
+        context.drawImage(video, 0, 0, canvas.width, canvas.height);
+        
+        // Aplicar mejoras de contraste y nitidez para OCR
+        const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+        const data = imageData.data;
+        
+        // Mejorar contraste (opcional, puede ayudar con texto poco visible)
+        for (let i = 0; i < data.length; i += 4) {
+          // Aumentar ligeramente el contraste
+          const factor = 1.1;
+          data[i] = Math.min(255, data[i] * factor);     // Red
+          data[i + 1] = Math.min(255, data[i + 1] * factor); // Green
+          data[i + 2] = Math.min(255, data[i + 2] * factor); // Blue
+        }
+        
+        context.putImageData(imageData, 0, 0);
+        
+        // Optimizar imagen para OCR con mayor calidad
+        const imageDataUrl = canvas.toDataURL('image/jpeg', 0.92); // Mayor calidad
+        setCapturedImage(imageDataUrl);
+        
+        // Detener la cámara después de capturar
+        stopCamera();
+        
+        // Procesar la imagen con OCR
+        processImageWithOCR(imageDataUrl);
+      }, 200); // Pequeño delay para estabilizar la imagen
     } catch (err) {
       console.error('Error capturing photo:', err);
       setError(t('cameraCapture.cameraError'));
     }
-  }, [stopCamera]);
+  }, [stopCamera, t]);
 
   // Validar imagen antes del procesamiento
   const validateImage = (file: File): Promise<boolean> => {
@@ -457,20 +501,46 @@ export default function CameraCapture({ onReadingExtracted, isProcessing = false
             autoPlay 
             playsInline 
             muted
-            className="w-full max-w-md mx-auto rounded-xl border-2 border-gray-300 h-auto aspect-video"
+            className="w-full max-w-lg mx-auto rounded-xl border-2 border-gray-300 h-auto aspect-[4/3] object-cover"
+            style={{ maxHeight: '400px' }}
           />
-          <div className="flex justify-center gap-3 mt-3">
+          
+          {/* Indicador de estado de la cámara */}
+          <div className="flex justify-center mt-3 mb-2">
+            {!isCameraReady ? (
+              <div className="flex items-center bg-orange-100 text-orange-700 px-4 py-2 rounded-full text-sm font-medium">
+                <svg className="animate-pulse w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                  <circle cx="10" cy="10" r="3"/>
+                </svg>
+                📷 Enfocando cámara...
+              </div>
+            ) : (
+              <div className="flex items-center bg-green-100 text-green-700 px-4 py-2 rounded-full text-sm font-medium">
+                <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"/>
+                </svg>
+                ✅ Cámara lista para capturar
+              </div>
+            )}
+          </div>
+          
+          <div className="flex justify-center gap-4 mt-2">
             <button
               onClick={capturePhoto}
-              className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-xl font-medium transition-colors"
+              disabled={!isCameraReady}
+              className={`px-8 py-4 rounded-2xl font-bold text-lg transition-all duration-200 shadow-lg min-w-[120px] touch-manipulation ${
+                isCameraReady 
+                  ? 'bg-green-600 hover:bg-green-700 active:bg-green-800 text-white hover:shadow-xl transform hover:scale-105 active:scale-95' 
+                  : 'bg-gray-400 text-gray-200 cursor-not-allowed'
+              }`}
             >
-              {t('cameraCapture.capture')}
+              📸 {isCameraReady ? t('cameraCapture.capture') : 'Esperando...'}
             </button>
             <button
               onClick={stopCamera}
-              className="bg-gray-600 hover:bg-gray-700 text-white px-6 py-2 rounded-xl font-medium transition-colors"
+              className="bg-gray-600 hover:bg-gray-700 active:bg-gray-800 text-white px-8 py-4 rounded-2xl font-bold text-lg transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105 active:scale-95 min-w-[120px] touch-manipulation"
             >
-              {t('cameraCapture.cancel')}
+              ❌ {t('cameraCapture.cancel')}
             </button>
           </div>
         </div>
@@ -559,10 +629,12 @@ export default function CameraCapture({ onReadingExtracted, isProcessing = false
           <div>
             <p className="text-yellow-800 font-medium text-sm mb-1">{t('cameraCapture.tipsTitle')}</p>
             <ul className="text-yellow-700 text-xs space-y-1">
-              <li>{t('cameraCapture.tip1')}</li>
-              <li>{t('cameraCapture.tip2')}</li>
-              <li>{t('cameraCapture.tip3')}</li>
-              <li>{t('cameraCapture.tip4')}</li>
+              <li>📱 <strong>Móviles:</strong> Mantén el teléfono estable y espera que la imagen se enfoque</li>
+              <li>💡 Asegúrate de tener buena iluminación, evita sombras sobre el medidor</li>
+              <li>📏 Acerca el medidor para que los números sean claramente visibles</li>
+              <li>🎯 Centra los números del medidor en la pantalla antes de capturar</li>
+              <li>⏱️ Espera 1-2 segundos después de enfocar antes de tomar la foto</li>
+              <li>🔄 Si la foto sale borrosa, intenta de nuevo con mejor iluminación</li>
             </ul>
           </div>
         </div>
