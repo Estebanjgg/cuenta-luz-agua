@@ -1,9 +1,10 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { ValidationResult } from '../../types';
 import { formatNumber } from '../../utils/calculations';
 import { useLanguage } from '../../contexts/LanguageContext';
+import { CameraCapture } from '../UI';
 
 interface ReadingFormProps {
   onAddReading: (date: string, value: number) => Promise<ValidationResult> | ValidationResult;
@@ -16,13 +17,34 @@ export default function ReadingForm({ onAddReading, currentReading }: ReadingFor
   const [reading, setReading] = useState('');
   const [error, setError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isClient, setIsClient] = useState(false);
+  const [showCamera, setShowCamera] = useState(false);
+  const [showCameraMenu, setShowCameraMenu] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+
 
   // Establecer fecha actual solo en el cliente para evitar errores de hidratación
   useEffect(() => {
-    setIsClient(true);
     setDate(new Date().toISOString().split('T')[0]);
   }, []);
+
+  // Cerrar menú al hacer clic fuera
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setShowCameraMenu(false);
+      }
+    };
+
+    if (showCameraMenu) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showCameraMenu]);
+
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -60,6 +82,65 @@ export default function ReadingForm({ onAddReading, currentReading }: ReadingFor
     }
   };
 
+  // Manejar lectura extraída del OCR
+  const handleReadingExtracted = (extractedValue: string) => {
+    setReading(extractedValue);
+    setShowCamera(false);
+    if (error) {
+      setError('');
+    }
+  };
+
+  // Procesar imagen subida
+  const processUploadedImage = async (file: File) => {
+    try {
+      // Crear un canvas para procesar la imagen
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      const img = new Image();
+      
+      img.onload = async () => {
+        // Configurar el canvas con las dimensiones de la imagen
+        canvas.width = img.width;
+        canvas.height = img.height;
+        
+        // Dibujar la imagen en el canvas
+        ctx?.drawImage(img, 0, 0);
+        
+        // Obtener los datos de la imagen
+        const imageData = canvas.toDataURL('image/jpeg', 0.9);
+        
+        // Aquí podrías integrar OCR (Tesseract.js u otro)
+        // Por ahora, simularemos la extracción
+        console.log('Procesando imagen subida para OCR...');
+        
+        // Placeholder para OCR - en una implementación real usarías Tesseract.js
+        // const { data: { text } } = await Tesseract.recognize(imageData, 'eng');
+        // const extractedReading = extractMeterReading(text);
+        
+        // Por ahora, solo mostramos un mensaje
+        alert('Funcionalidad de OCR para imágenes subidas en desarrollo. Por favor, ingresa la lectura manualmente.');
+      };
+      
+      // Cargar la imagen
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        img.src = e.target?.result as string;
+      };
+      reader.readAsDataURL(file);
+      
+    } catch (error) {
+      console.error('Error procesando imagen:', error);
+      alert('Error al procesar la imagen. Por favor, intenta de nuevo.');
+    }
+  };
+
+  const handleCameraCapture = (imageSrc: string) => {
+    setShowCamera(false);
+    // Aquí puedes procesar la imagen capturada
+    console.log('Imagen capturada:', imageSrc);
+  };
+
   return (
     <div className="bg-gradient-to-br from-blue-50 to-indigo-100 border-2 border-blue-200 rounded-2xl shadow-xl p-8 mb-8 relative overflow-hidden">
       {/* Decorative background elements */}
@@ -82,6 +163,26 @@ export default function ReadingForm({ onAddReading, currentReading }: ReadingFor
             </p>
           </div>
         </div>
+
+        {/* Componente de captura de cámara */}
+         {showCamera && (
+           <div className="mb-6">
+             <div className="flex justify-between items-center mb-4">
+               <h4 className="text-lg font-semibold text-gray-800">{t('cameraCapture.title')}</h4>
+               <button
+                 type="button"
+                 onClick={() => setShowCamera(false)}
+                 className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg text-sm transition-colors"
+               >
+                 {t('cameraCapture.close')}
+               </button>
+             </div>
+             <CameraCapture 
+               onReadingExtracted={handleReadingExtracted}
+               isProcessing={isSubmitting}
+             />
+           </div>
+         )}
       
       <form onSubmit={handleSubmit} className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -108,17 +209,60 @@ export default function ReadingForm({ onAddReading, currentReading }: ReadingFor
                 </svg>
                 {t('meterReading')}:
               </label>
-              <input
-                type="number"
-                value={reading}
-                onChange={(e) => handleReadingChange(e.target.value)}
-                className={`w-full p-4 border-2 rounded-xl focus:ring-4 focus:ring-blue-200 transition-all duration-200 bg-white shadow-sm hover:shadow-md ${
-                  error ? 'border-red-400 focus:border-red-500 focus:ring-red-200' : 'border-gray-200 focus:border-blue-500'
-                }`}
-                placeholder={`${t('mustBeGreaterThan')} ${currentReading.toLocaleString()}`}
-                step="0.1"
-                required
-              />
+              
+              <div className="relative">
+                 <input
+                   type="number"
+                   value={reading}
+                   onChange={(e) => handleReadingChange(e.target.value)}
+                   className={`w-full p-4 pr-12 border-2 rounded-xl focus:ring-4 focus:ring-blue-200 transition-all duration-200 bg-white shadow-sm hover:shadow-md ${
+                     error ? 'border-red-400 focus:border-red-500 focus:ring-red-200' : 'border-gray-200 focus:border-blue-500'
+                   }`}
+                   placeholder={`${t('mustBeGreaterThan')} ${currentReading.toLocaleString()}`}
+                    step="0.1"
+                    required
+                 />
+                 
+                 {/* Ícono de cámara dentro del input */}
+                 <button
+                   type="button"
+                   onClick={() => setShowCameraMenu(!showCameraMenu)}
+                   className="absolute right-3 top-1/2 transform -translate-y-1/2 p-2 text-gray-400 hover:text-blue-600 transition-colors"
+                   title="Capturar lectura"
+                 >
+                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0118.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+                   </svg>
+                 </button>
+                 
+                 {/* Menú de cámara */}
+                     {showCameraMenu && (
+                       <div ref={menuRef} className="absolute top-full right-0 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-xl z-50 overflow-hidden">
+                         <div className="py-2">
+                           <button
+                             type="button"
+                             onClick={() => {
+                               setShowCamera(true);
+                               setShowCameraMenu(false);
+                             }}
+                             className="w-full px-4 py-3 text-left hover:bg-green-50 transition-colors flex items-center space-x-3 group"
+                           >
+                             <div className="bg-green-100 group-hover:bg-green-200 p-2 rounded-lg transition-colors">
+                               <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0118.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+                               </svg>
+                             </div>
+                             <div>
+                               <p className="font-medium text-gray-900">Fotografiar medidor o subir imagen</p>
+                               <p className="text-xs text-gray-500">Activar cámara</p>
+                             </div>
+                           </button>
+                         </div>
+                       </div>
+                     )}
+               </div>
             </div>
           </div>
         
