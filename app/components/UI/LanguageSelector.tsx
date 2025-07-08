@@ -7,9 +7,26 @@ interface LanguageSelectorProps {
   className?: string;
 }
 
+const SpainFlag = () => (
+  <svg width="20" height="15" viewBox="0 0 512 341" xmlns="http://www.w3.org/2000/svg">
+    <rect width="512" height="341" fill="#AA151B"/>
+    <rect y="85" width="512" height="171" fill="#F1BF00"/>
+    <rect y="256" width="512" height="85" fill="#AA151B"/>
+  </svg>
+);
+
+const BrazilFlag = () => (
+  <svg width="20" height="15" viewBox="0 0 512 341" xmlns="http://www.w3.org/2000/svg">
+    <rect width="512" height="341" fill="#009739"/>
+    <polygon points="256,85 356,170 256,255 156,170" fill="#FEDD00"/>
+    <circle cx="256" cy="170" r="35" fill="#012169"/>
+    <path d="M256 145 L256 195 M231 170 L281 170" stroke="white" strokeWidth="8"/>
+  </svg>
+);
+
 const languages = [
-  { code: 'es' as Language, name: 'Español', flag: '🇪🇸' },
-  { code: 'pt-BR' as Language, name: 'Português (BR)', flag: '🇧🇷' }
+  { code: 'es' as Language, name: 'Español', flag: <SpainFlag /> },
+  { code: 'pt-BR' as Language, name: 'Português (BR)', flag: <BrazilFlag /> }
 ];
 
 export default function LanguageSelector({ className = '' }: LanguageSelectorProps) {
@@ -31,7 +48,9 @@ export default function LanguageSelector({ className = '' }: LanguageSelectorPro
         className="flex items-center space-x-2 bg-white/10 hover:bg-white/20 rounded-lg px-3 py-2 transition-colors duration-200"
         aria-label={t('languageSelector.selectLanguage')}
       >
-        <span className="text-lg">{currentLanguage?.flag}</span>
+        <span className="inline-flex items-center justify-center w-5 h-4 rounded-sm overflow-hidden">
+          {currentLanguage?.flag}
+        </span>
         <span className="text-white text-sm font-medium hidden sm:block">
           {currentLanguage?.code.toUpperCase()}
         </span>
@@ -70,7 +89,9 @@ export default function LanguageSelector({ className = '' }: LanguageSelectorPro
                     language === lang.code ? 'bg-blue-50 text-blue-700' : 'text-gray-700'
                   }`}
                 >
-                  <span className="text-lg">{lang.flag}</span>
+                  <span className="inline-flex items-center justify-center w-5 h-4 rounded-sm overflow-hidden">
+                    {lang.flag}
+                  </span>
                   <div className="flex-1">
                     <span className="font-medium">{lang.name}</span>
                     {language === lang.code && (
