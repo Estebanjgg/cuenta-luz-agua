@@ -521,6 +521,42 @@ const translations = {
       tariffCreatedMessage: 'Tu nueva tarifa para {city}, {state} - {company} ha sido creada exitosamente. ¿Deseas usarla ahora?',
       useNow: 'Usar Ahora',
       later: 'Más Tarde'
+    },
+
+    // CameraCapture
+    cameraCapture: {
+      title: 'Captura Automática',
+      description: 'Toma una foto del medidor para extraer la lectura',
+      openCamera: '📷 Abrir Cámara',
+      selectImage: '🖼️ Seleccionar Imagen',
+      capture: '📸 Capturar',
+      cancel: '❌ Cancelar',
+      close: '✕ Cerrar',
+      delete: '🗑️ Eliminar',
+      processing: 'Procesando imagen...',
+      capturedImage: 'Imagen capturada',
+      cameraError: 'No se pudo acceder a la cámara. Verifica los permisos.',
+      permissionDenied: 'Permiso de cámara denegado. Permite el acceso en la configuración.',
+      noCameraFound: 'No se encontró ninguna cámara en el dispositivo.',
+      cameraNotSupported: 'La cámara no es compatible con este navegador.',
+      cameraInUse: 'La cámara está siendo usada por otra aplicación.',
+      ocrError: 'Error al procesar la imagen. Intenta nuevamente.',
+      noReadingDetected: 'No se pudo detectar una lectura válida en la imagen. Intenta con mejor iluminación o ángulo.',
+      invalidFileType: 'Tipo de archivo no válido. Selecciona una imagen.',
+      fileTooLarge: 'El archivo es demasiado grande. Máximo 10MB.',
+      imageTooSmall: 'La imagen es demasiado pequeña. Mínimo 100x100 píxeles.',
+      imageTooLarge: 'La imagen es demasiado grande. Máximo 4000x4000 píxeles.',
+      invalidImage: 'Imagen no válida o corrupta.',
+      fileReadError: 'Error al leer el archivo.',
+      imageReadError: 'Error al leer la imagen para OCR.',
+      networkError: 'Error de conexión. Verifica tu internet.',
+      memoryError: 'Error de memoria. Intenta con una imagen más pequeña.',
+      lowConfidence: 'Calidad de imagen baja. Intenta con mejor iluminación.',
+      tipsTitle: '💡 Consejos para mejores resultados:',
+      tip1: '• Asegúrate de que los números estén bien iluminados',
+      tip2: '• Mantén la cámara estable y enfocada',
+      tip3: '• Los números deben estar claramente visibles',
+      tip4: '• Evita reflejos y sombras sobre el medidor'
     }
   },
   'pt-BR': {
@@ -1027,6 +1063,42 @@ const translations = {
       tariffCreatedMessage: 'Sua nova tarifa para {city}, {state} - {company} foi criada com sucesso. Deseja usá-la agora?',
       useNow: 'Usar Agora',
       later: 'Mais Tarde'
+    },
+
+    // CameraCapture
+    cameraCapture: {
+      title: 'Captura Automática',
+      description: 'Tire uma foto do medidor para extrair a leitura',
+      openCamera: '📷 Abrir Câmera',
+      selectImage: '🖼️ Selecionar Imagem',
+      capture: '📸 Capturar',
+      cancel: '❌ Cancelar',
+      close: '✕ Fechar',
+      delete: '🗑️ Excluir',
+      processing: 'Processando imagem...',
+      capturedImage: 'Imagem capturada',
+      cameraError: 'Não foi possível acessar a câmera. Verifique as permissões.',
+      permissionDenied: 'Permissão de câmera negada. Permita o acesso nas configurações.',
+      noCameraFound: 'Nenhuma câmera encontrada no dispositivo.',
+      cameraNotSupported: 'A câmera não é compatível com este navegador.',
+      cameraInUse: 'A câmera está sendo usada por outro aplicativo.',
+      ocrError: 'Erro ao processar a imagem. Tente novamente.',
+      noReadingDetected: 'Não foi possível detectar uma leitura válida na imagem. Tente com melhor iluminação ou ângulo.',
+      invalidFileType: 'Tipo de arquivo inválido. Selecione uma imagem.',
+      fileTooLarge: 'O arquivo é muito grande. Máximo 10MB.',
+      imageTooSmall: 'A imagem é muito pequena. Mínimo 100x100 pixels.',
+      imageTooLarge: 'A imagem é muito grande. Máximo 4000x4000 pixels.',
+      invalidImage: 'Imagem inválida ou corrompida.',
+      fileReadError: 'Erro ao ler o arquivo.',
+      imageReadError: 'Erro ao ler a imagem para OCR.',
+      networkError: 'Erro de conexão. Verifique sua internet.',
+      memoryError: 'Erro de memória. Tente com uma imagem menor.',
+      lowConfidence: 'Qualidade de imagem baixa. Tente com melhor iluminação.',
+      tipsTitle: '💡 Dicas para melhores resultados:',
+      tip1: '• Certifique-se de que os números estejam bem iluminados',
+      tip2: '• Mantenha a câmera estável e focada',
+      tip3: '• Os números devem estar claramente visíveis',
+      tip4: '• Evite reflexos e sombras sobre o medidor'
     }
   }
 };
