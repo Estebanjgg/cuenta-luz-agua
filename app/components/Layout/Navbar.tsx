@@ -16,7 +16,7 @@ export default function Navbar({ onLogout, onShowTariffManager }: NavbarProps) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   return (
-    <nav className="bg-gradient-to-r from-blue-600 to-blue-800 shadow-lg">
+    <nav className="relative z-50 bg-gradient-to-r from-blue-600 to-blue-800 shadow-lg">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo y título */}
