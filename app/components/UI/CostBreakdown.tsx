@@ -3,6 +3,7 @@
 import { TariffConfig, TariffFlagType, Tariff } from '../../types';
 import { formatCurrency, formatNumber } from '../../utils/calculations';
 import { TARIFF_FLAGS } from '../../constants';
+import { useLanguage } from '../../contexts/LanguageContext';
 
 interface CostBreakdownProps {
   consumption: number;
@@ -12,6 +13,7 @@ interface CostBreakdownProps {
 }
 
 export default function CostBreakdown({ consumption, tariff, flagType = 'GREEN', selectedTariff }: CostBreakdownProps) {
+  const { t } = useLanguage();
   if (consumption === 0) {
     return null;
   }
@@ -31,7 +33,7 @@ export default function CostBreakdown({ consumption, tariff, flagType = 'GREEN',
 
   const costItems = [
     {
-      label: 'Consumo Base',
+      label: t('baseConsumption'),
       description: `${formatNumber(consumption)} kWh × ${formatCurrency(tariff.baseConsumption || tariff.pricePerKwh)}`,
       value: baseCost,
       percentage: (baseCost / totalCost) * 100,
@@ -39,35 +41,35 @@ export default function CostBreakdown({ consumption, tariff, flagType = 'GREEN',
     },
 
     {
-      label: 'Servicio de Transmisión',
+      label: t('transmissionService'),
       description: `${formatNumber(consumption)} kWh × ${formatCurrency(tariff.transmission || 0)}`,
       value: transmissionCost,
       percentage: (transmissionCost / totalCost) * 100,
       color: 'bg-yellow-50 text-yellow-700'
     },
     {
-      label: 'Encargos Sectoriales',
+      label: t('sectoralCharges'),
       description: `${formatNumber(consumption)} kWh × ${formatCurrency(tariff.sectorCharges || 0)}`,
       value: sectorChargesCost,
       percentage: (sectorChargesCost / totalCost) * 100,
       color: 'bg-purple-50 text-purple-700'
     },
     {
-      label: 'Impuestos y Encargos',
+      label: t('taxesAndCharges'),
       description: `${formatNumber(consumption)} kWh × ${formatCurrency(tariff.taxes || 0)}`,
       value: taxesCost,
       percentage: (taxesCost / totalCost) * 100,
       color: 'bg-orange-50 text-orange-700'
     },
     {
-      label: 'Contribución Iluminación Pública',
-      description: 'Tarifa fija mensual',
+      label: t('publicLightingContribution'),
+      description: t('monthlyFixedTariff'),
       value: publicLightingCost,
       percentage: (publicLightingCost / totalCost) * 100,
       color: 'bg-green-50 text-green-700'
     },
     {
-      label: `Bandera Tarifaria (${TARIFF_FLAGS[flagType].name})`,
+      label: `${t('tariffFlag')} (${TARIFF_FLAGS[flagType].name})`,
       description: `${formatNumber(consumption)} kWh × ${formatCurrency(TARIFF_FLAGS[flagType].surcharge)}`,
       value: flagSurcharge,
       percentage: (flagSurcharge / totalCost) * 100,
@@ -81,7 +83,7 @@ export default function CostBreakdown({ consumption, tariff, flagType = 'GREEN',
     <div className="bg-white rounded-xl shadow-lg p-6">
       <div className="mb-6">
         <h2 className="text-xl font-bold text-gray-800 flex items-center mb-2">
-          💰 Desglose de Costos
+          💰 {t('costBreakdown')}
           {selectedTariff && (
             <span className="ml-2 text-base font-medium text-blue-600">
               - {selectedTariff.company_name}
@@ -90,7 +92,7 @@ export default function CostBreakdown({ consumption, tariff, flagType = 'GREEN',
         </h2>
         {selectedTariff && (
           <p className="text-sm text-gray-600">
-            Tarifa aplicada: <span className="font-medium text-gray-800">{selectedTariff.company_name}</span>
+            {t('appliedTariff')}: <span className="font-medium text-gray-800">{selectedTariff.company_name}</span>
             {selectedTariff.city && selectedTariff.state && (
               <span> • {selectedTariff.city}, {selectedTariff.state}</span>
             )}
@@ -104,7 +106,7 @@ export default function CostBreakdown({ consumption, tariff, flagType = 'GREEN',
           <div className="flex items-center justify-between">
             <div>
               <h3 className="font-semibold text-blue-800 flex items-center">
-                ⚡ Tarifa Activa
+                ⚡ {t('activeTariff')}
               </h3>
               <p className="text-sm text-blue-700 mt-1">
                 <span className="font-medium">{selectedTariff.company_name}</span>
@@ -114,7 +116,7 @@ export default function CostBreakdown({ consumption, tariff, flagType = 'GREEN',
               </p>
             </div>
             <div className="text-right">
-              <p className="text-xs text-blue-600 uppercase tracking-wide font-medium">Bandera {TARIFF_FLAGS[flagType].name}</p>
+              <p className="text-xs text-blue-600 uppercase tracking-wide font-medium">{t('tariffFlag')} {TARIFF_FLAGS[flagType].name}</p>
               <p className="text-lg font-bold text-blue-800">
                 {formatCurrency(
                   flagType === 'GREEN' ? selectedTariff.price_per_kwh_green :
@@ -157,8 +159,8 @@ export default function CostBreakdown({ consumption, tariff, flagType = 'GREEN',
       <div className="mt-6 pt-4 border-t border-gray-200">
         <div className="flex items-center justify-between bg-gray-50 p-4 rounded-lg">
           <div>
-            <h3 className="font-bold text-lg text-gray-800">Total a Pagar</h3>
-            <p className="text-sm text-gray-600">{formatNumber(consumption)} kWh consumidos</p>
+            <h3 className="font-bold text-lg text-gray-800">{t('totalToPay')}</h3>
+            <p className="text-sm text-gray-600">{formatNumber(consumption)} kWh {t('consumed')}</p>
           </div>
           <div className="text-right">
             <p className="font-bold text-2xl text-gray-800">{formatCurrency(totalCost)}</p>
@@ -172,7 +174,7 @@ export default function CostBreakdown({ consumption, tariff, flagType = 'GREEN',
       {/* Nota informativa */}
       <div className="mt-4 p-3 bg-blue-50 rounded-lg">
         <p className="text-xs text-blue-700">
-          💡 <strong>Nota:</strong> Este desglose está basado en la estructura tarifaria de{' '}
+          💡 <strong>{t('note')}:</strong> {t('costBreakdownNote')}{' '}
           {selectedTariff ? (
             <span className="font-medium">
               {selectedTariff.company_name}
@@ -181,9 +183,9 @@ export default function CostBreakdown({ consumption, tariff, flagType = 'GREEN',
               )}
             </span>
           ) : (
-            'la empresa distribuidora seleccionada'
+            t('selectedDistributionCompany')
           )}{' '}
-          y puede variar según la región, tipo de conexión y período de facturación.
+          {t('costVariationNote')}
         </p>
       </div>
     </div>

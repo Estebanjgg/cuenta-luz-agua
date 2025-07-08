@@ -76,11 +76,19 @@ export const DEFAULT_TARIFF = {
   }
 };
 
-// Meses del año
-export const MONTHS = [
+// Meses del año - claves para traducción
+export const MONTH_KEYS = [
   'enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio',
   'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'
 ];
+
+// Función para obtener meses traducidos
+export const getTranslatedMonths = (t: (key: string) => string) => {
+  return MONTH_KEYS.map(month => t(`months.${month}`));
+};
+
+// Mantener MONTHS para compatibilidad con versiones anteriores
+export const MONTHS = MONTH_KEYS;
 
 // Configuración de gráficos
 export const CHART_CONFIG = {

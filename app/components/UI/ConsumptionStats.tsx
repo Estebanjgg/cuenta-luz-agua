@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { Reading, ConsumptionStats as StatsType } from '../../types';
 import { formatNumber, formatCurrency, getReadingDateRange } from '../../utils/calculations';
+import { useLanguage } from '../../contexts/LanguageContext';
 
 interface ConsumptionStatsProps {
   stats: StatsType;
@@ -12,6 +13,7 @@ interface ConsumptionStatsProps {
 }
 
 export default function ConsumptionStats({ stats, readings, currentMonth, currentYear }: ConsumptionStatsProps) {
+  const { t } = useLanguage();
   const [currentDay, setCurrentDay] = useState(1);
   const [daysInMonth, setDaysInMonth] = useState(30);
   
@@ -27,32 +29,32 @@ export default function ConsumptionStats({ stats, readings, currentMonth, curren
 
   const statCards = [
     {
-      title: 'Consumo Total',
+      title: t('totalConsumption'),
       value: `${formatNumber(stats.totalConsumption)} kWh`,
       icon: '⚡',
       color: 'bg-blue-500',
-      description: 'Consumo acumulado del mes'
+      description: t('monthlyAccumulatedConsumption')
     },
     {
-      title: 'Promedio Diario',
+      title: t('dailyAverage'),
       value: `${formatNumber(stats.averageDailyConsumption, 1)} kWh`,
       icon: '📊',
       color: 'bg-green-500',
-      description: 'Consumo promedio por día'
+      description: t('averageConsumptionPerDay')
     },
     {
-      title: 'Proyección Mensual',
+      title: t('monthlyProjection'),
       value: `${formatNumber(stats.monthlyProjection)} kWh`,
       icon: '📈',
       color: 'bg-yellow-500',
-      description: 'Estimación para todo el mes'
+      description: t('estimationForWholeMonth')
     },
     {
-      title: 'Costo Estimado',
+      title: t('estimatedCost'),
       value: formatCurrency(stats.estimatedCost),
       icon: '💰',
       color: 'bg-purple-500',
-      description: 'Costo total estimado'
+      description: t('totalEstimatedCost')
     }
   ];
 
@@ -60,7 +62,7 @@ export default function ConsumptionStats({ stats, readings, currentMonth, curren
     <div className="bg-white rounded-xl shadow-lg p-6 mb-6">
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-xl font-bold text-gray-800">
-          📊 Estadísticas de {currentMonth.charAt(0).toUpperCase() + currentMonth.slice(1)} {currentYear}
+          📊 {t('consumptionStatistics')} {currentMonth.charAt(0).toUpperCase() + currentMonth.slice(1)} {currentYear}
         </h2>
         {dateRange && (
           <div className="text-sm text-gray-600">
@@ -72,9 +74,9 @@ export default function ConsumptionStats({ stats, readings, currentMonth, curren
       {/* Progreso del mes */}
       <div className="mb-6">
         <div className="flex justify-between items-center mb-2">
-          <span className="text-sm font-medium text-gray-700">Progreso del mes</span>
+          <span className="text-sm font-medium text-gray-700">{t('monthProgress')}</span>
           <span className="text-sm text-gray-600">
-            Día {currentDay} de {daysInMonth} ({Math.round(progressPercentage)}%)
+            {t('dayOf').replace('{current}', currentDay.toString()).replace('{total}', daysInMonth.toString())} ({Math.round(progressPercentage)}%)
           </span>
         </div>
         <div className="w-full bg-gray-200 rounded-full h-2">
@@ -105,20 +107,20 @@ export default function ConsumptionStats({ stats, readings, currentMonth, curren
       {readings.length > 0 && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-            <h4 className="font-semibold text-blue-800 mb-2">📋 Resumen de Lecturas</h4>
+            <h4 className="font-semibold text-blue-800 mb-2">📋 {t('readingsSummary')}</h4>
             <div className="space-y-1 text-sm text-blue-700">
-              <p>• Total de lecturas registradas: <span className="font-medium">{readings.length}</span></p>
-              <p>• Última lectura: <span className="font-medium">{formatNumber(Math.max(...readings.map(r => r.value)))} kWh</span></p>
-              <p>• Frecuencia promedio: <span className="font-medium">{Math.round(currentDay / readings.length)} días</span></p>
+              <p>• {t('totalReadingsRegistered')}: <span className="font-medium">{readings.length}</span></p>
+              <p>• {t('lastReading')}: <span className="font-medium">{formatNumber(Math.max(...readings.map(r => r.value)))} kWh</span></p>
+              <p>• {t('averageFrequency')}: <span className="font-medium">{Math.round(currentDay / readings.length)} {t('days')}</span></p>
             </div>
           </div>
           
           <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-            <h4 className="font-semibold text-green-800 mb-2">🎯 Proyecciones</h4>
+            <h4 className="font-semibold text-green-800 mb-2">🎯 {t('projections')}</h4>
             <div className="space-y-1 text-sm text-green-700">
-              <p>• Consumo restante estimado: <span className="font-medium">{formatNumber(Math.max(0, stats.monthlyProjection - stats.totalConsumption))} kWh</span></p>
-              <p>• Días restantes del mes: <span className="font-medium">{daysInMonth - currentDay}</span></p>
-              <p>• Consumo diario sugerido: <span className="font-medium">{formatNumber((stats.monthlyProjection - stats.totalConsumption) / Math.max(1, daysInMonth - currentDay), 1)} kWh</span></p>
+              <p>• {t('estimatedRemainingConsumption')}: <span className="font-medium">{formatNumber(Math.max(0, stats.monthlyProjection - stats.totalConsumption))} kWh</span></p>
+              <p>• {t('remainingDaysOfMonth')}: <span className="font-medium">{daysInMonth - currentDay}</span></p>
+              <p>• {t('suggestedDailyConsumption')}: <span className="font-medium">{formatNumber((stats.monthlyProjection - stats.totalConsumption) / Math.max(1, daysInMonth - currentDay), 1)} kWh</span></p>
             </div>
           </div>
         </div>
@@ -127,8 +129,8 @@ export default function ConsumptionStats({ stats, readings, currentMonth, curren
       {readings.length === 0 && (
         <div className="text-center py-8">
           <div className="text-6xl mb-4">📊</div>
-          <h3 className="text-lg font-semibold text-gray-600 mb-2">No hay lecturas registradas</h3>
-          <p className="text-gray-500">Agrega tu primera lectura para ver las estadísticas de consumo</p>
+          <h3 className="text-lg font-semibold text-gray-600 mb-2">{t('noReadingsRegistered')}</h3>
+          <p className="text-gray-500">{t('addFirstReadingStats')}</p>
         </div>
       )}
     </div>

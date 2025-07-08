@@ -1,8 +1,9 @@
 'use client';
 
 import { useState } from 'react';
-import { MONTHS, APP_CONFIG } from '../../constants';
+import { MONTH_KEYS, APP_CONFIG } from '../../constants';
 import { ValidationResult } from '../../types';
+import { useLanguage } from '../../contexts/LanguageContext';
 
 interface MonthSelectorProps {
   currentMonth: string;
@@ -13,6 +14,7 @@ interface MonthSelectorProps {
 }
 
 export default function MonthSelector({ currentMonth, currentYear, onMonthChange, onSwitchToMonth, hasMonthData }: MonthSelectorProps) {
+  const { t } = useLanguage();
   const [selectedMonth, setSelectedMonth] = useState(currentMonth);
   const [selectedYear, setSelectedYear] = useState(currentYear);
   const [initialReading, setInitialReading] = useState(APP_CONFIG.defaultInitialReading);
@@ -27,13 +29,13 @@ export default function MonthSelector({ currentMonth, currentYear, onMonthChange
     if (isNaN(value) || value <= 0) {
       return {
         isValid: false,
-        message: 'La lectura inicial debe ser un número válido mayor a 0'
+        message: t('monthSelector.validationError')
       };
     }
     if (value > 999999) {
       return {
         isValid: false,
-        message: 'La lectura inicial parece demasiado alta'
+        message: t('monthSelector.validationTooHigh')
       };
     }
     return { isValid: true };
@@ -43,7 +45,7 @@ export default function MonthSelector({ currentMonth, currentYear, onMonthChange
     const validation = validateInitialReading(initialReading);
     
     if (!validation.isValid) {
-      setError(validation.message || 'Error de validación');
+      setError(validation.message || t('monthSelector.validationGeneral'));
       return;
     }
     
@@ -77,14 +79,14 @@ export default function MonthSelector({ currentMonth, currentYear, onMonthChange
   return (
     <div className="bg-white rounded-xl shadow-lg p-6 mb-6">
       <h2 className="text-xl font-semibold text-gray-800 mb-4">
-        📅 Navegación de Períodos
+        📅 {t('monthSelector.title')}
       </h2>
       <p className="text-sm text-gray-600 mb-4">
-        Selecciona el mes y año para ver o iniciar el registro de lecturas
+        {t('monthSelector.description')}
       </p>
       
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-        {MONTHS.map((month) => (
+        {MONTH_KEYS.map((month) => (
           <button
             key={month}
             onClick={() => handleMonthChange(month, currentYear)}
@@ -94,7 +96,7 @@ export default function MonthSelector({ currentMonth, currentYear, onMonthChange
                 : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
             }`}
           >
-            {month.charAt(0).toUpperCase() + month.slice(1)}
+            {t(`months.${month}`).charAt(0).toUpperCase() + t(`months.${month}`).slice(1)}
           </button>
         ))}
       </div>
@@ -102,7 +104,7 @@ export default function MonthSelector({ currentMonth, currentYear, onMonthChange
       <div className="mt-6 flex items-center justify-between">
         <div className="flex items-center gap-4">
           <label className="text-sm font-medium text-gray-700">
-            📆 Año:
+            📆 {t('monthSelector.yearLabel')}
           </label>
           <select
             value={currentYear}
@@ -111,14 +113,14 @@ export default function MonthSelector({ currentMonth, currentYear, onMonthChange
           >
             {availableYears.map(year => (
               <option key={year} value={year}>
-                {year} {year === currentYearNow ? '(Actual)' : ''}
+                {year} {year === currentYearNow ? t('monthSelector.currentLabel') : ''}
               </option>
             ))}
           </select>
         </div>
         
         <div className="text-sm text-gray-500">
-          Período actual: <span className="font-semibold text-blue-600">{currentMonth} {currentYear}</span>
+          {t('monthSelector.currentPeriod')} <span className="font-semibold text-blue-600">{t(`months.${currentMonth}`)} {currentYear}</span>
         </div>
       </div>
       
@@ -130,11 +132,11 @@ export default function MonthSelector({ currentMonth, currentYear, onMonthChange
             </svg>
           </div>
           <div>
-            <p className="text-sm font-semibold text-blue-800 mb-1">¿Cómo funciona?</p>
+            <p className="text-sm font-semibold text-blue-800 mb-1">{t('monthSelector.howItWorks')}</p>
             <ul className="text-sm text-blue-700 space-y-1">
-              <li>• <strong>Mes con datos:</strong> Se mostrará el historial existente</li>
-              <li>• <strong>Mes nuevo:</strong> Se solicitará la lectura inicial del medidor</li>
-              <li>• <strong>Cambio de año:</strong> Se inicia un nuevo período de mediciones</li>
+              <li>• {t('monthSelector.monthWithData')}</li>
+              <li>• {t('monthSelector.newMonth')}</li>
+              <li>• {t('monthSelector.yearChange')}</li>
             </ul>
           </div>
         </div>
@@ -152,17 +154,17 @@ export default function MonthSelector({ currentMonth, currentYear, onMonthChange
               </div>
               <div>
                 <h3 className="text-lg font-semibold text-gray-800">
-                  Iniciar Nuevo Período
+                  {t('monthSelector.newPeriodTitle')}
                 </h3>
                 <p className="text-sm text-gray-600">
-                  {selectedMonth} {selectedYear}
+                  {t(`months.${selectedMonth}`)} {selectedYear}
                 </p>
               </div>
             </div>
             
             <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 mb-4">
               <p className="text-sm text-yellow-800">
-                <strong>📋 Importante:</strong> Vas a iniciar un nuevo período de mediciones. Necesitamos la lectura actual de tu medidor para comenzar.
+                <strong>📋 {t('periodNavigator.important')}:</strong> {t('monthSelector.importantNote')}
               </p>
             </div>
             
@@ -173,16 +175,16 @@ export default function MonthSelector({ currentMonth, currentYear, onMonthChange
                     <svg className="w-4 h-4 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3a4 4 0 118 0v4m-4 12v-6m0 0V7m0 6h6m-6 0H6" />
                     </svg>
-                    Mes:
+                    {t('monthSelector.monthLabel')}
                   </label>
                   <select
                     value={selectedMonth}
                     onChange={(e) => setSelectedMonth(e.target.value)}
                     className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
                   >
-                    {MONTHS.map(month => (
+                    {MONTH_KEYS.map(month => (
                       <option key={month} value={month}>
-                        {month.charAt(0).toUpperCase() + month.slice(1)}
+                        {t(`months.${month}`).charAt(0).toUpperCase() + t(`months.${month}`).slice(1)}
                       </option>
                     ))}
                   </select>
@@ -193,7 +195,7 @@ export default function MonthSelector({ currentMonth, currentYear, onMonthChange
                     <svg className="w-4 h-4 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3a4 4 0 118 0v4m-4 12v-6m0 0V7m0 6h6m-6 0H6" />
                     </svg>
-                    Año:
+                    {t('monthSelector.yearLabel')}
                   </label>
                   <select
                     value={selectedYear}
@@ -202,7 +204,7 @@ export default function MonthSelector({ currentMonth, currentYear, onMonthChange
                   >
                     {availableYears.map(year => (
                       <option key={year} value={year}>
-                        {year} {year === currentYearNow ? '(Actual)' : ''}
+                        {year} {year === currentYearNow ? t('monthSelector.currentLabel') : ''}
                       </option>
                     ))}
                   </select>
@@ -214,7 +216,7 @@ export default function MonthSelector({ currentMonth, currentYear, onMonthChange
                   <svg className="w-4 h-4 mr-2 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
                   </svg>
-                  Lectura inicial del medidor (kWh):
+                  {t('monthSelector.initialReadingLabel')}
                 </label>
                 <input
                   type="number"
@@ -223,7 +225,7 @@ export default function MonthSelector({ currentMonth, currentYear, onMonthChange
                   className={`w-full p-3 border rounded-lg focus:ring-2 transition-all duration-200 ${
                     error ? 'border-red-400 focus:border-red-500 focus:ring-red-200' : 'border-gray-300 focus:border-blue-500 focus:ring-blue-200'
                   }`}
-                  placeholder="Ej: 65788"
+                  placeholder={t('monthSelector.placeholder')}
                   step="1"
                 />
                 {error && (
@@ -250,7 +252,7 @@ export default function MonthSelector({ currentMonth, currentYear, onMonthChange
                 <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                 </svg>
-                Cancelar
+                {t('monthSelector.cancel')}
               </button>
               <button
                 onClick={handleSubmit}
@@ -264,7 +266,7 @@ export default function MonthSelector({ currentMonth, currentYear, onMonthChange
                 <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                 </svg>
-                Iniciar Período
+                {t('monthSelector.startPeriod')}
               </button>
             </div>
           </div>

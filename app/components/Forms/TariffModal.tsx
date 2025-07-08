@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Tariff, TariffFormData } from '../../types';
+import { useLanguage } from '../../contexts/LanguageContext';
 
 interface TariffModalProps {
   isOpen: boolean;
@@ -39,6 +40,7 @@ export default function TariffModal({
   tariff, 
   title = 'Nueva Tarifa' 
 }: TariffModalProps) {
+  const { t } = useLanguage();
   const [formData, setFormData] = useState<TariffFormData>(initialFormData);
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -72,7 +74,7 @@ export default function TariffModal({
     }
 
     if (!formData.state.trim()) {
-      newErrors.state = 'El estado es requerido';
+      newErrors.state = t('tariffModal.stateRequired');
     }
 
     if (!formData.company_name.trim()) {
@@ -80,7 +82,7 @@ export default function TariffModal({
     }
 
     if (formData.price_per_kwh_green <= 0) {
-      newErrors.price_per_kwh_green = 'El precio por kWh (verde) debe ser mayor a 0';
+      newErrors.price_per_kwh_green = t('tariffModal.priceGreaterThanZero');
     }
 
     if (formData.price_per_kwh_yellow <= 0) {
@@ -154,11 +156,11 @@ export default function TariffModal({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+    <div className="fixed inset-0 flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
         <div className="p-6">
           <div className="flex justify-between items-center mb-6">
-            <h2 className="text-2xl font-bold text-gray-800">{title}</h2>
+            <h2 className="text-2xl font-bold text-gray-800">{tariff ? t('tariffModal.update') : t('tariffModal.newTariff')}</h2>
             <button
               onClick={onClose}
               className="text-gray-500 hover:text-gray-700 text-2xl font-bold"
@@ -173,7 +175,7 @@ export default function TariffModal({
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Ciudad *
+                  {t('tariffModal.city')}
                 </label>
                 <input
                   type="text"
@@ -190,7 +192,7 @@ export default function TariffModal({
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Estado *
+                  {t('tariffModal.state')}
                 </label>
                 <input
                   type="text"
@@ -208,7 +210,7 @@ export default function TariffModal({
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Compañía Eléctrica *
+                {t('tariffModal.electricCompany')}
               </label>
               <input
                 type="text"
@@ -227,9 +229,9 @@ export default function TariffModal({
             <div className="space-y-4">
               <div className="flex justify-between items-start">
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-800">Tarifas por Bandera (R$/kWh)</h3>
+                  <h3 className="text-lg font-semibold text-gray-800">{t('tariffModal.tariffsByFlag')}</h3>
                   <p className="text-sm text-gray-600 mt-1">
-                    Los recargos por bandeira son valores oficiales de ANEEL, uniformes para todo Brasil
+                    {t('tariffModal.aneelInfo')}
                   </p>
                 </div>
                 <button
@@ -238,25 +240,25 @@ export default function TariffModal({
                   className="px-3 py-1 text-xs bg-green-100 text-green-700 rounded-md hover:bg-green-200 focus:outline-none focus:ring-2 focus:ring-green-500"
                   disabled={isLoading}
                 >
-                  Aplicar Valores ANEEL
+                  {t('tariffModal.applyAneelValues')}
                 </button>
               </div>
               
               <div className="bg-blue-50 p-3 rounded-md">
-                <h4 className="text-sm font-medium text-blue-800 mb-2">ℹ️ Información sobre Bandeiras Tarifarias</h4>
+                <h4 className="text-sm font-medium text-blue-800 mb-2">{t('tariffModal.flagInfo')}</h4>
                 <div className="text-xs text-blue-700 space-y-1">
-                  <p><strong>🟢 Verde:</strong> Sin recargo adicional (R$ 0,00/kWh)</p>
-                  <p><strong>🟡 Amarilla:</strong> Recargo de R$ 0,01885/kWh</p>
-                  <p><strong>🔴 Roja Nivel 1:</strong> Recargo de R$ 0,04463/kWh</p>
-                  <p><strong>🔴 Roja Nivel 2:</strong> Recargo de R$ 0,07877/kWh</p>
-                  <p className="mt-2 italic">Estos valores se suman a la tarifa base de energía de tu distribuidora.</p>
+                  <p><strong>{t('tariffModal.greenFlagInfo')}</strong></p>
+                  <p><strong>{t('tariffModal.yellowFlagInfo')}</strong></p>
+                  <p><strong>{t('tariffModal.redFlag1Info')}</strong></p>
+                  <p><strong>{t('tariffModal.redFlag2Info')}</strong></p>
+                  <p className="mt-2 italic">{t('tariffModal.flagInfoNote')}</p>
                 </div>
               </div>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    🟢 Bandera Verde * (Tarifa Base)
+                    {t('tariffModal.greenFlagLabel')}
                   </label>
                   <input
                     type="number"
@@ -270,13 +272,13 @@ export default function TariffModal({
                     placeholder="0.7950"
                     disabled={isLoading}
                   />
-                  <p className="text-xs text-gray-500 mt-1">Tarifa base sin recargo adicional</p>
+                  <p className="text-xs text-gray-500 mt-1">{t('tariffModal.baseTariffNote')}</p>
                   {errors.price_per_kwh_green && <p className="text-red-500 text-sm mt-1">{errors.price_per_kwh_green}</p>}
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    🟡 Bandera Amarilla *
+                    {t('tariffModal.yellowFlagLabel')}
                   </label>
                   <input
                     type="number"
@@ -296,7 +298,7 @@ export default function TariffModal({
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    🔴 Bandera Roja Nivel 1 *
+                    {t('tariffModal.redFlag1Label')}
                   </label>
                   <input
                     type="number"
@@ -316,7 +318,7 @@ export default function TariffModal({
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    🔴 Bandera Roja Nivel 2 *
+                    {t('tariffModal.redFlag2Label')}
                   </label>
                   <input
                     type="number"
@@ -338,12 +340,12 @@ export default function TariffModal({
 
             {/* Tarifas fijas */}
             <div className="space-y-4">
-              <h3 className="text-lg font-semibold text-gray-800">Tarifas Fijas (R$)</h3>
+              <h3 className="text-lg font-semibold text-gray-800">{t('tariffModal.fixedTariffs')}</h3>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Tarifas Adicionales
+                    {t('tariffModal.additionalFees')}
                   </label>
                   <input
                     type="number"
@@ -362,7 +364,7 @@ export default function TariffModal({
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Alumbrado Público
+                    {t('tariffModal.publicLighting')}
                   </label>
                   <input
                     type="number"
@@ -392,7 +394,7 @@ export default function TariffModal({
                 disabled={isLoading}
               />
               <label htmlFor="is_public" className="text-sm text-gray-700">
-                Hacer esta tarifa pública (otros usuarios podrán verla y copiarla)
+                {t('tariffModal.makePublic')}
               </label>
             </div>
 
@@ -404,14 +406,14 @@ export default function TariffModal({
                 className="px-4 py-2 text-gray-600 border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500"
                 disabled={isLoading}
               >
-                Cancelar
+                {t('tariffModal.cancel')}
               </button>
               <button
                 type="submit"
                 className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
                 disabled={isLoading}
               >
-                {isLoading ? 'Guardando...' : tariff ? 'Actualizar' : 'Crear Tarifa'}
+                {isLoading ? t('tariffModal.saving') : tariff ? t('tariffModal.update') : t('tariffModal.createTariff')}
               </button>
             </div>
           </form>

@@ -4,6 +4,7 @@ import { useEffect, useRef } from 'react';
 import { Reading } from '../types';
 import { CHART_CONFIG } from '../constants';
 import { formatNumber, formatDate } from '../utils/calculations';
+import { useLanguage } from '../contexts/LanguageContext';
 
 interface ConsumptionChartProps {
   readings: Reading[];
@@ -12,6 +13,7 @@ interface ConsumptionChartProps {
 
 export default function ConsumptionChart({ readings, initialReading }: ConsumptionChartProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const { t } = useLanguage();
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -36,7 +38,7 @@ export default function ConsumptionChart({ readings, initialReading }: Consumpti
       ctx.fillStyle = '#64748b';
       ctx.font = '16px Inter';
       ctx.textAlign = 'center';
-      ctx.fillText('No hay datos para mostrar', width / 2, height / 2);
+      ctx.fillText(t('consumptionChart.noData'), width / 2, height / 2);
       return;
     }
 
@@ -143,12 +145,12 @@ export default function ConsumptionChart({ readings, initialReading }: Consumpti
     return (
       <div className="bg-white rounded-xl shadow-lg p-6">
         <h3 className="text-lg font-semibold text-gray-800 mb-4">
-          📊 Gráfico de Consumo
+          📊 {t('consumptionChart.title')}
         </h3>
         <div className="flex items-center justify-center h-64 text-gray-500">
           <div className="text-center">
             <span className="text-4xl mb-2 block">📈</span>
-            <p>Agrega lecturas para ver el gráfico</p>
+            <p>{t('consumptionChart.addReadingsMessage')}</p>
           </div>
         </div>
       </div>
@@ -157,7 +159,7 @@ export default function ConsumptionChart({ readings, initialReading }: Consumpti
 
   return (
     <div className="bg-white rounded-lg shadow-md p-6">
-      <h3 className="text-lg font-semibold text-gray-800 mb-4">Gráfico de Consumo</h3>
+      <h3 className="text-lg font-semibold text-gray-800 mb-4">{t('consumptionChart.title')}</h3>
       <div className="overflow-x-auto">
         <canvas 
           ref={canvasRef}
@@ -167,7 +169,7 @@ export default function ConsumptionChart({ readings, initialReading }: Consumpti
       </div>
       {readings.length > 0 && (
         <div className="mt-4 text-sm text-gray-600">
-          <p>Consumo total acumulado: <span className="font-semibold">{formatNumber(Math.max(...readings.map(r => r.value)) - initialReading)} kWh</span></p>
+          <p>{t('consumptionChart.totalAccumulated')} <span className="font-semibold">{formatNumber(Math.max(...readings.map(r => r.value)) - initialReading)} kWh</span></p>
         </div>
       )}
     </div>

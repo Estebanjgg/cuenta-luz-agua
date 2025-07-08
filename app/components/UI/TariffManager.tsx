@@ -3,8 +3,10 @@
 import React, { useState } from 'react';
 import { Tariff } from '../../types';
 import { useTariffs } from '../../hooks/useTariffs';
+import { useLanguage } from '../../contexts/LanguageContext';
 import TariffModal from '../Forms/TariffModal';
 import PublicTariffsModal from './PublicTariffsModal';
+import ConfirmationModal from './ConfirmationModal';
 
 interface TariffManagerProps {
   onTariffSelect?: (tariff: Tariff) => void;
@@ -28,16 +30,25 @@ export default function TariffManager({
     copyPublicTariff,
     refreshTariffs
   } = useTariffs();
+  const { t } = useLanguage();
 
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isPublicModalOpen, setIsPublicModalOpen] = useState(false);
   const [editingTariff, setEditingTariff] = useState<Tariff | null>(null);
   const [deletingTariffId, setDeletingTariffId] = useState<string | null>(null);
+  const [isConfirmSelectionOpen, setIsConfirmSelectionOpen] = useState(false);
+  const [isConfirmCreationOpen, setIsConfirmCreationOpen] = useState(false);
+  const [pendingTariff, setPendingTariff] = useState<Tariff | null>(null);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [selectedTariffForConfirmation, setSelectedTariffForConfirmation] = useState<Tariff | null>(null);
+
 
   const handleCreateTariff = async (tariffData: any) => {
     const newTariff = await createTariff(tariffData);
     if (newTariff) {
       setIsCreateModalOpen(false);
+      setPendingTariff(newTariff);
+      setIsConfirmCreationOpen(true);
       return true;
     }
     return false;
@@ -68,7 +79,7 @@ export default function TariffManager({
       setConfirmDeleteId(null);
       
       if (!success) {
-        alert('Error al eliminar la tarifa');
+        alert(t('tariffManager.deleteError'));
       }
     }
   };
@@ -81,8 +92,56 @@ export default function TariffManager({
     const copiedTariff = await copyPublicTariff(publicTariffId);
     if (copiedTariff) {
       setIsPublicModalOpen(false);
-      alert('Tarifa copiada exitosamente');
+      setPendingTariff(copiedTariff);
+      setIsConfirmCreationOpen(true);
     }
+  };
+
+  const handleTariffClick = (tariff: Tariff) => {
+    setSelectedTariffForConfirmation(tariff);
+  };
+
+  const handleConfirmSelection = () => {
+    if (selectedTariffForConfirmation) {
+      setPendingTariff(selectedTariffForConfirmation);
+      setIsConfirmSelectionOpen(true);
+    }
+  };
+
+  const confirmTariffSelection = async () => {
+    if (!pendingTariff) return;
+    
+    setIsProcessing(true);
+    try {
+      onTariffSelect?.(pendingTariff);
+      setIsConfirmSelectionOpen(false);
+      setPendingTariff(null);
+      setSelectedTariffForConfirmation(null);
+    } catch (error) {
+      console.error('Error selecting tariff:', error);
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  const confirmTariffCreation = async () => {
+    if (!pendingTariff) return;
+    
+    setIsProcessing(true);
+    try {
+      onTariffSelect?.(pendingTariff);
+      setIsConfirmCreationOpen(false);
+      setPendingTariff(null);
+    } catch (error) {
+      console.error('Error using created tariff:', error);
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  const skipTariffCreation = () => {
+    setIsConfirmCreationOpen(false);
+    setPendingTariff(null);
   };
 
   const formatCurrency = (value: number) => {
@@ -114,19 +173,19 @@ export default function TariffManager({
   return (
     <div className="bg-white rounded-lg shadow-md p-6">
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold text-gray-800">Gestión de Tarifas</h2>
+        <h2 className="text-2xl font-bold text-gray-800">{t('tariffManager.title')}</h2>
         <div className="flex space-x-2">
           <button
             onClick={() => setIsPublicModalOpen(true)}
             className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500"
           >
-            Tarifas Públicas
+            {t('tariffManager.publicTariffs')}
           </button>
           <button
             onClick={() => setIsCreateModalOpen(true)}
             className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
-            Nueva Tarifa
+            {t('tariffManager.newTariff')}
           </button>
         </div>
       </div>
@@ -144,22 +203,22 @@ export default function TariffManager({
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
             </svg>
           </div>
-          <h3 className="text-lg font-medium text-gray-900 mb-2">No tienes tarifas creadas</h3>
+          <h3 className="text-lg font-medium text-gray-900 mb-2">{t('tariffManager.noTariffsTitle')}</h3>
           <p className="text-gray-500 mb-4">
-            Crea tu primera tarifa personalizada o copia una tarifa pública existente.
+            {t('tariffManager.noTariffsDescription')}
           </p>
           <div className="flex justify-center space-x-2">
             <button
               onClick={() => setIsPublicModalOpen(true)}
               className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700"
             >
-              Ver Tarifas Públicas
+              {t('tariffManager.viewPublicTariffs')}
             </button>
             <button
               onClick={() => setIsCreateModalOpen(true)}
               className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
             >
-              Crear Nueva Tarifa
+              {t('tariffManager.createNewTariff')}
             </button>
           </div>
         </div>
@@ -172,9 +231,14 @@ export default function TariffManager({
             return (
               <div
                 key={tariff.id}
+                onClick={() => showSelectButton && handleTariffClick(tariff)}
                 className={`border rounded-lg p-4 transition-all ${
+                  showSelectButton ? 'cursor-pointer' : ''
+                } ${
                   isSelected 
                     ? 'border-blue-500 bg-blue-50' 
+                    : selectedTariffForConfirmation?.id === tariff.id
+                    ? 'border-green-500 bg-green-50'
                     : 'border-gray-200 hover:border-gray-300'
                 }`}
               >
@@ -186,7 +250,7 @@ export default function TariffManager({
                       </h3>
                       {tariff.is_public && (
                         <span className="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">
-                          Pública
+                          {t('tariffManager.public')}
                         </span>
                       )}
                     </div>
@@ -194,50 +258,46 @@ export default function TariffManager({
                     
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-sm">
                       <div>
-                        <span className="text-gray-500">🟢 Verde:</span>
+                        <span className="text-gray-500">🟢 {t('tariffManager.green')}:</span>
                         <span className="ml-1 font-medium">{formatKwhPrice(tariff.price_per_kwh_green)}</span>
                       </div>
                       <div>
-                        <span className="text-gray-500">🟡 Amarilla:</span>
+                        <span className="text-gray-500">🟡 {t('tariffManager.yellow')}:</span>
                         <span className="ml-1 font-medium">{formatKwhPrice(tariff.price_per_kwh_yellow)}</span>
                       </div>
                       <div>
-                        <span className="text-gray-500">🔴 Roja 1:</span>
+                        <span className="text-gray-500">🔴 {t('tariffManager.red1')}:</span>
                         <span className="ml-1 font-medium">{formatKwhPrice(tariff.price_per_kwh_red_1)}</span>
                       </div>
                       <div>
-                        <span className="text-gray-500">🔴 Roja 2:</span>
+                        <span className="text-gray-500">🔴 {t('tariffManager.red2')}:</span>
                         <span className="ml-1 font-medium">{formatKwhPrice(tariff.price_per_kwh_red_2)}</span>
                       </div>
                     </div>
                     
                     <div className="grid grid-cols-2 gap-2 text-sm mt-2">
                       <div>
-                        <span className="text-gray-500">Tarifas adicionales:</span>
+                        <span className="text-gray-500">{t('tariffManager.additionalFees')}:</span>
                         <span className="ml-1 font-medium">{formatCurrency(tariff.additional_fees)}</span>
                       </div>
                       <div>
-                        <span className="text-gray-500">Alumbrado público:</span>
+                        <span className="text-gray-500">{t('tariffManager.publicLighting')}:</span>
                         <span className="ml-1 font-medium">{formatCurrency(tariff.public_lighting_fee)}</span>
                       </div>
                     </div>
                   </div>
                   
                   <div className="flex flex-col space-y-2 ml-4">
-                    {showSelectButton && (
+                    {showSelectButton && selectedTariffForConfirmation?.id === tariff.id && (
                       <button
                         onClick={(e) => {
                           e.preventDefault();
                           e.stopPropagation();
-                          onTariffSelect?.(tariff);
+                          handleConfirmSelection();
                         }}
-                        className={`px-3 py-1 text-sm rounded-md ${
-                          isSelected
-                            ? 'bg-blue-600 text-white'
-                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                        }`}
+                        className="px-3 py-1 text-sm bg-green-600 text-white rounded-md hover:bg-green-700"
                       >
-                        {isSelected ? 'Seleccionada' : 'Seleccionar'}
+                        {t('tariffManager.confirmSelection')}
                       </button>
                     )}
                     
@@ -249,7 +309,7 @@ export default function TariffManager({
                       }}
                       className="px-3 py-1 text-sm bg-yellow-100 text-yellow-700 rounded-md hover:bg-yellow-200"
                     >
-                      Editar
+                      {t('tariffManager.edit')}
                     </button>
                     
                     <button
@@ -261,7 +321,7 @@ export default function TariffManager({
                       disabled={isDeleting}
                       className="px-3 py-1 text-sm bg-red-100 text-red-700 rounded-md hover:bg-red-200 disabled:opacity-50"
                     >
-                      {isDeleting ? 'Eliminando...' : 'Eliminar'}
+                      {isDeleting ? t('tariffManager.deleting') : t('tariffManager.delete')}
                     </button>
                   </div>
                 </div>
@@ -276,7 +336,7 @@ export default function TariffManager({
         isOpen={isCreateModalOpen}
         onClose={() => setIsCreateModalOpen(false)}
         onSave={handleCreateTariff}
-        title="Nueva Tarifa"
+        title={t('tariffManager.newTariff')}
       />
 
       {/* Modal para editar tarifa */}
@@ -285,7 +345,7 @@ export default function TariffManager({
         onClose={() => setEditingTariff(null)}
         onSave={handleUpdateTariff}
         tariff={editingTariff}
-        title="Editar Tarifa"
+        title={t('tariffManager.editTariff')}
       />
 
       {/* Modal para tarifas públicas */}
@@ -296,28 +356,70 @@ export default function TariffManager({
         publicTariffs={publicTariffs}
       />
 
+      {/* Modal de confirmación para selección de tarifa */}
+      <ConfirmationModal
+        isOpen={isConfirmSelectionOpen}
+        onClose={() => {
+          setIsConfirmSelectionOpen(false);
+          setPendingTariff(null);
+          setSelectedTariffForConfirmation(null);
+        }}
+        onConfirm={confirmTariffSelection}
+        title={t('confirmationModal.tariffSelected')}
+        message={pendingTariff ? 
+          t('confirmationModal.tariffSelectedMessage')
+            .replace('{city}', pendingTariff.city)
+            .replace('{state}', pendingTariff.state)
+            .replace('{company}', pendingTariff.company_name)
+          : ''
+        }
+        confirmText={t('confirmationModal.confirm')}
+        cancelText={t('confirmationModal.cancel')}
+        type="info"
+        isLoading={isProcessing}
+      />
+
+      {/* Modal de confirmación para tarifa creada */}
+      <ConfirmationModal
+        isOpen={isConfirmCreationOpen}
+        onClose={skipTariffCreation}
+        onConfirm={confirmTariffCreation}
+        title={t('confirmationModal.tariffCreated')}
+        message={pendingTariff ? 
+          t('confirmationModal.tariffCreatedMessage')
+            .replace('{city}', pendingTariff.city)
+            .replace('{state}', pendingTariff.state)
+            .replace('{company}', pendingTariff.company_name)
+          : ''
+        }
+        confirmText={t('confirmationModal.useNow')}
+        cancelText={t('confirmationModal.later')}
+        type="success"
+        isLoading={isProcessing}
+      />
+
       {/* Modal de confirmación de eliminación */}
       {confirmDeleteId && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="fixed inset-0 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
             <h3 className="text-lg font-semibold text-gray-800 mb-4">
-              Confirmar eliminación
+              {t('tariffManager.confirmDeleteTitle')}
             </h3>
             <p className="text-gray-600 mb-6">
-              ¿Estás seguro de que quieres eliminar esta tarifa? Esta acción no se puede deshacer.
+              {t('tariffManager.confirmDeleteMessage')}
             </p>
             <div className="flex justify-end space-x-3">
               <button
                 onClick={cancelDelete}
                 className="px-4 py-2 text-gray-600 border border-gray-300 rounded-md hover:bg-gray-50"
               >
-                Cancelar
+                {t('tariffManager.cancel')}
               </button>
               <button
                 onClick={confirmDelete}
                 className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
               >
-                Eliminar
+                {t('tariffManager.delete')}
               </button>
             </div>
           </div>

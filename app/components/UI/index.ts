@@ -6,3 +6,4 @@ export { default as CostBreakdown } from './CostBreakdown';
 export { default as TariffFlagSelector } from './TariffFlagSelector';
 export { default as TariffManager } from './TariffManager';
 export { default as PublicTariffsModal } from './PublicTariffsModal';
+export { default as LanguageSelector } from './LanguageSelector';
