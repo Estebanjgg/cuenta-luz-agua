@@ -27,6 +27,28 @@ const translations = {
     manageTariffs: 'Gestionar Tarifas',
     logout: 'Cerrar Sesión',
     
+    // Navbar object
+    navbar: {
+      title: 'Control de Energía',
+      subtitle: 'Gestión inteligente del consumo eléctrico',
+      profile: 'Mi Perfil',
+      settings: 'Configuración',
+      manageTariffs: 'Gestionar Tarifas',
+      logout: 'Cerrar Sesión'
+    },
+    
+    // Actions object
+    actions: {
+      resetMonth: 'Reiniciar Mes',
+      resetMonthDescription: 'Reinicia todas las lecturas del mes actual'
+    },
+    
+    // Footer object
+    footer: {
+      message: 'Gestiona tu consumo de energía de manera inteligente',
+      tech: 'Desarrollado con tecnología moderna para un mejor control energético'
+    },
+    
     // Main page
     loadingData: 'Cargando datos...',
     monthActions: 'Acciones del Mes',
@@ -165,16 +187,26 @@ const translations = {
     
     // TariffFlagSelector
     tariffFlagSelector: {
+      currentTariffFlag: 'Bandera Tarifaria Actual',
+      selectTariffFlag: 'Seleccionar Bandera Tarifaria',
+      tariffFlag: 'Bandera',
       noSurcharge: 'Sin recargo',
+      whatDoesItMean: '¿Qué significa?',
+      savingTips: 'Consejos para ahorrar',
+      active: 'activa',
+      recommendations: 'Recomendaciones',
+      andMore: 'Ver más...',
+      showLess: 'Ver menos',
+      tariffFlagSystem: 'Sistema de Banderas Tarifarias',
+      tariffFlagSystemDescription: 'Las banderas tarifarias indican las condiciones de generación de energía eléctrica en el país y determinan si habrá o no un recargo en la cuenta de luz.',
+      moreInfoANEEL: 'Más información ANEEL',
+      howSystemWorks: 'Cómo funciona el sistema',
       flagWithSurcharge: 'Bandera {name} - {surcharge}',
       flagMeaning: 'Bandera {name} - ¿Qué significa?',
-      savingTips: 'Consejos para ahorrar:',
       flagActive: 'Bandera {name} activa',
-      recommendations: 'Recomendaciones:',
-      tariffFlagSystem: 'Sistema de Banderas Tarifarias:',
       learnMore: 'Más información',
-      
-      // Flag explanations
+       
+       // Flag explanations
       greenExplanation: 'Condiciones favorables de generación. Los embalses de las hidroeléctricas están en niveles adecuados y no es necesario activar termoeléctricas más caras.',
       yellowExplanation: 'Condiciones menos favorables. Los niveles de los embalses están bajando y algunas termoeléctricas comienzan a operar, aumentando el costo de generación.',
       redLevel1Explanation: 'Condiciones más costosas. Los embalses están en niveles bajos y más termoeléctricas están operando, aumentando significativamente los costos.',
@@ -396,20 +428,6 @@ const translations = {
     costBreakdownTitle: 'Desglose de Costos',
     
     // General UI
-    andMore: 'y {count} más',
-    showLess: 'mostrar menos',
-    whatDoesItMean: '¿Qué significa?',
-    active: 'activa',
-    tariffFlag: 'Bandera',
-    currentTariffFlag: 'Bandera Tarifaria Actual',
-    selectTariffFlag: 'Seleccionar bandera tarifaria',
-    noSurcharge: 'Sin recargo',
-    savingTips: 'Consejos para ahorrar',
-    recommendations: 'Recomendaciones',
-    tariffFlagSystem: 'Sistema de Banderas Tarifarias',
-    tariffFlagSystemDescription: 'Las banderas tarifarias reflejan las condiciones de generación de energía eléctrica y indican si habrá o no un valor adicional en la cuenta de luz.',
-    moreInfoANEEL: 'Más información ANEEL',
-    howSystemWorks: 'Cómo funciona el sistema',
 
     // SessionStatus
     sessionStatus: {
@@ -499,6 +517,28 @@ const translations = {
     settings: 'Configurações',
     manageTariffs: 'Gerenciar Tarifas',
     logout: 'Sair',
+    
+    // Navbar object
+    navbar: {
+      title: 'Controle de Energia',
+      subtitle: 'Gestão inteligente do consumo elétrico',
+      profile: 'Meu Perfil',
+      settings: 'Configurações',
+      manageTariffs: 'Gerenciar Tarifas',
+      logout: 'Sair'
+    },
+    
+    // Actions object
+    actions: {
+      resetMonth: 'Reiniciar Mês',
+      resetMonthDescription: 'Reinicia todas as leituras do mês atual'
+    },
+    
+    // Footer object
+    footer: {
+      message: 'Gerencie seu consumo de energia de forma inteligente',
+      tech: 'Desenvolvido com tecnologia moderna para um melhor controle energético'
+    },
     
     // Main page
     loadingData: 'Carregando dados...',
@@ -638,16 +678,26 @@ const translations = {
     
     // TariffFlagSelector
     tariffFlagSelector: {
+      currentTariffFlag: 'Bandeira Tarifária Atual',
+      selectTariffFlag: 'Selecionar Bandeira Tarifária',
+      tariffFlag: 'Bandeira',
       noSurcharge: 'Sem acréscimo',
+      whatDoesItMean: 'O que significa?',
+      savingTips: 'Dicas para economizar',
+      active: 'ativa',
+      recommendations: 'Recomendações',
+      andMore: 'Ver mais...',
+      showLess: 'Ver menos',
+      tariffFlagSystem: 'Sistema de Bandeiras Tarifárias',
+      tariffFlagSystemDescription: 'As bandeiras tarifárias indicam as condições de geração de energia elétrica no país e determinam se haverá ou não acréscimo na conta de luz.',
+      moreInfoANEEL: 'Mais informações ANEEL',
+      howSystemWorks: 'Como funciona o sistema',
       flagWithSurcharge: 'Bandeira {name} - {surcharge}',
       flagMeaning: 'Bandeira {name} - O que significa?',
-      savingTips: 'Dicas para economizar:',
       flagActive: 'Bandeira {name} ativa',
-      recommendations: 'Recomendações:',
-      tariffFlagSystem: 'Sistema de Bandeiras Tarifárias:',
       learnMore: 'Mais informações',
-      
-      // Flag explanations
+       
+       // Flag explanations
       greenExplanation: 'Condições favoráveis de geração. Os reservatórios das hidrelétricas estão em níveis adequados e não é necessário acionar termelétricas mais caras.',
       yellowExplanation: 'Condições menos favoráveis. Os níveis dos reservatórios estão baixando e algumas termelétricas começam a operar, aumentando o custo de geração.',
       redLevel1Explanation: 'Condições mais caras. Os reservatórios estão em níveis baixos e mais termelétricas estão operando, aumentando significativamente os custos.',
@@ -869,20 +919,6 @@ const translations = {
     costBreakdownTitle: 'Detalhamento de Custos',
     
     // General UI
-    andMore: 'e mais {count}',
-    showLess: 'mostrar menos',
-    whatDoesItMean: 'O que significa?',
-    active: 'ativa',
-    tariffFlag: 'Bandeira',
-    currentTariffFlag: 'Bandeira Tarifária Atual',
-    selectTariffFlag: 'Selecionar bandeira tarifária',
-    noSurcharge: 'Sem acréscimo',
-    savingTips: 'Dicas para economizar',
-    recommendations: 'Recomendações',
-    tariffFlagSystem: 'Sistema de Bandeiras Tarifárias',
-    tariffFlagSystemDescription: 'As bandeiras tarifárias refletem as condições de geração de energia elétrica e indicam se haverá ou não um valor adicional na conta de luz.',
-    moreInfoANEEL: 'Mais informações ANEEL',
-    howSystemWorks: 'Como funciona o sistema',
 
     // SessionStatus
     sessionStatus: {

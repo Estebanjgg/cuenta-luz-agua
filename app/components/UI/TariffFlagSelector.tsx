@@ -16,67 +16,67 @@ const getFlagExplanation = (flagType: TariffFlagType, t: (key: string) => string
   switch (flagType) {
     case 'GREEN':
       return {
-        explanation: t('greenExplanation'),
+        explanation: t('tariffFlagSelector.greenExplanation'),
         tips: [
-          t('greenTip1'),
-          t('greenTip2'),
-          t('greenTip3'),
-          t('greenTip4'),
-          t('greenTip5'),
-          t('greenTip6'),
-          t('greenTip7'),
-          t('greenTip8')
+          t('tariffFlagSelector.greenTip1'),
+          t('tariffFlagSelector.greenTip2'),
+          t('tariffFlagSelector.greenTip3'),
+          t('tariffFlagSelector.greenTip4'),
+          t('tariffFlagSelector.greenTip5'),
+          t('tariffFlagSelector.greenTip6'),
+          t('tariffFlagSelector.greenTip7'),
+          t('tariffFlagSelector.greenTip8')
         ]
       };
     case 'YELLOW':
       return {
-        explanation: t('yellowExplanation'),
+        explanation: t('tariffFlagSelector.yellowExplanation'),
         tips: [
-          t('yellowTip1'),
-          t('yellowTip2'),
-          t('yellowTip3'),
-          t('yellowTip4'),
-          t('yellowTip5'),
-          t('yellowTip6'),
-          t('yellowTip7'),
-          t('yellowTip8'),
-          t('yellowTip9')
+          t('tariffFlagSelector.yellowTip1'),
+          t('tariffFlagSelector.yellowTip2'),
+          t('tariffFlagSelector.yellowTip3'),
+          t('tariffFlagSelector.yellowTip4'),
+          t('tariffFlagSelector.yellowTip5'),
+          t('tariffFlagSelector.yellowTip6'),
+          t('tariffFlagSelector.yellowTip7'),
+          t('tariffFlagSelector.yellowTip8'),
+          t('tariffFlagSelector.yellowTip9')
         ]
       };
     case 'RED_LEVEL_1':
       return {
-        explanation: t('redLevel1Explanation'),
+        explanation: t('tariffFlagSelector.redLevel1Explanation'),
         tips: [
-          t('redLevel1Tip1'),
-          t('redLevel1Tip2'),
-          t('redLevel1Tip3'),
-          t('redLevel1Tip4'),
-          t('redLevel1Tip5'),
-          t('redLevel1Tip6'),
-          t('redLevel1Tip7'),
-          t('redLevel1Tip8'),
-          t('redLevel1Tip9'),
-          t('redLevel1Tip10')
+          t('tariffFlagSelector.redLevel1Tip1'),
+          t('tariffFlagSelector.redLevel1Tip2'),
+          t('tariffFlagSelector.redLevel1Tip3'),
+          t('tariffFlagSelector.redLevel1Tip4'),
+          t('tariffFlagSelector.redLevel1Tip5'),
+          t('tariffFlagSelector.redLevel1Tip6'),
+          t('tariffFlagSelector.redLevel1Tip7'),
+          t('tariffFlagSelector.redLevel1Tip8'),
+          t('tariffFlagSelector.redLevel1Tip9'),
+          t('tariffFlagSelector.redLevel1Tip10')
         ]
       };
     case 'RED_LEVEL_2':
       return {
-        explanation: t('redLevel2Explanation'),
+        explanation: t('tariffFlagSelector.redLevel2Explanation'),
         tips: [
-          t('redLevel2Tip1'),
-          t('redLevel2Tip2'),
-          t('redLevel2Tip3'),
-          t('redLevel2Tip4'),
-          t('redLevel2Tip5'),
-          t('redLevel2Tip6'),
-          t('redLevel2Tip7'),
-          t('redLevel2Tip8'),
-          t('redLevel2Tip9'),
-          t('redLevel2Tip10'),
-          t('redLevel2Tip11'),
-          t('redLevel2Tip12'),
-          t('redLevel2Tip13'),
-          t('redLevel2Tip14')
+          t('tariffFlagSelector.redLevel2Tip1'),
+          t('tariffFlagSelector.redLevel2Tip2'),
+          t('tariffFlagSelector.redLevel2Tip3'),
+          t('tariffFlagSelector.redLevel2Tip4'),
+          t('tariffFlagSelector.redLevel2Tip5'),
+          t('tariffFlagSelector.redLevel2Tip6'),
+          t('tariffFlagSelector.redLevel2Tip7'),
+          t('tariffFlagSelector.redLevel2Tip8'),
+          t('tariffFlagSelector.redLevel2Tip9'),
+          t('tariffFlagSelector.redLevel2Tip10'),
+          t('tariffFlagSelector.redLevel2Tip11'),
+          t('tariffFlagSelector.redLevel2Tip12'),
+          t('tariffFlagSelector.redLevel2Tip13'),
+          t('tariffFlagSelector.redLevel2Tip14')
         ]
       };
     default:
@@ -101,13 +101,13 @@ export default function TariffFlagSelector({
   return (
     <div className={`bg-white rounded-lg shadow-md p-6 ${className}`}>
       <h3 className="text-lg font-semibold text-gray-800 mb-4">
-        {t('currentTariffFlag')}
+        {t('tariffFlagSelector.currentTariffFlag')}
       </h3>
       
       {/* Selector dropdown */}
       <div className="mb-4">
         <label className="block text-sm font-medium text-gray-700 mb-2">
-          {t('selectTariffFlag')}:
+          {t('tariffFlagSelector.selectTariffFlag')}:
         </label>
         <div className="relative">
           <select
@@ -117,12 +117,12 @@ export default function TariffFlagSelector({
           >
             {flagOptions.map(([flagKey, flagData]) => {
               const surchargeText = flagData.surcharge === 0 
-                ? t('noSurcharge') 
+                ? t('tariffFlagSelector.noSurcharge') 
                 : `+R$ ${flagData.surcharge.toFixed(5)}/kWh`;
               
               return (
                 <option key={flagKey} value={flagKey}>
-                  {t('tariffFlag')} {flagData.name} - {surchargeText}
+                  {t('tariffFlagSelector.tariffFlag')} {flagData.name} - {surchargeText}
                 </option>
               );
             })}
@@ -146,10 +146,10 @@ export default function TariffFlagSelector({
            />
            <div className="flex-1">
              <h4 className="font-medium text-gray-800">
-               {t('tariffFlag')} {TARIFF_FLAGS[selectedFlag].name}
+               {t('tariffFlagSelector.tariffFlag')} {TARIFF_FLAGS[selectedFlag].name}
              </h4>
              <p className="text-sm text-gray-600">
-               {TARIFF_FLAGS[selectedFlag].description}
+               {getFlagExplanation(selectedFlag, t).explanation}
              </p>
            </div>
            <div className="flex items-center space-x-3">
@@ -171,7 +171,7 @@ export default function TariffFlagSelector({
              <div className="text-right">
                <span className="text-sm font-medium text-gray-700">
                  {TARIFF_FLAGS[selectedFlag].surcharge === 0 
-                   ? t('noSurcharge') 
+                   ? t('tariffFlagSelector.noSurcharge') 
                    : `+R$ ${TARIFF_FLAGS[selectedFlag].surcharge.toFixed(5)}/kWh`
                  }
                </span>
@@ -189,13 +189,13 @@ export default function TariffFlagSelector({
                 className="w-3 h-3 rounded-full mr-2"
                 style={{ backgroundColor: TARIFF_FLAGS[selectedForDetails].color }}
               />
-              {t('tariffFlag')} {TARIFF_FLAGS[selectedForDetails].name} - {t('whatDoesItMean')}?
+              {t('tariffFlagSelector.tariffFlag')} {TARIFF_FLAGS[selectedForDetails].name} - {t('tariffFlagSelector.whatDoesItMean')}?
             </h4>
             <p className="text-blue-800 text-sm mb-3">
               {detailFlagInfo.explanation}
             </p>
             
-            <h5 className="font-medium text-blue-900 mb-2">💡 {t('savingTips')}:</h5>
+            <h5 className="font-medium text-blue-900 mb-2">💡 {t('tariffFlagSelector.savingTips')}:</h5>
             <ul className="space-y-1">
               {detailFlagInfo.tips.map((tip, index) => (
                 <li key={index} className="text-blue-700 text-sm flex items-start">
@@ -217,14 +217,14 @@ export default function TariffFlagSelector({
           />
           <div className="flex-1">
             <p className="text-yellow-800 text-sm font-medium mb-1">
-              {t('tariffFlag')} {TARIFF_FLAGS[selectedFlag].name} {t('active')}
+              {t('tariffFlagSelector.tariffFlag')} {TARIFF_FLAGS[selectedFlag].name} {t('tariffFlagSelector.active')}
             </p>
             <p className="text-yellow-700 text-sm mb-2">
               {currentFlagInfo.explanation}
             </p>
             {currentFlagInfo.tips.length > 0 && (
               <div>
-                <p className="text-yellow-800 text-sm font-medium mb-1">{t('recommendations')}:</p>
+                <p className="text-yellow-800 text-sm font-medium mb-1">{t('tariffFlagSelector.recommendations')}:</p>
                 <div className="text-yellow-700 text-sm">
                   <p className="mb-1">{currentFlagInfo.tips[0]}</p>
                   {currentFlagInfo.tips.length > 1 && (
@@ -234,7 +234,7 @@ export default function TariffFlagSelector({
                           onClick={() => setShowMoreTips(true)}
                           className="text-yellow-600 hover:text-yellow-800 underline cursor-pointer font-medium"
                         >
-                          ({t('andMore').replace('{count}', (currentFlagInfo.tips.length - 1).toString())}...)
+                          ({t('tariffFlagSelector.andMore').replace('{count}', (currentFlagInfo.tips.length - 1).toString())}...)
                         </button>
                       ) : (
                         <div className="space-y-1">
@@ -248,7 +248,7 @@ export default function TariffFlagSelector({
                             onClick={() => setShowMoreTips(false)}
                             className="text-yellow-600 hover:text-yellow-800 underline cursor-pointer font-medium mt-2"
                           >
-                            ({t('showLess')})
+                            ({t('tariffFlagSelector.showLess')})
                           </button>
                         </div>
                       )}
@@ -264,7 +264,7 @@ export default function TariffFlagSelector({
       {/* Información general del sistema */}
       <div className="mt-4 p-3 bg-gray-50 rounded-lg border border-gray-200">
         <p className="text-gray-700 text-sm">
-          <strong>ℹ️ {t('tariffFlagSystem')}:</strong> {t('tariffFlagSystemDescription')}
+          <strong>ℹ️ {t('tariffFlagSelector.tariffFlagSystem')}:</strong> {t('tariffFlagSelector.tariffFlagSystemDescription')}
         </p>
         <div className="mt-2 flex flex-wrap gap-2">
           <a 
@@ -273,7 +273,7 @@ export default function TariffFlagSelector({
             rel="noopener noreferrer"
             className="text-blue-600 hover:text-blue-800 text-xs underline"
           >
-            📖 {t('moreInfoANEEL')}
+            📖 {t('tariffFlagSelector.moreInfoANEEL')}
           </a>
           <a 
             href="https://www.portalsolar.com.br/bandeira-de-energia-como-funciona" 
@@ -281,7 +281,7 @@ export default function TariffFlagSelector({
             rel="noopener noreferrer"
             className="text-blue-600 hover:text-blue-800 text-xs underline"
           >
-            🔍 {t('howSystemWorks')}
+            🔍 {t('tariffFlagSelector.howSystemWorks')}
           </a>
         </div>
       </div>
