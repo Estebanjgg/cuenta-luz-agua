@@ -233,7 +233,7 @@ export default function PeriodNavigator({
 
       {/* Modal para Nuevo Período */}
       {showNewPeriodModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+        <div className="fixed inset-0 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-xl shadow-2xl p-6 w-full max-w-md">
             <div className="flex items-center mb-4">
               <div className="bg-green-100 p-3 rounded-full mr-4">
@@ -323,7 +323,7 @@ export default function PeriodNavigator({
       {/* Modal de Gestión de Tarifas */}
       {showTariffManager && (
         <div 
-          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+          className="fixed inset-0 flex items-center justify-center z-50 p-4"
           onClick={() => setShowTariffManager(false)}
         >
           <div 

@@ -371,7 +371,8 @@ const translations = {
       createNew: '➕ Crear Nueva Tarifa',
       viewPublic: '🌍 Ver Tarifas Públicas',
       tip: '💡 Tip: Puedes crear tarifas personalizadas o usar tarifas públicas creadas por otros usuarios.',
-      newTariff: 'Nueva Tarifa'
+      newTariff: 'Nueva Tarifa',
+      confirmSelection: 'Confirmar Selección'
     },
 
     // TariffManager
@@ -396,6 +397,7 @@ const translations = {
       delete: 'Eliminar',
       deleting: 'Eliminando...',
       editTariff: 'Editar Tarifa',
+      confirmSelection: 'Confirmar Selección',
       confirmDeleteTitle: 'Confirmar eliminación',
       confirmDeleteMessage: '¿Estás seguro de que quieres eliminar esta tarifa? Esta acción no se puede deshacer.',
       cancel: 'Cancelar',
@@ -506,6 +508,19 @@ const translations = {
       selectLanguage: 'Seleccionar idioma',
       chooseLanguage: 'Escolher idioma',
       active: 'Activo / Ativo'
+    },
+
+    // ConfirmationModal
+    confirmationModal: {
+      cancel: 'Cancelar',
+      confirm: 'Confirmar',
+      processing: 'Procesando...',
+      tariffSelected: 'Tarifa Seleccionada',
+      tariffSelectedMessage: 'Has seleccionado la tarifa de {city}, {state} - {company}. ¿Deseas confirmar esta selección?',
+      tariffCreated: 'Tarifa Creada con Éxito',
+      tariffCreatedMessage: 'Tu nueva tarifa para {city}, {state} - {company} ha sido creada exitosamente. ¿Deseas usarla ahora?',
+      useNow: 'Usar Ahora',
+      later: 'Más Tarde'
     }
   },
   'pt-BR': {
@@ -862,7 +877,8 @@ const translations = {
       createNew: '➕ Criar Nova Tarifa',
       viewPublic: '🌍 Ver Tarifas Públicas',
       tip: '💡 Dica: Você pode criar tarifas personalizadas ou usar tarifas públicas criadas por outros usuários.',
-      newTariff: 'Nova Tarifa'
+      newTariff: 'Nova Tarifa',
+      confirmSelection: 'Confirmar Seleção'
     },
 
     // TariffManager
@@ -887,6 +903,7 @@ const translations = {
       delete: 'Excluir',
       deleting: 'Excluindo...',
       editTariff: 'Editar Tarifa',
+      confirmSelection: 'Confirmar Seleção',
       confirmDeleteTitle: 'Confirmar exclusão',
       confirmDeleteMessage: 'Tem certeza de que deseja excluir esta tarifa? Esta ação não pode ser desfeita.',
       cancel: 'Cancelar',
@@ -997,6 +1014,19 @@ const translations = {
       selectLanguage: 'Selecionar idioma',
       chooseLanguage: 'Escolher idioma',
       active: 'Ativo / Activo'
+    },
+
+    // ConfirmationModal
+    confirmationModal: {
+      cancel: 'Cancelar',
+      confirm: 'Confirmar',
+      processing: 'Processando...',
+      tariffSelected: 'Tarifa Selecionada',
+      tariffSelectedMessage: 'Você selecionou a tarifa de {city}, {state} - {company}. Deseja confirmar esta seleção?',
+      tariffCreated: 'Tarifa Criada com Sucesso',
+      tariffCreatedMessage: 'Sua nova tarifa para {city}, {state} - {company} foi criada com sucesso. Deseja usá-la agora?',
+      useNow: 'Usar Agora',
+      later: 'Mais Tarde'
     }
   }
 };

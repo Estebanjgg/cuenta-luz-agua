@@ -6,6 +6,7 @@ import { useTariffs } from '../../hooks/useTariffs';
 import { useLanguage } from '../../contexts/LanguageContext';
 import TariffModal from '../Forms/TariffModal';
 import PublicTariffsModal from './PublicTariffsModal';
+import ConfirmationModal from './ConfirmationModal';
 
 interface TariffSelectorProps {
   selectedTariffId?: string;
@@ -37,6 +38,10 @@ export default function TariffSelector({
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isPublicModalOpen, setIsPublicModalOpen] = useState(false);
   const [selectedTariff, setSelectedTariff] = useState<Tariff | null>(null);
+  const [isConfirmSelectionOpen, setIsConfirmSelectionOpen] = useState(false);
+  const [isConfirmCreationOpen, setIsConfirmCreationOpen] = useState(false);
+  const [pendingTariff, setPendingTariff] = useState<Tariff | null>(null);
+  const [isProcessing, setIsProcessing] = useState(false);
 
   // Cargar tarifa del mes si existe month y year
   useEffect(() => {
@@ -67,13 +72,36 @@ export default function TariffSelector({
     }
   };
 
-  const handleTariffSelect = async (tariff: Tariff) => {
+  const handleTariffSelect = (tariff: Tariff) => {
     setSelectedTariff(tariff);
-    onTariffSelect(tariff);
+  };
+
+  const handleConfirmSelection = () => {
+    if (selectedTariff) {
+      setPendingTariff(selectedTariff);
+      setIsConfirmSelectionOpen(true);
+    }
+  };
+
+  const confirmTariffSelection = async () => {
+    if (!pendingTariff) return;
     
-    // Si hay month y year, asociar la tarifa al mes
-    if (month && year) {
-      await assignTariffToMonth(month, year, tariff.id);
+    setIsProcessing(true);
+    try {
+      setSelectedTariff(pendingTariff);
+      onTariffSelect(pendingTariff);
+      
+      // Si hay month y year, asociar la tarifa al mes
+      if (month && year) {
+        await assignTariffToMonth(month, year, pendingTariff.id);
+      }
+      
+      setIsConfirmSelectionOpen(false);
+      setPendingTariff(null);
+    } catch (error) {
+      console.error('Error selecting tariff:', error);
+    } finally {
+      setIsProcessing(false);
     }
   };
 
@@ -81,17 +109,46 @@ export default function TariffSelector({
     const newTariff = await createTariff(tariffData);
     if (newTariff) {
       setIsCreateModalOpen(false);
-      handleTariffSelect(newTariff);
+      setPendingTariff(newTariff);
+      setIsConfirmCreationOpen(true);
       return true;
     }
     return false;
+  };
+
+  const confirmTariffCreation = async () => {
+    if (!pendingTariff) return;
+    
+    setIsProcessing(true);
+    try {
+      setSelectedTariff(pendingTariff);
+      onTariffSelect(pendingTariff);
+      
+      // Si hay month y year, asociar la tarifa al mes
+      if (month && year) {
+        await assignTariffToMonth(month, year, pendingTariff.id);
+      }
+      
+      setIsConfirmCreationOpen(false);
+      setPendingTariff(null);
+    } catch (error) {
+      console.error('Error using created tariff:', error);
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  const skipTariffCreation = () => {
+    setIsConfirmCreationOpen(false);
+    setPendingTariff(null);
   };
 
   const handleCopyPublicTariff = async (publicTariffId: string) => {
     const copiedTariff = await copyPublicTariff(publicTariffId);
     if (copiedTariff) {
       setIsPublicModalOpen(false);
-      handleTariffSelect(copiedTariff);
+      setPendingTariff(copiedTariff);
+      setIsConfirmCreationOpen(true);
     }
   };
 
@@ -143,16 +200,28 @@ export default function TariffSelector({
                 <span>🔴 {formatKwhPrice(selectedTariff.price_per_kwh_red_2)}</span>
               </div>
             </div>
-            <button
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                setSelectedTariff(null);
-              }}
-              className="text-blue-600 hover:text-blue-800 text-sm"
-            >
-              {t('tariffSelector.change')}
-            </button>
+            <div className="flex flex-col space-y-1">
+              <button
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  handleConfirmSelection();
+                }}
+                className="px-3 py-1 bg-blue-600 text-white text-sm rounded hover:bg-blue-700"
+              >
+                {t('tariffSelector.confirmSelection')}
+              </button>
+              <button
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setSelectedTariff(null);
+                }}
+                className="text-blue-600 hover:text-blue-800 text-sm"
+              >
+                {t('tariffSelector.change')}
+              </button>
+            </div>
           </div>
         </div>
       )}
@@ -232,6 +301,47 @@ export default function TariffSelector({
         onClose={() => setIsPublicModalOpen(false)}
         onCopyTariff={handleCopyPublicTariff}
         publicTariffs={publicTariffs}
+      />
+
+      {/* Modal de confirmación para selección de tarifa */}
+      <ConfirmationModal
+        isOpen={isConfirmSelectionOpen}
+        onClose={() => {
+          setIsConfirmSelectionOpen(false);
+          setPendingTariff(null);
+        }}
+        onConfirm={confirmTariffSelection}
+        title={t('confirmationModal.tariffSelected')}
+        message={pendingTariff ? 
+          t('confirmationModal.tariffSelectedMessage')
+            .replace('{city}', pendingTariff.city)
+            .replace('{state}', pendingTariff.state)
+            .replace('{company}', pendingTariff.company_name)
+          : ''
+        }
+        confirmText={t('confirmationModal.confirm')}
+        cancelText={t('confirmationModal.cancel')}
+        type="info"
+        isLoading={isProcessing}
+      />
+
+      {/* Modal de confirmación para tarifa creada */}
+      <ConfirmationModal
+        isOpen={isConfirmCreationOpen}
+        onClose={skipTariffCreation}
+        onConfirm={confirmTariffCreation}
+        title={t('confirmationModal.tariffCreated')}
+        message={pendingTariff ? 
+          t('confirmationModal.tariffCreatedMessage')
+            .replace('{city}', pendingTariff.city)
+            .replace('{state}', pendingTariff.state)
+            .replace('{company}', pendingTariff.company_name)
+          : ''
+        }
+        confirmText={t('confirmationModal.useNow')}
+        cancelText={t('confirmationModal.later')}
+        type="success"
+        isLoading={isProcessing}
       />
     </div>
   );

@@ -6,6 +6,7 @@ import { useTariffs } from '../../hooks/useTariffs';
 import { useLanguage } from '../../contexts/LanguageContext';
 import TariffModal from '../Forms/TariffModal';
 import PublicTariffsModal from './PublicTariffsModal';
+import ConfirmationModal from './ConfirmationModal';
 
 interface TariffManagerProps {
   onTariffSelect?: (tariff: Tariff) => void;
@@ -35,11 +36,19 @@ export default function TariffManager({
   const [isPublicModalOpen, setIsPublicModalOpen] = useState(false);
   const [editingTariff, setEditingTariff] = useState<Tariff | null>(null);
   const [deletingTariffId, setDeletingTariffId] = useState<string | null>(null);
+  const [isConfirmSelectionOpen, setIsConfirmSelectionOpen] = useState(false);
+  const [isConfirmCreationOpen, setIsConfirmCreationOpen] = useState(false);
+  const [pendingTariff, setPendingTariff] = useState<Tariff | null>(null);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [selectedTariffForConfirmation, setSelectedTariffForConfirmation] = useState<Tariff | null>(null);
+
 
   const handleCreateTariff = async (tariffData: any) => {
     const newTariff = await createTariff(tariffData);
     if (newTariff) {
       setIsCreateModalOpen(false);
+      setPendingTariff(newTariff);
+      setIsConfirmCreationOpen(true);
       return true;
     }
     return false;
@@ -83,8 +92,56 @@ export default function TariffManager({
     const copiedTariff = await copyPublicTariff(publicTariffId);
     if (copiedTariff) {
       setIsPublicModalOpen(false);
-      alert(t('tariffManager.copySuccess'));
+      setPendingTariff(copiedTariff);
+      setIsConfirmCreationOpen(true);
     }
+  };
+
+  const handleTariffClick = (tariff: Tariff) => {
+    setSelectedTariffForConfirmation(tariff);
+  };
+
+  const handleConfirmSelection = () => {
+    if (selectedTariffForConfirmation) {
+      setPendingTariff(selectedTariffForConfirmation);
+      setIsConfirmSelectionOpen(true);
+    }
+  };
+
+  const confirmTariffSelection = async () => {
+    if (!pendingTariff) return;
+    
+    setIsProcessing(true);
+    try {
+      onTariffSelect?.(pendingTariff);
+      setIsConfirmSelectionOpen(false);
+      setPendingTariff(null);
+      setSelectedTariffForConfirmation(null);
+    } catch (error) {
+      console.error('Error selecting tariff:', error);
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  const confirmTariffCreation = async () => {
+    if (!pendingTariff) return;
+    
+    setIsProcessing(true);
+    try {
+      onTariffSelect?.(pendingTariff);
+      setIsConfirmCreationOpen(false);
+      setPendingTariff(null);
+    } catch (error) {
+      console.error('Error using created tariff:', error);
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  const skipTariffCreation = () => {
+    setIsConfirmCreationOpen(false);
+    setPendingTariff(null);
   };
 
   const formatCurrency = (value: number) => {
@@ -174,9 +231,14 @@ export default function TariffManager({
             return (
               <div
                 key={tariff.id}
+                onClick={() => showSelectButton && handleTariffClick(tariff)}
                 className={`border rounded-lg p-4 transition-all ${
+                  showSelectButton ? 'cursor-pointer' : ''
+                } ${
                   isSelected 
                     ? 'border-blue-500 bg-blue-50' 
+                    : selectedTariffForConfirmation?.id === tariff.id
+                    ? 'border-green-500 bg-green-50'
                     : 'border-gray-200 hover:border-gray-300'
                 }`}
               >
@@ -226,21 +288,17 @@ export default function TariffManager({
                   </div>
                   
                   <div className="flex flex-col space-y-2 ml-4">
-                    {showSelectButton && (
+                    {showSelectButton && selectedTariffForConfirmation?.id === tariff.id && (
                       <button
                         onClick={(e) => {
                           e.preventDefault();
                           e.stopPropagation();
-                          onTariffSelect?.(tariff);
+                          handleConfirmSelection();
                         }}
-                        className={`px-3 py-1 text-sm rounded-md ${
-                          isSelected
-                            ? 'bg-blue-600 text-white'
-                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                        }`}
+                        className="px-3 py-1 text-sm bg-green-600 text-white rounded-md hover:bg-green-700"
                       >
-                          {isSelected ? t('tariffManager.selected') : t('tariffManager.select')}
-                        </button>
+                        {t('tariffManager.confirmSelection')}
+                      </button>
                     )}
                     
                     <button
@@ -298,9 +356,51 @@ export default function TariffManager({
         publicTariffs={publicTariffs}
       />
 
+      {/* Modal de confirmación para selección de tarifa */}
+      <ConfirmationModal
+        isOpen={isConfirmSelectionOpen}
+        onClose={() => {
+          setIsConfirmSelectionOpen(false);
+          setPendingTariff(null);
+          setSelectedTariffForConfirmation(null);
+        }}
+        onConfirm={confirmTariffSelection}
+        title={t('confirmationModal.tariffSelected')}
+        message={pendingTariff ? 
+          t('confirmationModal.tariffSelectedMessage')
+            .replace('{city}', pendingTariff.city)
+            .replace('{state}', pendingTariff.state)
+            .replace('{company}', pendingTariff.company_name)
+          : ''
+        }
+        confirmText={t('confirmationModal.confirm')}
+        cancelText={t('confirmationModal.cancel')}
+        type="info"
+        isLoading={isProcessing}
+      />
+
+      {/* Modal de confirmación para tarifa creada */}
+      <ConfirmationModal
+        isOpen={isConfirmCreationOpen}
+        onClose={skipTariffCreation}
+        onConfirm={confirmTariffCreation}
+        title={t('confirmationModal.tariffCreated')}
+        message={pendingTariff ? 
+          t('confirmationModal.tariffCreatedMessage')
+            .replace('{city}', pendingTariff.city)
+            .replace('{state}', pendingTariff.state)
+            .replace('{company}', pendingTariff.company_name)
+          : ''
+        }
+        confirmText={t('confirmationModal.useNow')}
+        cancelText={t('confirmationModal.later')}
+        type="success"
+        isLoading={isProcessing}
+      />
+
       {/* Modal de confirmación de eliminación */}
       {confirmDeleteId && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="fixed inset-0 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
             <h3 className="text-lg font-semibold text-gray-800 mb-4">
               {t('tariffManager.confirmDeleteTitle')}
