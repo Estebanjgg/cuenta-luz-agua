@@ -64,17 +64,18 @@ export default function LanguageSelector({ className = '' }: LanguageSelectorPro
         </svg>
       </button>
 
-      {/* Dropdown menu */}
+      {/* Overlay */}
       {isOpen && (
-        <>
-          {/* Overlay para cerrar al hacer clic fuera */}
-          <div 
-            className="fixed inset-0 z-40" 
-            onClick={() => setIsOpen(false)}
-          />
-          
-          {/* Menu desplegable */}
-          <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg z-50 border border-gray-200">
+        <div 
+          className="fixed inset-0 z-[9998]"
+          onClick={() => setIsOpen(false)}
+        />
+      )}
+
+      {/* Dropdown */}
+      <div className={`absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 transition-all duration-200 z-[9999] ${
+        isOpen ? 'opacity-100 visible' : 'opacity-0 invisible'
+      }`}>
             <div className="py-2">
               <div className="px-4 py-2 border-b border-gray-100">
                 <p className="text-sm font-medium text-gray-900">{t('languageSelector.selectLanguage')}</p>
@@ -106,9 +107,7 @@ export default function LanguageSelector({ className = '' }: LanguageSelectorPro
                 </button>
               ))}
             </div>
-          </div>
-        </>
-      )}
-    </div>
-  );
+       </div>
+     </div>
+   );
 }

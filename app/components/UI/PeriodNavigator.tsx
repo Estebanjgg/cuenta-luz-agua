@@ -114,105 +114,107 @@ export default function PeriodNavigator({
   return (
     <>
       {/* Navegador de Período Compacto */}
-      <div className="bg-white rounded-xl shadow-lg p-6 mb-6">
-        <div className="flex items-center justify-between">
+      <div className="bg-white rounded-xl shadow-lg p-4 sm:p-6 mb-6">
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
           {/* Selector de Período */}
-          <div className="flex items-center space-x-4">
+          <div className="flex flex-col sm:flex-row sm:items-center space-y-3 sm:space-y-0 sm:space-x-4">
             <div className="flex items-center space-x-2">
-              <span className="text-2xl">📅</span>
-              <h2 className="text-xl font-semibold text-gray-800">{t('periodNavigator.period')}</h2>
+              <span className="text-xl sm:text-2xl">📅</span>
+              <h2 className="text-lg sm:text-xl font-semibold text-gray-800">{t('periodNavigator.period')}</h2>
             </div>
             
-            {/* Selector de Mes */}
-            <div className="relative">
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setIsMonthDropdownOpen(!isMonthDropdownOpen);
-                  setIsYearDropdownOpen(false);
-                }}
-                className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium shadow-md"
-              >
-                <span>{currentMonth.charAt(0).toUpperCase() + currentMonth.slice(1)}</span>
-                <svg className={`w-4 h-4 transition-transform ${isMonthDropdownOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                </svg>
-              </button>
+            <div className="flex flex-row space-x-2">
+              {/* Selector de Mes */}
+              <div className="relative flex-1">
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setIsMonthDropdownOpen(!isMonthDropdownOpen);
+                    setIsYearDropdownOpen(false);
+                  }}
+                  className="flex items-center justify-center space-x-2 px-3 sm:px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium shadow-md w-full text-sm sm:text-base"
+                >
+                  <span className="truncate">{currentMonth.charAt(0).toUpperCase() + currentMonth.slice(1)}</span>
+                  <svg className={`w-4 h-4 transition-transform flex-shrink-0 ${isMonthDropdownOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </button>
               
-              {isMonthDropdownOpen && (
-                <div className="absolute top-full left-0 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-xl z-50 max-h-60 overflow-y-auto">
-                  {MONTHS.map((month) => (
-                    <button
-                      key={month}
-                      onClick={() => handlePeriodChange(month, currentYear)}
-                      className={`w-full text-left px-4 py-2 hover:bg-gray-50 transition-colors ${
-                        month === currentMonth ? 'bg-blue-50 text-blue-600 font-medium' : 'text-gray-700'
-                      } ${hasMonthData(month, currentYear) ? 'border-l-4 border-l-green-400' : ''}`}
-                    >
-                      <div className="flex items-center justify-between">
-                        <span>{month.charAt(0).toUpperCase() + month.slice(1)}</span>
-                        {hasMonthData(month, currentYear) && (
-                          <span className="text-xs text-green-600">✓</span>
-                        )}
-                      </div>
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
+                {isMonthDropdownOpen && (
+                  <div className="absolute top-full left-0 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-xl z-50 max-h-60 overflow-y-auto">
+                    {MONTHS.map((month) => (
+                      <button
+                        key={month}
+                        onClick={() => handlePeriodChange(month, currentYear)}
+                        className={`w-full text-left px-4 py-2 hover:bg-gray-50 transition-colors ${
+                          month === currentMonth ? 'bg-blue-50 text-blue-600 font-medium' : 'text-gray-700'
+                        } ${hasMonthData(month, currentYear) ? 'border-l-4 border-l-green-400' : ''}`}
+                      >
+                        <div className="flex items-center justify-between">
+                          <span>{month.charAt(0).toUpperCase() + month.slice(1)}</span>
+                          {hasMonthData(month, currentYear) && (
+                            <span className="text-xs text-green-600">✓</span>
+                          )}
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
             
-            {/* Selector de Año */}
-            <div className="relative">
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setIsYearDropdownOpen(!isYearDropdownOpen);
-                  setIsMonthDropdownOpen(false);
-                }}
-                className="flex items-center space-x-2 px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors font-medium shadow-md"
-              >
-                <span>{currentYear}</span>
-                <svg className={`w-4 h-4 transition-transform ${isYearDropdownOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                </svg>
-              </button>
+              {/* Selector de Año */}
+              <div className="relative flex-1">
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setIsYearDropdownOpen(!isYearDropdownOpen);
+                    setIsMonthDropdownOpen(false);
+                  }}
+                  className="flex items-center justify-center space-x-2 px-3 sm:px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors font-medium shadow-md w-full text-sm sm:text-base"
+                >
+                  <span className="truncate">{currentYear}</span>
+                  <svg className={`w-4 h-4 transition-transform flex-shrink-0 ${isYearDropdownOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </button>
               
-              {isYearDropdownOpen && (
-                <div className="absolute top-full left-0 mt-2 w-32 bg-white border border-gray-200 rounded-lg shadow-xl z-50">
-                  {availableYears.map((year) => (
-                    <button
-                      key={year}
-                      onClick={() => handlePeriodChange(currentMonth, year)}
-                      className={`w-full text-left px-4 py-2 hover:bg-gray-50 transition-colors ${
-                        year === currentYear ? 'bg-gray-50 text-gray-800 font-medium' : 'text-gray-700'
-                      }`}
-                    >
-                      <div className="flex items-center justify-between">
-                        <span>{year}</span>
-                        {year === currentYearNow && (
-                          <span className="text-xs text-blue-600">{t('periodNavigator.current')}</span>
-                        )}
-                      </div>
-                    </button>
-                  ))}
-                </div>
-              )}
+                {isYearDropdownOpen && (
+                  <div className="absolute top-full left-0 mt-2 w-32 bg-white border border-gray-200 rounded-lg shadow-xl z-50">
+                    {availableYears.map((year) => (
+                      <button
+                        key={year}
+                        onClick={() => handlePeriodChange(currentMonth, year)}
+                        className={`w-full text-left px-4 py-2 hover:bg-gray-50 transition-colors ${
+                          year === currentYear ? 'bg-gray-50 text-gray-800 font-medium' : 'text-gray-700'
+                        }`}
+                      >
+                        <div className="flex items-center justify-between">
+                          <span>{year}</span>
+                          {year === currentYearNow && (
+                            <span className="text-xs text-blue-600">{t('periodNavigator.current')}</span>
+                          )}
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
           </div>
           
           {/* Gestión de Tarifas */}
-          <div className="flex items-center space-x-4">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-4">
             {/* Información de Tarifa Actual */}
-            <div className="text-right">
+            <div className="text-left sm:text-right flex-1 min-w-0">
               {selectedMonthTariff ? (
                 <div>
-                  <p className="text-sm font-medium text-green-600">{t('periodNavigator.tariffAssigned')}</p>
-                  <p className="text-xs text-gray-600">{selectedMonthTariff.company_name}</p>
+                  <p className="text-sm font-medium text-green-600 truncate">{t('periodNavigator.tariffAssigned')}</p>
+                  <p className="text-xs text-gray-600 truncate">{selectedMonthTariff.company_name}</p>
                 </div>
               ) : (
                 <div>
-                  <p className="text-sm font-medium text-orange-600">{t('periodNavigator.noTariff')}</p>
-                  <p className="text-xs text-gray-600">{t('periodNavigator.assignTariff')}</p>
+                  <p className="text-sm font-medium text-orange-600 truncate">{t('periodNavigator.noTariff')}</p>
+                  <p className="text-xs text-gray-600 truncate">{t('periodNavigator.assignTariff')}</p>
                 </div>
               )}
             </div>
@@ -220,12 +222,12 @@ export default function PeriodNavigator({
             {/* Botón de Gestión de Tarifas */}
             <button
               onClick={() => setShowTariffManager(true)}
-              className="flex items-center space-x-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium shadow-md"
+              className="flex items-center justify-center space-x-2 px-3 sm:px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium shadow-md w-full sm:w-auto text-sm sm:text-base flex-shrink-0"
             >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 100-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 100-4m0 4v2m0-6V4" />
+              <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4" />
               </svg>
-              <span>{t('periodNavigator.manageTariffs')}</span>
+              <span className="truncate">{t('periodNavigator.manageTariffs')}</span>
             </button>
           </div>
         </div>
