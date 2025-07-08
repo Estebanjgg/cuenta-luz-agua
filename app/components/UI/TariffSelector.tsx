@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { Tariff } from '../../types';
 import { useTariffs } from '../../hooks/useTariffs';
+import { useLanguage } from '../../contexts/LanguageContext';
 import TariffModal from '../Forms/TariffModal';
 import PublicTariffsModal from './PublicTariffsModal';
 
@@ -31,6 +32,7 @@ export default function TariffSelector({
     assignTariffToMonth,
     getMonthTariff
   } = useTariffs();
+  const { t } = useLanguage();
 
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isPublicModalOpen, setIsPublicModalOpen] = useState(false);
@@ -117,7 +119,7 @@ export default function TariffSelector({
 
   return (
     <div className={`bg-white rounded-lg shadow-md p-4 ${className}`}>
-      <h3 className="text-lg font-semibold text-gray-800 mb-4">Seleccionar Tarifa</h3>
+      <h3 className="text-lg font-semibold text-gray-800 mb-4">{t('tariffSelector.title')}</h3>
       
       {error && (
         <div className="bg-red-100 border border-red-400 text-red-700 px-3 py-2 rounded mb-4 text-sm">
@@ -149,7 +151,7 @@ export default function TariffSelector({
               }}
               className="text-blue-600 hover:text-blue-800 text-sm"
             >
-              Cambiar
+              {t('tariffSelector.change')}
             </button>
           </div>
         </div>
@@ -162,7 +164,7 @@ export default function TariffSelector({
           {userTariffs.length > 0 && (
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Mis Tarifas
+                {t('tariffSelector.myTariffs')}
               </label>
               <select
                 onChange={(e) => {
@@ -174,7 +176,7 @@ export default function TariffSelector({
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 defaultValue=""
               >
-                <option value="">Seleccionar una tarifa existente...</option>
+                <option value="">{t('tariffSelector.selectExisting')}</option>
                 {userTariffs.map((tariff) => (
                   <option key={tariff.id} value={tariff.id}>
                     {tariff.city}, {tariff.state} - {tariff.company_name}
@@ -194,7 +196,7 @@ export default function TariffSelector({
               }}
               className="w-full px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
-              ➕ Crear Nueva Tarifa
+              {t('tariffSelector.createNew')}
             </button>
             
             <button
@@ -205,13 +207,13 @@ export default function TariffSelector({
               }}
               className="w-full px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500"
             >
-              🌍 Ver Tarifas Públicas
+              {t('tariffSelector.viewPublic')}
             </button>
           </div>
 
           {/* Información */}
           <div className="text-xs text-gray-500 mt-3 p-2 bg-gray-50 rounded">
-            💡 <strong>Tip:</strong> Puedes crear tarifas personalizadas o usar tarifas públicas creadas por otros usuarios.
+            {t('tariffSelector.tip')}
           </div>
         </div>
       )}
@@ -221,7 +223,7 @@ export default function TariffSelector({
         isOpen={isCreateModalOpen}
         onClose={() => setIsCreateModalOpen(false)}
         onSave={handleCreateTariff}
-        title="Nueva Tarifa"
+        title={t('tariffSelector.newTariff')}
       />
 
       {/* Modal para tarifas públicas */}

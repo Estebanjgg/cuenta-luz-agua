@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { MONTHS, APP_CONFIG } from '../../constants';
 import { ValidationResult, Tariff } from '../../types';
+import { useLanguage } from '../../contexts/LanguageContext';
 import TariffManager from './TariffManager';
 
 interface PeriodNavigatorProps {
@@ -24,6 +25,7 @@ export default function PeriodNavigator({
   selectedMonthTariff,
   onTariffSelect
 }: PeriodNavigatorProps) {
+  const { t } = useLanguage();
   const [isMonthDropdownOpen, setIsMonthDropdownOpen] = useState(false);
   const [isYearDropdownOpen, setIsYearDropdownOpen] = useState(false);
   const [showNewPeriodModal, setShowNewPeriodModal] = useState(false);
@@ -45,13 +47,13 @@ export default function PeriodNavigator({
     if (isNaN(value) || value <= 0) {
       return {
         isValid: false,
-        message: 'La lectura inicial debe ser un número válido mayor a 0'
+        message: t('periodNavigator.validationErrors.invalidNumber')
       };
     }
     if (value > 999999) {
       return {
         isValid: false,
-        message: 'La lectura inicial parece demasiado alta'
+        message: t('periodNavigator.validationErrors.tooHigh')
       };
     }
     return { isValid: true };
@@ -78,7 +80,7 @@ export default function PeriodNavigator({
     const validation = validateInitialReading(initialReading);
     
     if (!validation.isValid) {
-      setError(validation.message || 'Error de validación');
+      setError(validation.message || t('periodNavigator.validationErrors.validationError'));
       return;
     }
     
@@ -118,7 +120,7 @@ export default function PeriodNavigator({
           <div className="flex items-center space-x-4">
             <div className="flex items-center space-x-2">
               <span className="text-2xl">📅</span>
-              <h2 className="text-xl font-semibold text-gray-800">Período:</h2>
+              <h2 className="text-xl font-semibold text-gray-800">{t('periodNavigator.period')}</h2>
             </div>
             
             {/* Selector de Mes */}
@@ -188,7 +190,7 @@ export default function PeriodNavigator({
                       <div className="flex items-center justify-between">
                         <span>{year}</span>
                         {year === currentYearNow && (
-                          <span className="text-xs text-blue-600">(Actual)</span>
+                          <span className="text-xs text-blue-600">{t('periodNavigator.current')}</span>
                         )}
                       </div>
                     </button>
@@ -204,13 +206,13 @@ export default function PeriodNavigator({
             <div className="text-right">
               {selectedMonthTariff ? (
                 <div>
-                  <p className="text-sm font-medium text-green-600">✓ Tarifa asignada</p>
+                  <p className="text-sm font-medium text-green-600">{t('periodNavigator.tariffAssigned')}</p>
                   <p className="text-xs text-gray-600">{selectedMonthTariff.company_name}</p>
                 </div>
               ) : (
                 <div>
-                  <p className="text-sm font-medium text-orange-600">⚠ Sin tarifa</p>
-                  <p className="text-xs text-gray-600">Asignar tarifa</p>
+                  <p className="text-sm font-medium text-orange-600">{t('periodNavigator.noTariff')}</p>
+                  <p className="text-xs text-gray-600">{t('periodNavigator.assignTariff')}</p>
                 </div>
               )}
             </div>
@@ -223,7 +225,7 @@ export default function PeriodNavigator({
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 100-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 100-4m0 4v2m0-6V4" />
               </svg>
-              <span>Gestionar Tarifas</span>
+              <span>{t('periodNavigator.manageTariffs')}</span>
             </button>
           </div>
         </div>
@@ -241,7 +243,7 @@ export default function PeriodNavigator({
               </div>
               <div>
                 <h3 className="text-lg font-semibold text-gray-800">
-                  Iniciar Nuevo Período
+                  {t('periodNavigator.newPeriodTitle')}
                 </h3>
                 <p className="text-sm text-gray-600">
                   {selectedMonth} {selectedYear}
@@ -251,7 +253,7 @@ export default function PeriodNavigator({
             
             <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 mb-4">
               <p className="text-sm text-yellow-800">
-                <strong>📋 Importante:</strong> Vas a iniciar un nuevo período de mediciones. Necesitamos la lectura actual de tu medidor para comenzar.
+                <strong>{t('periodNavigator.importantNote')}</strong> {t('periodNavigator.importantMessage')}
               </p>
             </div>
             
@@ -261,7 +263,7 @@ export default function PeriodNavigator({
                   <svg className="w-4 h-4 mr-2 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
                   </svg>
-                  Lectura inicial del medidor (kWh):
+                  {t('periodNavigator.initialReadingLabel')}
                 </label>
                 <input
                   type="number"
@@ -270,7 +272,7 @@ export default function PeriodNavigator({
                   className={`w-full p-3 border rounded-lg focus:ring-2 transition-all duration-200 ${
                     error ? 'border-red-400 focus:border-red-500 focus:ring-red-200' : 'border-gray-300 focus:border-blue-500 focus:ring-blue-200'
                   }`}
-                  placeholder="Ej: 65788"
+                  placeholder={t('periodNavigator.placeholder')}
                   step="1"
                 />
                 {error && (
@@ -297,7 +299,7 @@ export default function PeriodNavigator({
                 <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                 </svg>
-                Cancelar
+                {t('periodNavigator.cancel')}
               </button>
               <button
                 onClick={handleSubmitNewPeriod}
@@ -311,7 +313,7 @@ export default function PeriodNavigator({
                 <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                 </svg>
-                Iniciar Período
+                {t('periodNavigator.startPeriod')}
               </button>
             </div>
           </div>
@@ -331,15 +333,15 @@ export default function PeriodNavigator({
             <div className="p-6">
               <div className="flex justify-between items-center mb-4">
                 <div>
-                  <h2 className="text-xl font-bold text-gray-800">Gestión de Tarifas - {currentMonth} {currentYear}</h2>
+                  <h2 className="text-xl font-bold text-gray-800">{t('periodNavigator.tariffManagementTitle')} - {currentMonth} {currentYear}</h2>
                   {selectedMonthTariff && (
                     <p className="text-sm text-green-600 mt-1">
-                      ✓ Tarifa actual: {selectedMonthTariff.city}, {selectedMonthTariff.state} - {selectedMonthTariff.company_name}
+                      {t('periodNavigator.currentTariff')} {selectedMonthTariff.city}, {selectedMonthTariff.state} - {selectedMonthTariff.company_name}
                     </p>
                   )}
                   {!selectedMonthTariff && (
                     <p className="text-sm text-orange-600 mt-1">
-                      ⚠ No hay tarifa asignada para este mes
+                      {t('periodNavigator.noTariffAssigned')}
                     </p>
                   )}
                 </div>
@@ -368,13 +370,13 @@ export default function PeriodNavigator({
                   onClick={() => setShowTariffManager(false)}
                   className="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500"
                 >
-                  Cancelar
+                  {t('periodNavigator.cancel')}
                 </button>
                 <button
                   onClick={() => setShowTariffManager(false)}
                   className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
-                  Confirmar Selección
+                  {t('periodNavigator.confirmSelection')}
                 </button>
               </div>
             </div>

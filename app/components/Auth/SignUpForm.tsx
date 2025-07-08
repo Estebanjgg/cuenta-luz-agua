@@ -2,12 +2,14 @@
 
 import React, { useState } from 'react'
 import { useAuth } from '../../contexts/AuthContext'
+import { useLanguage } from '../../contexts/LanguageContext'
 
 interface SignUpFormProps {
   onToggleMode: () => void
 }
 
 export const SignUpForm: React.FC<SignUpFormProps> = ({ onToggleMode }) => {
+  const { t } = useLanguage();
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
@@ -23,13 +25,13 @@ export const SignUpForm: React.FC<SignUpFormProps> = ({ onToggleMode }) => {
     setSuccess('')
 
     if (password !== confirmPassword) {
-      setError('Las contraseñas no coinciden')
+      setError(t('signUpForm.passwordMismatch'))
       setLoading(false)
       return
     }
 
     if (password.length < 6) {
-      setError('La contraseña debe tener al menos 6 caracteres')
+      setError(t('signUpForm.passwordTooShort'))
       setLoading(false)
       return
     }
@@ -39,7 +41,7 @@ export const SignUpForm: React.FC<SignUpFormProps> = ({ onToggleMode }) => {
     if (error) {
       setError(error.message)
     } else {
-      setSuccess('¡Cuenta creada exitosamente! Revisa tu email para confirmar tu cuenta.')
+      setSuccess(t('signUpForm.accountCreated'))
     }
     
     setLoading(false)
@@ -48,13 +50,13 @@ export const SignUpForm: React.FC<SignUpFormProps> = ({ onToggleMode }) => {
   return (
     <div className="max-w-md mx-auto bg-white p-8 rounded-lg shadow-md">
       <h2 className="text-2xl font-bold text-center mb-6 text-gray-800">
-        Crear Cuenta
+        {t('signUpForm.title')}
       </h2>
       
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
           <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-            Correo Electrónico
+            {t('signUpForm.email')}
           </label>
           <input
             type="email"
@@ -63,13 +65,13 @@ export const SignUpForm: React.FC<SignUpFormProps> = ({ onToggleMode }) => {
             onChange={(e) => setEmail(e.target.value)}
             required
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            placeholder="tu@email.com"
+            placeholder={t('signUpForm.emailPlaceholder')}
           />
         </div>
         
         <div>
           <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
-            Contraseña
+            {t('signUpForm.password')}
           </label>
           <input
             type="password"
@@ -78,13 +80,13 @@ export const SignUpForm: React.FC<SignUpFormProps> = ({ onToggleMode }) => {
             onChange={(e) => setPassword(e.target.value)}
             required
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            placeholder="••••••••"
+            placeholder={t('signUpForm.passwordPlaceholder')}
           />
         </div>
         
         <div>
           <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-1">
-            Confirmar Contraseña
+            {t('signUpForm.confirmPassword')}
           </label>
           <input
             type="password"
@@ -114,18 +116,18 @@ export const SignUpForm: React.FC<SignUpFormProps> = ({ onToggleMode }) => {
           disabled={loading}
           className="w-full bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 disabled:opacity-50"
         >
-          {loading ? 'Creando cuenta...' : 'Crear Cuenta'}
+          {loading ? t('signUpForm.creatingAccount') : t('signUpForm.createAccount')}
         </button>
       </form>
       
       <div className="mt-6 text-center">
         <p className="text-sm text-gray-600">
-          ¿Ya tienes una cuenta?{' '}
+          {t('signUpForm.haveAccount')}{' '}
           <button
             onClick={onToggleMode}
             className="text-blue-600 hover:text-blue-800 font-medium"
           >
-            Inicia sesión aquí
+            {t('signUpForm.signInHere')}
           </button>
         </p>
       </div>

@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { Reading } from '../../types';
 import { formatNumber, formatDate, calculateConsumptionBetween } from '../../utils/calculations';
+import { useLanguage } from '../../contexts/LanguageContext';
 
 interface ReadingsListProps {
   readings: Reading[];
@@ -11,6 +12,7 @@ interface ReadingsListProps {
 }
 
 export default function ReadingsList({ readings, initialReading, onDeleteReading }: ReadingsListProps) {
+  const { t } = useLanguage();
   const [monthStartTime, setMonthStartTime] = useState(0);
 
   // Establecer el tiempo de inicio del mes solo en el cliente
@@ -23,12 +25,12 @@ export default function ReadingsList({ readings, initialReading, onDeleteReading
     return (
       <div className="bg-white rounded-xl shadow-lg p-6">
         <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center">
-          📋 Historial de Lecturas
+          📋 {t('readingsHistory')}
         </h2>
         <div className="text-center py-8">
           <div className="text-6xl mb-4">📝</div>
-          <h3 className="text-lg font-semibold text-gray-600 mb-2">No hay lecturas registradas</h3>
-          <p className="text-gray-500">Las lecturas que agregues aparecerán aquí</p>
+          <h3 className="text-lg font-semibold text-gray-600 mb-2">{t('noReadingsRegistered')}</h3>
+          <p className="text-gray-500">{t('readingsWillAppear')}</p>
         </div>
       </div>
     );
@@ -60,10 +62,10 @@ export default function ReadingsList({ readings, initialReading, onDeleteReading
     <div className="bg-white rounded-xl shadow-lg p-6">
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-xl font-bold text-gray-800 flex items-center">
-          📋 Historial de Lecturas
+          📋 {t('readingsHistory')}
         </h2>
         <div className="text-sm text-gray-600">
-          {readings.length} lectura{readings.length !== 1 ? 's' : ''} registrada{readings.length !== 1 ? 's' : ''}
+          {readings.length} {readings.length === 1 ? t('readingsRegistered') : t('readingsRegisteredPlural')}
         </div>
       </div>
 
@@ -85,7 +87,7 @@ export default function ReadingsList({ readings, initialReading, onDeleteReading
                           {formatDate(reading.date)}
                         </p>
                         <p className="text-sm text-gray-500">
-                          Lectura #{readings.length - index}
+                          {t('readingNumber')}{readings.length - index}
                         </p>
                       </div>
                     </div>
@@ -97,7 +99,7 @@ export default function ReadingsList({ readings, initialReading, onDeleteReading
                           {formatNumber(reading.value)} kWh
                         </p>
                         <p className="text-sm text-gray-500">
-                          Lectura del medidor
+                          {t('meterReadingLabel')}
                         </p>
                       </div>
                     </div>
@@ -105,17 +107,17 @@ export default function ReadingsList({ readings, initialReading, onDeleteReading
                   
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mt-3">
                     <div className={`px-3 py-2 rounded-lg ${consumptionColorClass}`}>
-                      <p className="text-xs font-medium opacity-75">Consumo desde anterior</p>
+                      <p className="text-xs font-medium opacity-75">{t('consumptionSincePrevious')}</p>
                       <p className="font-bold">{formatNumber(consumptionSincePrevious)} kWh</p>
                     </div>
                     
                     <div className="px-3 py-2 rounded-lg bg-blue-50 text-blue-600">
-                      <p className="text-xs font-medium opacity-75">Consumo total del mes</p>
+                      <p className="text-xs font-medium opacity-75">{t('totalMonthConsumption')}</p>
                       <p className="font-bold">{formatNumber(totalConsumption)} kWh</p>
                     </div>
                     
                     <div className="px-3 py-2 rounded-lg bg-gray-50 text-gray-600">
-                      <p className="text-xs font-medium opacity-75">Días desde inicio</p>
+                      <p className="text-xs font-medium opacity-75">{t('daysSinceStart')}</p>
                       <p className="font-bold">
                         {monthStartTime > 0 ? Math.ceil((new Date(reading.date).getTime() - monthStartTime) / (1000 * 60 * 60 * 24)) : '-'}
                       </p>
@@ -132,7 +134,7 @@ export default function ReadingsList({ readings, initialReading, onDeleteReading
                     }
                   }}
                   className="ml-4 p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
-                  title="Eliminar lectura"
+                  title={t('deleteReading')}
                 >
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -148,21 +150,21 @@ export default function ReadingsList({ readings, initialReading, onDeleteReading
       <div className="mt-6 pt-4 border-t border-gray-200">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
           <div className="bg-blue-50 rounded-lg p-3">
-            <p className="text-sm text-blue-600 font-medium">Primera Lectura</p>
+            <p className="text-sm text-blue-600 font-medium">{t('firstReading')}</p>
             <p className="text-lg font-bold text-blue-800">
               {formatNumber(Math.min(...readings.map(r => r.value)))} kWh
             </p>
           </div>
           
           <div className="bg-green-50 rounded-lg p-3">
-            <p className="text-sm text-green-600 font-medium">Última Lectura</p>
+            <p className="text-sm text-green-600 font-medium">{t('lastReading')}</p>
             <p className="text-lg font-bold text-green-800">
               {formatNumber(Math.max(...readings.map(r => r.value)))} kWh
             </p>
           </div>
           
           <div className="bg-purple-50 rounded-lg p-3">
-            <p className="text-sm text-purple-600 font-medium">Consumo Total</p>
+            <p className="text-sm text-purple-600 font-medium">{t('totalConsumption')}</p>
             <p className="text-lg font-bold text-purple-800">
               {formatNumber(Math.max(...readings.map(r => r.value)) - initialReading)} kWh
             </p>

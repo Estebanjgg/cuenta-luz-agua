@@ -3,11 +3,11 @@
 import { useState, useEffect } from 'react';
 import { MonthData, Reading, TariffConfig, ConsumptionStats, ValidationResult, TariffFlagType } from '../types';
 import { calculateConsumptionStats, validateReading } from '../utils/calculations';
-import { STORAGE_KEY, DEFAULT_TARIFF } from '../constants';
+import { STORAGE_KEY, DEFAULT_TARIFF, APP_CONFIG } from '../constants';
 
 const DEFAULT_MONTH_DATA: MonthData = {
-  month: 'julio',
-  year: 2025,
+  month: APP_CONFIG.defaultMonth,
+  year: APP_CONFIG.defaultYear,
   initialReading: 65788,
   readings: [],
   totalConsumption: 0,
@@ -20,7 +20,7 @@ type MonthsData = Record<string, MonthData>;
 
 export const useEnergyData = () => {
   const [monthsData, setMonthsData] = useState<MonthsData>({});
-  const [currentMonthKey, setCurrentMonthKey] = useState<string>('julio-2025');
+  const [currentMonthKey, setCurrentMonthKey] = useState<string>(`${APP_CONFIG.defaultMonth}-${APP_CONFIG.defaultYear}`);
   const [tariff, setTariff] = useState<TariffConfig>(DEFAULT_TARIFF);
   const [isLoading, setIsLoading] = useState(true);
   const [isClient, setIsClient] = useState(false);
@@ -53,7 +53,7 @@ export const useEnergyData = () => {
           } else {
             // Formato nuevo (múltiples meses)
             setMonthsData(parsedData.monthsData || {});
-            setCurrentMonthKey(parsedData.currentMonthKey || 'julio-2025');
+            setCurrentMonthKey(parsedData.currentMonthKey || `${APP_CONFIG.defaultMonth}-${APP_CONFIG.defaultYear}`);
           }
         } catch (error) {
           console.error('Error loading saved data:', error);

@@ -1,6 +1,7 @@
 'use client';
 
 import { useAuth } from './contexts/AuthContext';
+import { useLanguage } from './contexts/LanguageContext';
 import { useSupabaseEnergyData } from './hooks/useSupabaseEnergyData';
 import { 
   AuthComponent,
@@ -22,6 +23,7 @@ import { Tariff } from './types';
 
 export default function Home() {
   const { user, loading: authLoading, signOut } = useAuth();
+  const { t } = useLanguage();
   const {
     currentMonth,
     isLoading,
@@ -67,7 +69,7 @@ export default function Home() {
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Cargando datos...</p>
+          <p className="text-gray-600">{t('loading')}</p>
         </div>
       </div>
     );
@@ -146,8 +148,8 @@ export default function Home() {
           <div className="bg-white rounded-xl shadow-lg p-6 mt-6">
             <div className="flex justify-between items-center">
               <div>
-                <h3 className="text-lg font-semibold text-gray-800">Acciones del Mes</h3>
-                <p className="text-sm text-gray-600">Reinicia todas las lecturas del mes actual</p>
+                <h3 className="text-lg font-semibold text-gray-800">{t('actions.resetMonth')}</h3>
+                <p className="text-sm text-gray-600">{t('actions.resetMonthDescription')}</p>
               </div>
               <button
                 onClick={resetMonth}
@@ -156,7 +158,7 @@ export default function Home() {
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                 </svg>
-                <span>Reiniciar Mes</span>
+                <span>{t('actions.resetMonth')}</span>
               </button>
             </div>
           </div>
@@ -164,8 +166,8 @@ export default function Home() {
 
         {/* Footer */}
         <div className="text-center mt-8 text-gray-500 text-sm">
-          <p>💡 Controla tu consumo eléctrico y ahorra en tu factura</p>
-          <p className="mt-1">Desarrollado con Next.js, TypeScript y Tailwind CSS</p>
+          <p>{t('footer.message')}</p>
+          <p className="mt-1">{t('footer.tech')}</p>
         </div>
       </div>
       

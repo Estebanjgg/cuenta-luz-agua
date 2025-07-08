@@ -5,6 +5,7 @@ import { createSupabaseBrowserClient } from '../lib/supabase'
 import { useAuth } from '../contexts/AuthContext'
 import { MonthData, TariffConfig, Reading, ConsumptionStats, ValidationResult, TariffFlagType } from '../types'
 import { validateReading, calculateConsumptionStats } from '../utils/calculations'
+import { APP_CONFIG } from '../constants'
 
 const DEFAULT_TARIFF: TariffConfig = {
   pricePerKwh: 0.795,
@@ -12,8 +13,8 @@ const DEFAULT_TARIFF: TariffConfig = {
 }
 
 const DEFAULT_MONTH_DATA: MonthData = {
-  month: 'enero',
-  year: 2025,
+  month: APP_CONFIG.defaultMonth,
+  year: APP_CONFIG.defaultYear,
   initialReading: 0,
   readings: [],
   totalConsumption: 0,
@@ -24,7 +25,7 @@ const DEFAULT_MONTH_DATA: MonthData = {
 export const useSupabaseEnergyData = () => {
   const { user } = useAuth()
   const [monthsData, setMonthsData] = useState<Record<string, MonthData>>({})
-  const [currentMonthKey, setCurrentMonthKey] = useState<string>('enero-2025')
+  const [currentMonthKey, setCurrentMonthKey] = useState<string>(`${APP_CONFIG.defaultMonth}-${APP_CONFIG.defaultYear}`)
   const [tariff, setTariff] = useState<TariffConfig>(DEFAULT_TARIFF)
   const [isLoading, setIsLoading] = useState(true)
   const supabase = createSupabaseBrowserClient()

@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useAutoLogout } from '../../hooks/useAutoLogout';
+import { useLanguage } from '../../contexts/LanguageContext';
 
 interface SessionStatusProps {
   showInProduction?: boolean;
@@ -17,6 +18,7 @@ export default function SessionStatus({
 }: SessionStatusProps) {
   const { user } = useAuth();
   const { getTimeUntilLogout, extendSession } = useAutoLogout();
+  const { t } = useLanguage();
   const [timeLeft, setTimeLeft] = useState(0);
   const [isVisible, setIsVisible] = useState(false);
 
@@ -96,7 +98,7 @@ export default function SessionStatus({
           
           {/* Tooltip */}
           <div className="absolute bottom-full mb-2 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-xs rounded py-1 px-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap">
-            Tiempo hasta auto-logout
+            {t('sessionStatus.autoLogoutTooltip')}
             <div className="absolute top-full left-1/2 transform -translate-x-1/2 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-800"></div>
           </div>
         </div>
@@ -109,20 +111,20 @@ export default function SessionStatus({
       <div className="bg-white rounded-lg shadow-lg border border-gray-200 p-3 min-w-[200px]">
         {/* Header */}
         <div className="flex items-center justify-between mb-2">
-          <h3 className="text-sm font-semibold text-gray-700">Estado de Sesión</h3>
+          <h3 className="text-sm font-semibold text-gray-700">{t('sessionStatus.title')}</h3>
           <div className={`w-3 h-3 rounded-full ${getStatusColor()}`}></div>
         </div>
         
         {/* Información del usuario */}
         <div className="mb-2">
           <p className="text-xs text-gray-500 truncate">
-            {user?.email || 'Usuario autenticado'}
+            {user?.email || t('sessionStatus.authenticatedUser')}
           </p>
         </div>
         
         {/* Tiempo restante */}
         <div className="mb-3">
-          <p className="text-xs text-gray-600 mb-1">Tiempo restante:</p>
+          <p className="text-xs text-gray-600 mb-1">{t('sessionStatus.timeRemaining')}</p>
           <p className="text-lg font-mono font-bold text-gray-800">
             {formatTime(timeLeft)}
           </p>
@@ -133,13 +135,13 @@ export default function SessionStatus({
           onClick={extendSession}
           className="w-full bg-blue-500 hover:bg-blue-600 text-white text-xs font-medium py-1.5 px-3 rounded transition-colors duration-200"
         >
-          Extender Sesión
+          {t('sessionStatus.extendSession')}
         </button>
         
         {/* Nota de desarrollo */}
         {process.env.NODE_ENV === 'development' && (
           <p className="text-xs text-gray-400 mt-2 text-center">
-            Solo visible en desarrollo
+            {t('sessionStatus.onlyInDevelopment')}
           </p>
         )}
       </div>
