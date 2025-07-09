@@ -12,10 +12,10 @@ if (typeof window !== 'undefined') {
 }
 
 interface AnimatedLoginFormProps {
-  onToggleForm: () => void;
+  onToggleMode: () => void;
 }
 
-export function AnimatedLoginForm({ onToggleForm }: AnimatedLoginFormProps) {
+export function AnimatedLoginForm({ onToggleMode }: AnimatedLoginFormProps) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -249,8 +249,8 @@ export function AnimatedLoginForm({ onToggleForm }: AnimatedLoginFormProps) {
         if (instance.eyesCovered || !armL || !armR || !bodyBG || !bodyBGchanged) return;
         gsap.killTweensOf([armL, armR]);
         gsap.set([armL, armR], { visibility: 'visible' });
-        gsap.to(armL, { duration: 0.45, x: -93, y: 10, rotation: 0, ease: 'quad.out' });
-        gsap.to(armR, { duration: 0.45, x: -93, y: 10, rotation: 0, ease: 'quad.out', delay: 0.1 });
+        gsap.to(armL, { duration: 0.6, x: -93, y: 2, rotation: 0, ease: 'back.out(1.7)' });
+        gsap.to(armR, { duration: 0.6, x: 93, y: 2, rotation: 0, ease: 'back.out(1.7)', delay: 0.05 });
         gsap.to(bodyBG, { duration: 0.45, morphSVG: bodyBGchanged, ease: 'quad.out' });
         instance.eyesCovered = true;
         stopBlinking();
@@ -259,13 +259,13 @@ export function AnimatedLoginForm({ onToggleForm }: AnimatedLoginFormProps) {
     const uncoverEyes = () => {
         if (!instance.eyesCovered || !armL || !armR || !bodyBG) return;
         gsap.killTweensOf([armL, armR]);
-        gsap.to(armL, { duration: 1.35, y: 220, rotation: 105, ease: 'quad.out' });
+        gsap.to(armL, { duration: 1.2, x: 0, y: 220, rotation: 105, ease: 'back.in(1.7)' });
         gsap.to(armR, {
-            duration: 1.35, y: 220, rotation: -105, ease: 'quad.out', delay: 0.1, onComplete: () => {
+            duration: 1.2, x: 0, y: 220, rotation: -105, ease: 'back.in(1.7)', delay: 0.05, onComplete: () => {
                 gsap.set([armL, armR], { visibility: 'hidden' });
             }
         });
-        gsap.to(bodyBG, { duration: 0.45, morphSVG: bodyBG, ease: 'quad.out' });
+        gsap.to(bodyBG, { duration: 0.6, morphSVG: bodyBG, ease: 'quad.out' });
         instance.eyesCovered = false;
         startBlinking();
     };
@@ -368,13 +368,49 @@ export function AnimatedLoginForm({ onToggleForm }: AnimatedLoginFormProps) {
         mouthCoords = { x: svgCoords.x + 100, y: svgCoords.y + 100 };
         emailScrollMax = email.scrollWidth;
 
-        if (armL && armR && mouth) {
+        // Configurar estado inicial de los brazos
+        if (armL && armR) {
           gsap.set(armL, { x: -93, y: 220, rotation: 105, transformOrigin: 'top left', visibility: 'hidden' });
           gsap.set(armR, { x: -93, y: 220, rotation: -105, transformOrigin: 'top right', visibility: 'hidden' });
+        }
+        
+        // Configurar estado inicial de otros elementos
+        if (mouth) {
           gsap.set(mouth, { transformOrigin: 'center center' });
         }
+        
+        // Configurar estado inicial de los ojos
+        if (eyeL && eyeR) {
+          gsap.set([eyeL, eyeR], {
+            x: 0,
+            y: 0,
+            scaleX: 1,
+            scaleY: 1,
+            transformOrigin: 'center center'
+          });
+        }
+        
+        // Configurar estado inicial de la cara
+        if (nose && chin && face && eyebrow && outerEarL && outerEarR && earHairL && earHairR && hair) {
+          gsap.set([nose, chin, face, eyebrow, outerEarL, outerEarR, earHairL, earHairR, hair], {
+            x: 0,
+            y: 0,
+            scaleX: 1,
+            scaleY: 1,
+            rotation: 0,
+            skewX: 0,
+            transformOrigin: 'center center'
+          });
+        }
+        
+        // Configurar estado inicial de variables de instancia
+        instance.mouthStatus = "small";
+        instance.eyeScale = 1;
+        instance.eyesCovered = false;
+        instance.activeElement = null;
 
-        startBlinking();
+        // Inicializar parpadeo con delay
+        startBlinking(3);
 
         email.addEventListener('focus', onEmailFocus);
         email.addEventListener('blur', onEmailBlur);
@@ -472,7 +508,7 @@ export function AnimatedLoginForm({ onToggleForm }: AnimatedLoginFormProps) {
                 </g>
                 <path ref={chinRef} className="chin" d="M84.1 121.6c2.7 2.9 6.1 5.4 9.8 7.5l.9-4.5c2.9 2.5 6.3 4.8 10.2 6.5 0-1.9-.1-3.9-.2-5.8 3 1.2 6.2 2 9.7 2.5-.3-2.1-.7-4.1-1.2-6.1" fill="none" stroke="#3a5e77" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
                 <path ref={faceRef} className="face" fill="#DDF1FA" d="M134.5,46v35.5c0,21.815-15.446,39.5-34.5,39.5s-34.5-17.685-34.5-39.5V46" />
-                <path ref={hairRef} className="hair" fill="#FFFFFF" stroke="#3A5E77" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" d="M81.457,27.929 c1.755-4.084,5.51-8.262,11.253-11.77c0.979,2.565,1.883,5.14,2.712,7.723c3.162-4.265,8.626-8.27,16.272-11.235 c-0.737,3.293-1.588,6.573-2.554,9.837c4.857-2.116,11.049-3.64,18.428-4.156c-2.403,3.23-5.021,6.391-7.852,9.474" />
+                <path ref={hairRef} className="hair" fill="#FFFFFF" stroke="#3A5E77" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" d="M81.457,27.929 c1.755-4.084,5.51-8.262,11.253-11.77c0.979,2.565,1.883,5.14,2.712,7.723c3.162-4.265,8.626-8.27,16.272-11.235 c-0.737,3.293-1.588,6.573-2.554,9.837c4.857-2.116,11.049-3.64,18.428-4.156c-2.403,3.23-5.021,6.391-7.852,9.474" />
                 <g ref={eyebrowRef} className="eyebrow">
                     <path fill="#FFFFFF" stroke="#3A5E77" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" d="M63.56,55.102 c6.243,5.624,13.38,10.614,21.296,14.738c2.071-2.785,4.01-5.626,5.816-8.515c4.537,3.785,9.583,7.263,15.097,10.329 c1.197-3.043,2.287-6.104,3.267-9.179c4.087,2.004,8.427,3.761,12.996,5.226c0.545-3.348,0.986-6.696,1.322-10.037 c4.913-0.481,9.857-1.34,14.787-2.599" />
                 </g>
@@ -610,7 +646,7 @@ export function AnimatedLoginForm({ onToggleForm }: AnimatedLoginFormProps) {
             <div className="text-center">
               <button
                 type="button"
-                onClick={onToggleForm}
+                onClick={onToggleMode}
                 className="text-blue-600 hover:text-blue-800 text-sm font-medium transition-colors duration-200 underline"
               >
                 {t('auth.noAccount')} {t('auth.signUp')}
