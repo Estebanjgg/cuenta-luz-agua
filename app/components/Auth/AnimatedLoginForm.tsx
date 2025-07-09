@@ -461,13 +461,27 @@ export function AnimatedLoginForm({ onToggleMode }: AnimatedLoginFormProps) {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-100 to-blue-100 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8">
-        <div className="bg-white rounded-2xl shadow-2xl p-8 border border-gray-100">
+    <div className="min-h-screen bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-800 flex items-center justify-center p-4">
+      <div className="w-full max-w-lg">
+        {/* Header Section */}
+        <div className="text-center mb-8">
+          <div className="inline-block p-3 bg-white/10 backdrop-blur-sm rounded-2xl mb-6">
+            <h1 className="text-4xl font-bold bg-gradient-to-r from-white to-blue-200 bg-clip-text text-transparent">
+              Control de Energía
+            </h1>
+            <p className="text-blue-100 text-lg mt-2 font-medium">
+              Gestiona tu consumo eléctrico de manera inteligente
+            </p>
+          </div>
+        </div>
+
+        {/* Main Card */}
+        <div className="bg-white/95 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 overflow-hidden">
           {/* Animated Yeti Avatar */}
-          <div className="flex justify-center mb-8">
-            <div ref={svgContainerRef} className="relative w-48 h-48 rounded-full border-4 border-blue-700 overflow-hidden bg-gradient-to-b from-sky-200 to-blue-300">
-              <svg
+          <div className="bg-gradient-to-b from-blue-50 to-indigo-100 py-8 px-6">
+            <div className="flex justify-center">
+              <div ref={svgContainerRef} className="relative w-40 h-40 rounded-full border-4 border-indigo-600 overflow-hidden bg-gradient-to-b from-sky-200 to-blue-300 shadow-lg">
+                <svg
                 viewBox="0 0 200 200"
                 className="w-full h-full"
                 style={{ transform: 'scale(1.05)' }}
@@ -553,50 +567,80 @@ export function AnimatedLoginForm({ onToggleMode }: AnimatedLoginFormProps) {
                     <path fill="#DDF1FA" stroke="#3A5E77" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" d="M39.2,77.5l-19.4-5.2c-2.7-0.7-5.4,0.9-6.1,3.5v0c-0.7,2.7,0.9,5.4,3.5,6.1l18.3,4.9" />
                 </g>
               </svg>
+              </div>
             </div>
           </div>
 
           {/* Form */}
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="relative">
-              <label htmlFor="email" className="block text-sm font-bold text-blue-700 mb-2">
-                {t('auth.email')}
-              </label>
-              <input
-                ref={emailRef}
-                id="email"
-                name="email"
-                type="email"
-                autoComplete="email"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="appearance-none relative block w-full px-4 py-3 border-2 border-blue-600 placeholder-gray-400 text-gray-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:z-10 text-lg font-semibold transition-all duration-200 bg-blue-50"
-                placeholder="email@domain.com"
-              />
+          <div className="p-8">
+            <div className="text-center mb-6">
+              <h2 className="text-2xl font-bold text-gray-800 mb-2">Iniciar Sesión</h2>
+              <p className="text-gray-600">Accede a tu panel de control energético</p>
             </div>
-
-            <div className="relative">
-              <label htmlFor="password" className="block text-sm font-bold text-blue-700 mb-2">
-                {t('auth.password')}
-              </label>
-              <div className="relative">
-                <input
-                  ref={passwordRef}
-                  id="password"
-                  name="password"
-                  type={showPassword ? 'text' : 'password'}
-                  autoComplete="current-password"
-                  required
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="appearance-none relative block w-full px-4 py-3 border-2 border-blue-600 placeholder-gray-400 text-gray-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:z-10 text-lg font-semibold transition-all duration-200 bg-blue-50"
-                  placeholder={t('auth.password')}
-                />
-                <label className="absolute top-1 right-0 pr-3 flex items-center text-blue-600 hover:text-blue-800 transition-colors duration-200 cursor-pointer">
-                  <span className="text-sm font-medium mr-2">
-                    {showPassword ? t('auth.hide') : t('auth.show')}
+            
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <div className="relative group">
+                <label htmlFor="email" className="block text-sm font-semibold text-gray-700 mb-3">
+                  <span className="flex items-center gap-2">
+                    <svg className="w-4 h-4 text-indigo-600" fill="currentColor" viewBox="0 0 20 20">
+                      <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"/>
+                      <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"/>
+                    </svg>
+                    Email
                   </span>
+                </label>
+                <input
+                  ref={emailRef}
+                  id="email"
+                  name="email"
+                  type="email"
+                  autoComplete="email"
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="w-full px-4 py-4 bg-gray-50 border-2 border-gray-200 rounded-xl text-gray-900 placeholder-gray-500 focus:outline-none focus:border-indigo-500 focus:bg-white transition-all duration-300 text-lg group-hover:border-gray-300"
+                  placeholder="tu@email.com"
+                />
+              </div>
+
+              <div className="relative group">
+                <label htmlFor="password" className="block text-sm font-semibold text-gray-700 mb-3">
+                  <span className="flex items-center gap-2">
+                    <svg className="w-4 h-4 text-indigo-600" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd"/>
+                    </svg>
+                    Contraseña
+                  </span>
+                </label>
+                <div className="relative">
+                  <input
+                    ref={passwordRef}
+                    id="password"
+                    name="password"
+                    type={showPassword ? 'text' : 'password'}
+                    autoComplete="current-password"
+                    required
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="w-full px-4 py-4 bg-gray-50 border-2 border-gray-200 rounded-xl text-gray-900 placeholder-gray-500 focus:outline-none focus:border-indigo-500 focus:bg-white transition-all duration-300 text-lg group-hover:border-gray-300 pr-12"
+                    placeholder="Tu contraseña"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-indigo-600 transition-colors duration-200"
+                  >
+                    {showPassword ? (
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L3 3m6.878 6.878L21 21"/>
+                      </svg>
+                    ) : (
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                      </svg>
+                    )}
+                  </button>
                   <input
                     ref={showPasswordCheckRef}
                     type="checkbox"
@@ -604,55 +648,65 @@ export function AnimatedLoginForm({ onToggleMode }: AnimatedLoginFormProps) {
                     onChange={() => setShowPassword(!showPassword)}
                     className="sr-only"
                   />
-                  <div className={`w-5 h-5 border-2 border-blue-600 rounded transition-all duration-200 ${
-                    showPassword ? 'bg-blue-600' : 'bg-blue-50'
-                  }`}>
-                    {showPassword && (
-                      <svg className="w-3 h-3 text-white absolute top-0.5 left-0.5" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                </div>
+              </div>
+              {error && (
+                <div className="bg-red-50 border-l-4 border-red-400 p-4 rounded-lg">
+                  <div className="flex">
+                    <div className="flex-shrink-0">
+                      <svg className="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd"/>
                       </svg>
-                    )}
+                    </div>
+                    <div className="ml-3">
+                      <p className="text-sm text-red-700 font-medium">{error}</p>
+                    </div>
                   </div>
-                </label>
-              </div>
-            </div>
-        
-            {error && (
-              <div className="text-red-600 text-sm text-center bg-red-50 p-3 rounded-lg border border-red-200">
-                {error}
-              </div>
-            )}
+                </div>
+              )}
 
-            <div>
               <button
                 type="submit"
                 disabled={loading}
-                className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-lg font-semibold rounded-lg text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 transform hover:scale-105 shadow-lg"
+                className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-bold py-4 px-6 rounded-xl transition-all duration-300 transform hover:scale-105 hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none text-lg"
               >
                 {loading ? (
-                  <div className="flex items-center">
+                  <div className="flex items-center justify-center">
                     <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                       <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                     </svg>
-                    {t('auth.signingIn')}
+                    Iniciando sesión...
                   </div>
                 ) : (
-                  t('auth.signIn')
+                  <span className="flex items-center justify-center gap-2">
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/>
+                    </svg>
+                    Iniciar Sesión
+                  </span>
                 )}
               </button>
-            </div>
 
-            <div className="text-center">
-              <button
-                type="button"
-                onClick={onToggleMode}
-                className="text-blue-600 hover:text-blue-800 text-sm font-medium transition-colors duration-200 underline"
-              >
-                {t('auth.noAccount')} {t('auth.signUp')}
-              </button>
-            </div>
-          </form>
+              <div className="text-center pt-4">
+                <p className="text-gray-600 text-sm mb-3">¿No tienes una cuenta?</p>
+                <button
+                  type="button"
+                  onClick={onToggleMode}
+                  className="text-indigo-600 hover:text-indigo-800 font-semibold transition-colors duration-200 hover:underline"
+                >
+                  Crear cuenta nueva
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+        
+        {/* Footer */}
+        <div className="text-center mt-8">
+          <p className="text-blue-200 text-sm">
+            © 2024 Control de Energía. Todos los derechos reservados.
+          </p>
         </div>
       </div>
     </div>
