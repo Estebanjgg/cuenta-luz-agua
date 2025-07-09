@@ -20,14 +20,23 @@ const ANEEL_BANDEIRA_VALUES = {
   red_2: 0.07877  // Roja Nivel 2: R$ 7,877/100 kWh → R$ 0,07877/kWh
 };
 
+// Valores predeterminados para las banderas tarifarias
+const DEFAULT_TARIFF_VALUES = {
+  base: 0.795, // Tarifa base
+  green: 0.795, // 🟢 Bandera Verde (Tarifa Base)
+  yellow: 0.8139, // 🟡 Bandera Amarilla (Base + R$ 0.01885/kWh)
+  red_1: 0.8396, // 🔴 Bandera Roja Nivel 1 (Base + R$ 0.04463/kWh)
+  red_2: 0.8738  // 🔴 Bandera Roja Nivel 2 (Base + R$ 0.07877/kWh)
+};
+
 const initialFormData: TariffFormData = {
   city: '',
   state: '',
   company_name: '',
-  price_per_kwh_green: 0.7950, // Valor base típico + bandeira verde (0)
-  price_per_kwh_yellow: 0.7950 + ANEEL_BANDEIRA_VALUES.yellow,
-  price_per_kwh_red_1: 0.7950 + ANEEL_BANDEIRA_VALUES.red_1,
-  price_per_kwh_red_2: 0.7950 + ANEEL_BANDEIRA_VALUES.red_2,
+  price_per_kwh_green: DEFAULT_TARIFF_VALUES.green,
+  price_per_kwh_yellow: DEFAULT_TARIFF_VALUES.yellow,
+  price_per_kwh_red_1: DEFAULT_TARIFF_VALUES.red_1,
+  price_per_kwh_red_2: DEFAULT_TARIFF_VALUES.red_2,
   additional_fees: 0,
   public_lighting_fee: 0,
   is_public: false
@@ -44,6 +53,7 @@ export default function TariffModal({
   const [formData, setFormData] = useState<TariffFormData>(initialFormData);
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [isFlagEditingEnabled, setIsFlagEditingEnabled] = useState(false);
 
   // Cargar datos de la tarifa para edición
   useEffect(() => {
@@ -60,8 +70,12 @@ export default function TariffModal({
         public_lighting_fee: tariff.public_lighting_fee,
         is_public: tariff.is_public
       });
+      // Para edición, habilitar la edición de banderas por defecto
+      setIsFlagEditingEnabled(true);
     } else {
       setFormData(initialFormData);
+      // Para nuevas tarifas, deshabilitar la edición de banderas por defecto
+      setIsFlagEditingEnabled(false);
     }
     setErrors({});
   }, [tariff, isOpen]);
@@ -153,6 +167,21 @@ export default function TariffModal({
     return ANEEL_BANDEIRA_VALUES[flag];
   };
 
+  // Función para habilitar/deshabilitar la edición de banderas
+  const toggleFlagEditing = () => {
+    setIsFlagEditingEnabled(!isFlagEditingEnabled);
+    // Si se está habilitando la edición y es una nueva tarifa, restablecer valores predeterminados
+    if (!isFlagEditingEnabled && !tariff) {
+      setFormData(prev => ({
+        ...prev,
+        price_per_kwh_green: DEFAULT_TARIFF_VALUES.green,
+        price_per_kwh_yellow: DEFAULT_TARIFF_VALUES.yellow,
+        price_per_kwh_red_1: DEFAULT_TARIFF_VALUES.red_1,
+        price_per_kwh_red_2: DEFAULT_TARIFF_VALUES.red_2
+      }));
+    }
+  };
+
   if (!isOpen) return null;
 
   return (
@@ -229,36 +258,86 @@ export default function TariffModal({
             <div className="space-y-4">
               <div className="flex justify-between items-start">
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-800">{t('tariffModal.tariffsByFlag')}</h3>
+                  <h3 className="text-lg font-semibold text-gray-800">Tarifas por Banderas</h3>
                   <p className="text-sm text-gray-600 mt-1">
-                    {t('tariffModal.aneelInfo')}
+                    Valores predeterminados según ANEEL 2025
                   </p>
                 </div>
-                <button
-                  type="button"
-                  onClick={applyAneelValues}
-                  className="px-3 py-1 text-xs bg-green-100 text-green-700 rounded-md hover:bg-green-200 focus:outline-none focus:ring-2 focus:ring-green-500"
-                  disabled={isLoading}
-                >
-                  {t('tariffModal.applyAneelValues')}
-                </button>
+                <div className="flex items-center space-x-3">
+                  {/* Interruptor para habilitar edición */}
+                  <div className="flex items-center space-x-2">
+                    <span className="text-sm text-gray-600">
+                      {isFlagEditingEnabled ? 'Edición habilitada' : 'Haga clic para editar'}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={toggleFlagEditing}
+                      className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
+                        isFlagEditingEnabled ? 'bg-blue-600' : 'bg-gray-200'
+                      }`}
+                      disabled={isLoading}
+                    >
+                      <span
+                        className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                          isFlagEditingEnabled ? 'translate-x-6' : 'translate-x-1'
+                        }`}
+                      />
+                    </button>
+                  </div>
+                  {isFlagEditingEnabled && (
+                    <button
+                      type="button"
+                      onClick={applyAneelValues}
+                      className="px-3 py-1 text-xs bg-green-100 text-green-700 rounded-md hover:bg-green-200 focus:outline-none focus:ring-2 focus:ring-green-500"
+                      disabled={isLoading}
+                    >
+                      Aplicar valores ANEEL
+                    </button>
+                  )}
+                </div>
               </div>
               
-              <div className="bg-blue-50 p-3 rounded-md">
-                <h4 className="text-sm font-medium text-blue-800 mb-2">{t('tariffModal.flagInfo')}</h4>
-                <div className="text-xs text-blue-700 space-y-1">
-                  <p><strong>{t('tariffModal.greenFlagInfo')}</strong></p>
-                  <p><strong>{t('tariffModal.yellowFlagInfo')}</strong></p>
-                  <p><strong>{t('tariffModal.redFlag1Info')}</strong></p>
-                  <p><strong>{t('tariffModal.redFlag2Info')}</strong></p>
-                  <p className="mt-2 italic">{t('tariffModal.flagInfoNote')}</p>
+              <div className="bg-blue-50 p-4 rounded-md">
+                <h4 className="text-sm font-medium text-blue-800 mb-3">Información de Banderas Tarifarias</h4>
+                <div className="text-xs text-blue-700 space-y-2">
+                  <div className="flex items-center space-x-2">
+                    <span className="text-lg">🟢</span>
+                    <div>
+                      <strong>Bandera Verde (R$ {DEFAULT_TARIFF_VALUES.green})</strong>
+                      <p className="text-blue-600">Tarifa base sin recargo adicional</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <span className="text-lg">🟡</span>
+                    <div>
+                      <strong>Bandera Amarilla (R$ {DEFAULT_TARIFF_VALUES.yellow})</strong>
+                      <p className="text-blue-600">Base + R$ {ANEEL_BANDEIRA_VALUES.yellow.toFixed(5)}/kWh (ANEEL)</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <span className="text-lg">🔴</span>
+                    <div>
+                      <strong>Bandera Roja Nivel 1 (R$ {DEFAULT_TARIFF_VALUES.red_1})</strong>
+                      <p className="text-blue-600">Base + R$ {ANEEL_BANDEIRA_VALUES.red_1.toFixed(5)}/kWh (ANEEL)</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <span className="text-lg">🔴</span>
+                    <div>
+                      <strong>Bandera Roja Nivel 2 (R$ {DEFAULT_TARIFF_VALUES.red_2})</strong>
+                      <p className="text-blue-600">Base + R$ {ANEEL_BANDEIRA_VALUES.red_2.toFixed(5)}/kWh (ANEEL)</p>
+                    </div>
+                  </div>
+                  <p className="mt-3 italic text-blue-600">
+                    {isFlagEditingEnabled ? 'Los campos están habilitados para edición' : 'Active el interruptor para editar estos valores'}
+                  </p>
                 </div>
               </div>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    {t('tariffModal.greenFlagLabel')}
+                    🟢 Bandera Verde * (Tarifa Base)
                   </label>
                   <input
                     type="number"
@@ -268,17 +347,17 @@ export default function TariffModal({
                     onChange={(e) => handleInputChange('price_per_kwh_green', parseFloat(e.target.value) || 0)}
                     className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
                       errors.price_per_kwh_green ? 'border-red-500' : 'border-gray-300'
-                    }`}
-                    placeholder="0.7950"
-                    disabled={isLoading}
+                    } ${!isFlagEditingEnabled ? 'bg-gray-100 cursor-not-allowed' : ''}`}
+                    placeholder="0.795"
+                    disabled={isLoading || !isFlagEditingEnabled}
                   />
-                  <p className="text-xs text-gray-500 mt-1">{t('tariffModal.baseTariffNote')}</p>
+                  <p className="text-xs text-gray-500 mt-1">Tarifa base sin recargo adicional</p>
                   {errors.price_per_kwh_green && <p className="text-red-500 text-sm mt-1">{errors.price_per_kwh_green}</p>}
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    {t('tariffModal.yellowFlagLabel')}
+                    🟡 Bandera Amarilla *
                   </label>
                   <input
                     type="number"
@@ -288,9 +367,9 @@ export default function TariffModal({
                     onChange={(e) => handleInputChange('price_per_kwh_yellow', parseFloat(e.target.value) || 0)}
                     className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
                       errors.price_per_kwh_yellow ? 'border-red-500' : 'border-gray-300'
-                    }`}
-                    placeholder={(0.7950 + ANEEL_BANDEIRA_VALUES.yellow).toFixed(4)}
-                    disabled={isLoading}
+                    } ${!isFlagEditingEnabled ? 'bg-gray-100 cursor-not-allowed' : ''}`}
+                    placeholder="0.8139"
+                    disabled={isLoading || !isFlagEditingEnabled}
                   />
                   <p className="text-xs text-gray-500 mt-1">Base + R$ {ANEEL_BANDEIRA_VALUES.yellow.toFixed(5)}/kWh (ANEEL)</p>
                   {errors.price_per_kwh_yellow && <p className="text-red-500 text-sm mt-1">{errors.price_per_kwh_yellow}</p>}
@@ -298,7 +377,7 @@ export default function TariffModal({
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    {t('tariffModal.redFlag1Label')}
+                    🔴 Bandera Roja Nivel 1 *
                   </label>
                   <input
                     type="number"
@@ -308,9 +387,9 @@ export default function TariffModal({
                     onChange={(e) => handleInputChange('price_per_kwh_red_1', parseFloat(e.target.value) || 0)}
                     className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
                       errors.price_per_kwh_red_1 ? 'border-red-500' : 'border-gray-300'
-                    }`}
-                    placeholder={(0.7950 + ANEEL_BANDEIRA_VALUES.red_1).toFixed(4)}
-                    disabled={isLoading}
+                    } ${!isFlagEditingEnabled ? 'bg-gray-100 cursor-not-allowed' : ''}`}
+                    placeholder="0.8396"
+                    disabled={isLoading || !isFlagEditingEnabled}
                   />
                   <p className="text-xs text-gray-500 mt-1">Base + R$ {ANEEL_BANDEIRA_VALUES.red_1.toFixed(5)}/kWh (ANEEL)</p>
                   {errors.price_per_kwh_red_1 && <p className="text-red-500 text-sm mt-1">{errors.price_per_kwh_red_1}</p>}
@@ -318,7 +397,7 @@ export default function TariffModal({
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    {t('tariffModal.redFlag2Label')}
+                    🔴 Bandera Roja Nivel 2 *
                   </label>
                   <input
                     type="number"
@@ -328,9 +407,9 @@ export default function TariffModal({
                     onChange={(e) => handleInputChange('price_per_kwh_red_2', parseFloat(e.target.value) || 0)}
                     className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
                       errors.price_per_kwh_red_2 ? 'border-red-500' : 'border-gray-300'
-                    }`}
-                    placeholder={(0.7950 + ANEEL_BANDEIRA_VALUES.red_2).toFixed(4)}
-                    disabled={isLoading}
+                    } ${!isFlagEditingEnabled ? 'bg-gray-100 cursor-not-allowed' : ''}`}
+                    placeholder="0.8738"
+                    disabled={isLoading || !isFlagEditingEnabled}
                   />
                   <p className="text-xs text-gray-500 mt-1">Base + R$ {ANEEL_BANDEIRA_VALUES.red_2.toFixed(5)}/kWh (ANEEL)</p>
                   {errors.price_per_kwh_red_2 && <p className="text-red-500 text-sm mt-1">{errors.price_per_kwh_red_2}</p>}
