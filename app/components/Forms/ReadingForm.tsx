@@ -5,6 +5,7 @@ import { ValidationResult } from '../../types';
 import { formatNumber } from '../../utils/calculations';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { CameraCapture } from '../UI';
+import TooltipHelper from '../UI/TooltipHelper';
 
 interface ReadingFormProps {
   onAddReading: (date: string, value: number) => Promise<ValidationResult> | ValidationResult;
@@ -206,6 +207,7 @@ export default function ReadingForm({ onAddReading, currentReading, currentMonth
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3a4 4 0 118 0v4m-4 12v-6m0 0V7m0 6h6m-6 0H6" />
                 </svg>
                 {t('readingDate')}:
+                <TooltipHelper type="measurement" />
               </label>
               <input
                 type="date"
@@ -222,6 +224,7 @@ export default function ReadingForm({ onAddReading, currentReading, currentMonth
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
                 </svg>
                 {t('meterReading')}:
+                <TooltipHelper type="reading" />
               </label>
               
               <div className="relative">

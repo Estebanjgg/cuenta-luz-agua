@@ -5,6 +5,7 @@ import { MONTHS, APP_CONFIG } from '../../constants';
 import { ValidationResult, Tariff } from '../../types';
 import { useLanguage } from '../../contexts/LanguageContext';
 import TariffManager from './TariffManager';
+import TooltipHelper from './TooltipHelper';
 
 interface PeriodNavigatorProps {
   currentMonth: string;
@@ -293,7 +294,7 @@ export default function PeriodNavigator({
               <div>
                 <label className="flex items-center text-sm font-medium text-gray-700 mb-2">
                   <svg className="w-4 h-4 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 002 2z" />
                   </svg>
                   Día de medición
                 </label>
@@ -307,6 +308,61 @@ export default function PeriodNavigator({
                   max="31"
                   step="1"
                 />
+              </div>
+              
+              {/* Sección de Tarifa */}
+              <div className="border-t border-gray-200 pt-4">
+                <label className="flex items-center text-sm font-medium text-gray-700 mb-3">
+                  <svg className="w-4 h-4 mr-2 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                  </svg>
+                  Tarifa Eléctrica
+                  <TooltipHelper type="tariff" />
+                </label>
+                
+                {selectedMonthTariff ? (
+                  <div className="bg-green-50 border border-green-200 rounded-lg p-3 mb-3">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-sm font-medium text-green-800">
+                          {selectedMonthTariff.company_name}
+                        </p>
+                        <p className="text-xs text-green-600">
+                          {selectedMonthTariff.city}, {selectedMonthTariff.state}
+                        </p>
+                      </div>
+                      <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                      </svg>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="bg-orange-50 border border-orange-200 rounded-lg p-3 mb-3">
+                    <div className="flex items-center">
+                      <svg className="w-5 h-5 text-orange-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                      </svg>
+                      <div>
+                        <p className="text-sm font-medium text-orange-800">
+                          Sin tarifa asignada
+                        </p>
+                        <p className="text-xs text-orange-600">
+                          Selecciona una tarifa para continuar
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+                
+                <button
+                  onClick={() => setShowTariffManager(true)}
+                  className="w-full flex items-center justify-center space-x-2 px-4 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors font-medium shadow-md text-sm"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4" />
+                  </svg>
+                  <span>{selectedMonthTariff ? 'Cambiar Tarifa' : 'Seleccionar Tarifa'}</span>
+                </button>
               </div>
             </div>
             

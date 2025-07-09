@@ -1,0 +1,38 @@
+<svg width="400" height="300" viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="400" height="300" fill="#f8f9fa" stroke="#dee2e6" stroke-width="2"/>
+  
+  <!-- Title -->
+  <text x="200" y="25" text-anchor="middle" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="#212529">Factura de Energía Eléctrica</text>
+  
+  <!-- Header section with dates -->
+  <rect x="20" y="40" width="360" height="60" fill="#e8f5e8" stroke="#4caf50" stroke-width="2"/>
+  <text x="30" y="60" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#2e7d32">PERÍODO DE FACTURACIÓN</text>
+  
+  <!-- Highlighted measurement date -->
+  <rect x="25" y="70" width="180" height="25" fill="#ffeb3b" stroke="#ff5722" stroke-width="3" stroke-dasharray="5,5"/>
+  <text x="30" y="87" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#d32f2f">Fecha de Medición: 04/06/25</text>
+  
+  <!-- Arrow pointing to date -->
+  <path d="M 220 82 L 250 82 L 245 77 M 250 82 L 245 87" stroke="#ff5722" stroke-width="3" fill="none"/>
+  <text x="260" y="87" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#ff5722">¡Esta fecha!</text>
+  
+  <!-- Period info -->
+  <text x="30" y="120" font-family="Arial, sans-serif" font-size="12" fill="#333">Período: 05/05/25 a 04/06/25</text>
+  
+  <!-- Consumption section -->
+  <rect x="20" y="140" width="360" height="80" fill="#fff3e0" stroke="#f57c00" stroke-width="1"/>
+  <text x="30" y="160" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#f57c00">DATOS DE CONSUMO</text>
+  
+  <!-- Reading data -->
+  <text x="30" y="180" font-family="Arial, sans-serif" font-size="12" fill="#333">Lectura Anterior: 65439 kWh</text>
+  <text x="30" y="200" font-family="Arial, sans-serif" font-size="12" fill="#333">Lectura Actual: 65788 kWh</text>
+  
+  <!-- Alternative date locations -->
+  <rect x="20" y="230" width="360" height="50" fill="#f0f0f0" stroke="#9e9e9e" stroke-width="1"/>
+  <text x="30" y="250" font-family="Arial, sans-serif" font-size="11" fill="#666">También puede aparecer como:</text>
+  <text x="30" y="265" font-family="Arial, sans-serif" font-size="11" fill="#666">• "Fecha de Lectura" • "Día de Medición" • "Data da Leitura"</text>
+  
+  <!-- Help text -->
+  <text x="200" y="295" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#666">Busca la fecha cuando se realizó la medición del medidor</text>
+</svg>
