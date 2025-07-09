@@ -112,6 +112,10 @@ export default function Home() {
         <ReadingForm 
           onAddReading={addReading}
           currentReading={getCurrentReading()}
+          currentMonth={currentMonth}
+          onUpdateReadingDay={(newReadingDay) => {
+            changeMonth(currentMonth.month, currentMonth.year, currentMonth.initialReading, newReadingDay);
+          }}
         />
 
         {/* Lista de lecturas */}

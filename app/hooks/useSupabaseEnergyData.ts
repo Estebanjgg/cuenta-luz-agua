@@ -71,6 +71,7 @@ export const useSupabaseEnergyData = () => {
           month: record.month,
           year: record.year,
           initialReading: record.initial_reading,
+          readingDay: record.reading_day || 1,
           readings: record.readings || [],
           totalConsumption: record.total_consumption,
           estimatedCost: record.estimated_cost,
@@ -124,6 +125,7 @@ export const useSupabaseEnergyData = () => {
           month: monthData.month,
           year: monthData.year,
           initial_reading: monthData.initialReading,
+          reading_day: monthData.readingDay || 1,
           readings: monthData.readings,
           total_consumption: monthData.totalConsumption,
           estimated_cost: monthData.estimatedCost,
@@ -248,7 +250,7 @@ export const useSupabaseEnergyData = () => {
   }
 
   // Cambiar mes (crear nuevo si no existe)
-  const changeMonth = async (month: string, year: number, initialReading: number): Promise<void> => {
+  const changeMonth = async (month: string, year: number, initialReading: number, readingDay?: number): Promise<void> => {
     const newMonthKey = getMonthKey(month, year)
     
     // Si el mes no existe, crearlo
@@ -257,6 +259,7 @@ export const useSupabaseEnergyData = () => {
         month,
         year,
         initialReading,
+        readingDay: readingDay || 1,
         readings: [],
         totalConsumption: 0,
         estimatedCost: tariff.publicLightingFee || tariff.additionalFees || 0,

@@ -151,7 +151,7 @@ export const useEnergyData = () => {
   };
 
   // Cambiar mes (crear nuevo si no existe)
-  const changeMonth = (month: string, year: number, initialReading: number): void => {
+  const changeMonth = (month: string, year: number, initialReading: number, readingDay?: number): void => {
     const newMonthKey = getMonthKey(month, year);
     
     // Si el mes no existe, crearlo
@@ -160,6 +160,7 @@ export const useEnergyData = () => {
         month,
         year,
         initialReading,
+        readingDay: readingDay || 1,
         readings: [],
         totalConsumption: 0,
         estimatedCost: tariff.publicLightingFee || 0,
