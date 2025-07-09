@@ -1,0 +1,38 @@
+<svg width="400" height="300" viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="400" height="300" fill="#f8f9fa" stroke="#dee2e6" stroke-width="2"/>
+  
+  <!-- Title -->
+  <text x="200" y="25" text-anchor="middle" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="#212529">Factura de Energía Eléctrica</text>
+  
+  <!-- Bill sections -->
+  <rect x="20" y="40" width="360" height="40" fill="#e3f2fd" stroke="#1976d2" stroke-width="1"/>
+  <text x="30" y="60" font-family="Arial, sans-serif" font-size="12" fill="#1976d2">Datos del Cliente - Período de Facturación</text>
+  
+  <!-- Consumption section -->
+  <rect x="20" y="90" width="360" height="80" fill="#fff3e0" stroke="#f57c00" stroke-width="2"/>
+  <text x="30" y="110" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#f57c00">CONSUMO DE ENERGÍA</text>
+  
+  <!-- Reading data -->
+  <text x="30" y="130" font-family="Arial, sans-serif" font-size="12" fill="#333">Lectura Anterior: 65439 kWh</text>
+  
+  <!-- Highlighted current reading -->
+  <rect x="25" y="140" width="200" height="25" fill="#ffeb3b" stroke="#ff5722" stroke-width="3" stroke-dasharray="5,5"/>
+  <text x="30" y="157" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#d32f2f">Lectura Actual: 65788 kWh</text>
+  
+  <!-- Arrow pointing to reading -->
+  <path d="M 250 152 L 280 152 L 275 147 M 280 152 L 275 157" stroke="#ff5722" stroke-width="3" fill="none"/>
+  <text x="290" y="157" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#ff5722">¡Este número!</text>
+  
+  <!-- Additional info -->
+  <text x="30" y="190" font-family="Arial, sans-serif" font-size="12" fill="#333">Consumo del Período: 349 kWh</text>
+  <text x="30" y="210" font-family="Arial, sans-serif" font-size="12" fill="#333">Días del Período: 30</text>
+  
+  <!-- Footer section -->
+  <rect x="20" y="230" width="360" height="50" fill="#f5f5f5" stroke="#9e9e9e" stroke-width="1"/>
+  <text x="30" y="250" font-family="Arial, sans-serif" font-size="12" fill="#666">Total a Pagar: R$ 314,43</text>
+  <text x="30" y="270" font-family="Arial, sans-serif" font-size="12" fill="#666">Vencimiento: 11/07/2025</text>
+  
+  <!-- Help text -->
+  <text x="200" y="295" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#666">Busca el número de "Lectura Actual" en tu factura</text>
+</svg>

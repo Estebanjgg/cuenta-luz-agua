@@ -186,6 +186,19 @@ const translations = {
     monthlyFixedTariff: 'Tarifa fija mensual',
     costBreakdownNote: 'Este desglose está basado en la estructura tarifaria de',
     initialMeasurementDay: 'Día de medición inicial',
+    tooltipHelper: {
+      readingTitle: 'Cómo encontrar la lectura del medidor',
+      readingDescription: 'Busca el número de lectura actual en tu factura. Generalmente aparece como "Lectura Actual" o "Consumo" en kWh.',
+      readingImageAlt: 'Imagen mostrando dónde encontrar la lectura en la factura',
+      measurementTitle: 'Cómo encontrar la fecha de medición',
+      measurementDescription: 'Busca la fecha en que se realizó la medición del medidor. Puede aparecer como "Fecha de Lectura" o "Período de Facturación".',
+      measurementImageAlt: 'Imagen mostrando dónde encontrar la fecha de medición en la factura',
+      tariffTitle: 'Cómo encontrar los valores de tarifas',
+      tariffDescription: 'Busca la sección de "Detalle de Tarifas" o "Composición del Consumo" en tu factura. Aquí encontrarás los valores por kWh de cada tarifa aplicada.',
+      tariffImageAlt: 'Imagen mostrando dónde encontrar los valores de tarifas en la factura',
+      helpButton: 'Ver ayuda visual',
+      helpNote: 'Esta información te ayudará a ingresar los datos correctos de tu factura.'
+    },
     
     // TariffFlagSelector
     tariffFlagSelector: {
@@ -730,6 +743,19 @@ const translations = {
     monthlyFixedTariff: 'Tarifa fixa mensal',
     costBreakdownNote: 'Este detalhamento está baseado na estrutura tarifária de',
     initialMeasurementDay: 'Dia de medição inicial',
+    tooltipHelper: {
+      readingTitle: 'Como encontrar a leitura do medidor',
+      readingDescription: 'Procure o número da leitura atual na sua conta. Geralmente aparece como "Leitura Atual" ou "Consumo" em kWh.',
+      readingImageAlt: 'Imagem mostrando onde encontrar a leitura na conta',
+      measurementTitle: 'Como encontrar a data de medição',
+      measurementDescription: 'Procure a data em que foi realizada a medição do medidor. Pode aparecer como "Data de Leitura" ou "Período de Faturamento".',
+      measurementImageAlt: 'Imagem mostrando onde encontrar a data de medição na conta',
+      tariffTitle: 'Como encontrar os valores das tarifas',
+      tariffDescription: 'Procure a seção de "Detalhamento de Tarifas" ou "Composição do Consumo" na sua conta. Aqui você encontrará os valores por kWh de cada tarifa aplicada.',
+      tariffImageAlt: 'Imagem mostrando onde encontrar os valores das tarifas na conta',
+      helpButton: 'Ver ajuda visual',
+      helpNote: 'Esta informação te ajudará a inserir os dados corretos da sua conta.'
+    },
     
     // TariffFlagSelector
     tariffFlagSelector: {
