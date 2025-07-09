@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState } from 'react'
-import { LoginForm } from './LoginForm'
+import { AnimatedLoginForm } from './AnimatedLoginForm'
 import { SignUpForm } from './SignUpForm'
 
 export const AuthComponent: React.FC = () => {
@@ -24,7 +24,7 @@ export const AuthComponent: React.FC = () => {
         </div>
         
         {isLogin ? (
-          <LoginForm onToggleMode={toggleMode} />
+          <AnimatedLoginForm onToggleMode={toggleMode} />
         ) : (
           <SignUpForm onToggleMode={toggleMode} />
         )}
