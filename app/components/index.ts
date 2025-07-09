@@ -5,7 +5,7 @@ export * from './Layout';
 export * from './UI';
 
 // Form Components
-export * from './Forms';
+export * from './UI/Forms';
 
 // Chart Components
 export * from './Charts';

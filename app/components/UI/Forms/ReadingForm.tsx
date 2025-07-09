@@ -1,11 +1,11 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { ValidationResult } from '../../types';
-import { formatNumber } from '../../utils/calculations';
-import { useLanguage } from '../../contexts/LanguageContext';
-import { CameraCapture } from '../UI';
-import TooltipHelper from '../UI/TooltipHelper';
+import { ValidationResult } from '../../../types';
+import { formatNumber } from '../../../utils/calculations';
+import { useLanguage } from '../../../contexts/LanguageContext';
+import { CameraCapture } from '..';
+import TooltipHelper from '../TooltipHelper';
 
 interface ReadingFormProps {
   onAddReading: (date: string, value: number) => Promise<ValidationResult> | ValidationResult;

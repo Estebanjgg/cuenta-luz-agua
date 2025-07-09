@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { Tariff } from '../../types';
 import { useTariffs } from '../../hooks/useTariffs';
 import { useLanguage } from '../../contexts/LanguageContext';
-import TariffModal from '../Forms/TariffModal';
+import TariffModal from './Forms/TariffModal';
 import PublicTariffsModal from './PublicTariffsModal';
 import ConfirmationModal from './ConfirmationModal';
 

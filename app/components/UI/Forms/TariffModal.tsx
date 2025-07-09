@@ -1,8 +1,8 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Tariff, TariffFormData } from '../../types';
-import { useLanguage } from '../../contexts/LanguageContext';
+import { Tariff, TariffFormData } from '../../../types';
+import { useLanguage } from '../../../contexts/LanguageContext';
 
 interface TariffModalProps {
   isOpen: boolean;
