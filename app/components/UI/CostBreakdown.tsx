@@ -38,7 +38,7 @@ export default function CostBreakdown({ consumption, tariff, flagType = 'GREEN',
       color: 'bg-blue-50 text-blue-700'
     },
     {
-      label: `${t('tariffFlag')} ${t(`tariffManager.${flagType.toLowerCase().replace('_level_', '')}`)}`,
+      label: `${t('tariffFlagSelector.tariffFlag')} ${TARIFF_FLAGS[flagType].name}`,
       description: flagType === 'GREEN' 
         ? `${formatCurrency(0)}/kWh (sin recargo)`
         : `${formatNumber(consumption)} kWh × ${formatCurrency(TARIFF_FLAGS[flagType].surcharge)}`,

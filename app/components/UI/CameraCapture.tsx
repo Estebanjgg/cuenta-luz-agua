@@ -328,7 +328,7 @@ export default function CameraCapture({ onReadingExtracted, isProcessing = false
         if (img.width < 50 || img.height < 50) {
           setError(t('cameraCapture.imageTooSmall'));
           resolve(false);
-        } else if (img.width > 4000 || img.height > 4000) {
+        } else if (img.width > 8000 || img.height > 8000) {
           setError(t('cameraCapture.imageTooLarge'));
           resolve(false);
         } else {
