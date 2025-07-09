@@ -20,25 +20,24 @@ const ANEEL_BANDEIRA_VALUES = {
   red_2: 0.07877  // Roja Nivel 2: R$ 7,877/100 kWh → R$ 0,07877/kWh
 };
 
-// Valores predeterminados para las banderas tarifarias
+// Valores predeterminados para el sistema de tarifas
 const DEFAULT_TARIFF_VALUES = {
-  base: 0.795, // Tarifa base
-  green: 0.795, // 🟢 Bandera Verde (Tarifa Base)
-  yellow: 0.8139, // 🟡 Bandera Amarilla (Base + R$ 0.01885/kWh)
-  red_1: 0.8396, // 🔴 Bandera Roja Nivel 1 (Base + R$ 0.04463/kWh)
-  red_2: 0.8738  // 🔴 Bandera Roja Nivel 2 (Base + R$ 0.07877/kWh)
+  base: 0.795, // Tarifa base que aparece en la factura
+  additional_fees: 41.12, // Tarifas fijas mensuales típicas
+  public_lighting: 15.00 // Alumbrado público típico
 };
 
 const initialFormData: TariffFormData = {
   city: '',
   state: '',
   company_name: '',
-  price_per_kwh_green: DEFAULT_TARIFF_VALUES.green,
-  price_per_kwh_yellow: DEFAULT_TARIFF_VALUES.yellow,
-  price_per_kwh_red_1: DEFAULT_TARIFF_VALUES.red_1,
-  price_per_kwh_red_2: DEFAULT_TARIFF_VALUES.red_2,
-  additional_fees: 0,
-  public_lighting_fee: 0,
+  base_price_per_kwh: DEFAULT_TARIFF_VALUES.base,
+  price_per_kwh_green: DEFAULT_TARIFF_VALUES.base + ANEEL_BANDEIRA_VALUES.green,
+  price_per_kwh_yellow: DEFAULT_TARIFF_VALUES.base + ANEEL_BANDEIRA_VALUES.yellow,
+  price_per_kwh_red_1: DEFAULT_TARIFF_VALUES.base + ANEEL_BANDEIRA_VALUES.red_1,
+  price_per_kwh_red_2: DEFAULT_TARIFF_VALUES.base + ANEEL_BANDEIRA_VALUES.red_2,
+  additional_fees: DEFAULT_TARIFF_VALUES.additional_fees,
+  public_lighting_fee: DEFAULT_TARIFF_VALUES.public_lighting,
   is_public: false
 };
 
@@ -62,6 +61,7 @@ export default function TariffModal({
         city: tariff.city,
         state: tariff.state,
         company_name: tariff.company_name,
+        base_price_per_kwh: tariff.base_price_per_kwh || tariff.price_per_kwh_green, // Fallback para tarifas antiguas
         price_per_kwh_green: tariff.price_per_kwh_green,
         price_per_kwh_yellow: tariff.price_per_kwh_yellow,
         price_per_kwh_red_1: tariff.price_per_kwh_red_1,
@@ -93,6 +93,10 @@ export default function TariffModal({
 
     if (!formData.company_name.trim()) {
       newErrors.company_name = 'El nombre de la compañía es requerido';
+    }
+
+    if (formData.base_price_per_kwh <= 0) {
+      newErrors.base_price_per_kwh = 'La tarifa base debe ser mayor a 0';
     }
 
     if (formData.price_per_kwh_green <= 0) {
@@ -144,21 +148,47 @@ export default function TariffModal({
   };
 
   const handleInputChange = (field: keyof TariffFormData, value: string | number | boolean) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+    setFormData(prev => {
+      const updated = {
+        ...prev,
+        [field]: value
+      };
+      
+      // Si cambió la tarifa base, recalcular automáticamente las banderas
+      if (field === 'base_price_per_kwh' && typeof value === 'number') {
+        const calculatedPrices = calculateFlagPrices(value);
+        return {
+          ...updated,
+          ...calculatedPrices
+        };
+      }
+      
+      return updated;
+    });
+    
     // Limpiar error del campo cuando el usuario empiece a escribir
     if (errors[field]) {
       setErrors(prev => ({ ...prev, [field]: '' }));
     }
   };
 
-  // Función para aplicar valores oficiales de ANEEL
-  const applyAneelValues = () => {
-    const basePrice = formData.price_per_kwh_green;
-    setFormData(prev => ({
-      ...prev,
+  // Función para calcular automáticamente las tarifas de banderas basadas en la tarifa base
+  const calculateFlagPrices = (basePrice: number) => {
+    return {
+      price_per_kwh_green: parseFloat((basePrice + ANEEL_BANDEIRA_VALUES.green).toFixed(4)),
       price_per_kwh_yellow: parseFloat((basePrice + ANEEL_BANDEIRA_VALUES.yellow).toFixed(4)),
       price_per_kwh_red_1: parseFloat((basePrice + ANEEL_BANDEIRA_VALUES.red_1).toFixed(4)),
       price_per_kwh_red_2: parseFloat((basePrice + ANEEL_BANDEIRA_VALUES.red_2).toFixed(4))
+    };
+  };
+
+  // Función para aplicar valores oficiales de ANEEL
+  const applyAneelValues = () => {
+    const basePrice = formData.base_price_per_kwh;
+    const calculatedPrices = calculateFlagPrices(basePrice);
+    setFormData(prev => ({
+      ...prev,
+      ...calculatedPrices
     }));
   };
 
@@ -170,14 +200,12 @@ export default function TariffModal({
   // Función para habilitar/deshabilitar la edición de banderas
   const toggleFlagEditing = () => {
     setIsFlagEditingEnabled(!isFlagEditingEnabled);
-    // Si se está habilitando la edición y es una nueva tarifa, restablecer valores predeterminados
+    // Si se está habilitando la edición y es una nueva tarifa, recalcular valores basados en la tarifa base
     if (!isFlagEditingEnabled && !tariff) {
+      const calculatedPrices = calculateFlagPrices(formData.base_price_per_kwh);
       setFormData(prev => ({
         ...prev,
-        price_per_kwh_green: DEFAULT_TARIFF_VALUES.green,
-        price_per_kwh_yellow: DEFAULT_TARIFF_VALUES.yellow,
-        price_per_kwh_red_1: DEFAULT_TARIFF_VALUES.red_1,
-        price_per_kwh_red_2: DEFAULT_TARIFF_VALUES.red_2
+        ...calculatedPrices
       }));
     }
   };
@@ -254,6 +282,35 @@ export default function TariffModal({
               {errors.company_name && <p className="text-red-500 text-sm mt-1">{errors.company_name}</p>}
             </div>
 
+            {/* Tarifa Base */}
+            <div className="bg-yellow-50 p-4 rounded-md border border-yellow-200">
+              <h3 className="text-lg font-semibold text-gray-800 mb-2">💰 Tarifa Base kWh</h3>
+              <p className="text-sm text-gray-600 mb-3">
+                Esta es la tarifa por kWh que aparece en tu factura de luz (sin recargos de banderas)
+              </p>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Precio base por kWh (R$) *
+                </label>
+                <input
+                  type="number"
+                  step="0.0001"
+                  min="0"
+                  value={parseFloat(formData.base_price_per_kwh.toFixed(4))}
+                  onChange={(e) => handleInputChange('base_price_per_kwh', parseFloat(e.target.value) || 0)}
+                  className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                    errors.base_price_per_kwh ? 'border-red-500' : 'border-gray-300'
+                  }`}
+                  placeholder="0.795"
+                  disabled={isLoading}
+                />
+                <p className="text-xs text-gray-500 mt-1">
+                  Ejemplo: Si tu factura dice "Energia Elétrica: R$ 0,795/kWh", ingresa 0.795
+                </p>
+                {errors.base_price_per_kwh && <p className="text-red-500 text-sm mt-1">{errors.base_price_per_kwh}</p>}
+              </div>
+            </div>
+
             {/* Tarifas por bandera */}
             <div className="space-y-4">
               <div className="flex justify-between items-start">
@@ -298,38 +355,38 @@ export default function TariffModal({
               </div>
               
               <div className="bg-blue-50 p-4 rounded-md">
-                <h4 className="text-sm font-medium text-blue-800 mb-3">Información de Banderas Tarifarias</h4>
+                <h4 className="text-sm font-medium text-blue-800 mb-3">📊 Recargos de Banderas Tarifarias (ANEEL 2025)</h4>
                 <div className="text-xs text-blue-700 space-y-2">
                   <div className="flex items-center space-x-2">
                     <span className="text-lg">🟢</span>
                     <div>
-                      <strong>Bandera Verde (R$ {DEFAULT_TARIFF_VALUES.green})</strong>
-                      <p className="text-blue-600">Tarifa base sin recargo adicional</p>
+                      <strong>Bandera Verde (R$ {formData.price_per_kwh_green.toFixed(4)})</strong>
+                      <p className="text-blue-600">Tarifa base + R$ {ANEEL_BANDEIRA_VALUES.green.toFixed(5)}/kWh = Sin recargo</p>
                     </div>
                   </div>
                   <div className="flex items-center space-x-2">
                     <span className="text-lg">🟡</span>
                     <div>
-                      <strong>Bandera Amarilla (R$ {DEFAULT_TARIFF_VALUES.yellow})</strong>
-                      <p className="text-blue-600">Base + R$ {ANEEL_BANDEIRA_VALUES.yellow.toFixed(5)}/kWh (ANEEL)</p>
+                      <strong>Bandera Amarilla (R$ {formData.price_per_kwh_yellow.toFixed(4)})</strong>
+                      <p className="text-blue-600">Tarifa base + R$ {ANEEL_BANDEIRA_VALUES.yellow.toFixed(5)}/kWh (ANEEL)</p>
                     </div>
                   </div>
                   <div className="flex items-center space-x-2">
                     <span className="text-lg">🔴</span>
                     <div>
-                      <strong>Bandera Roja Nivel 1 (R$ {DEFAULT_TARIFF_VALUES.red_1})</strong>
-                      <p className="text-blue-600">Base + R$ {ANEEL_BANDEIRA_VALUES.red_1.toFixed(5)}/kWh (ANEEL)</p>
+                      <strong>Bandera Roja Nivel 1 (R$ {formData.price_per_kwh_red_1.toFixed(4)})</strong>
+                      <p className="text-blue-600">Tarifa base + R$ {ANEEL_BANDEIRA_VALUES.red_1.toFixed(5)}/kWh (ANEEL)</p>
                     </div>
                   </div>
                   <div className="flex items-center space-x-2">
                     <span className="text-lg">🔴</span>
                     <div>
-                      <strong>Bandera Roja Nivel 2 (R$ {DEFAULT_TARIFF_VALUES.red_2})</strong>
-                      <p className="text-blue-600">Base + R$ {ANEEL_BANDEIRA_VALUES.red_2.toFixed(5)}/kWh (ANEEL)</p>
+                      <strong>Bandera Roja Nivel 2 (R$ {formData.price_per_kwh_red_2.toFixed(4)})</strong>
+                      <p className="text-blue-600">Tarifa base + R$ {ANEEL_BANDEIRA_VALUES.red_2.toFixed(5)}/kWh (ANEEL)</p>
                     </div>
                   </div>
                   <p className="mt-3 italic text-blue-600">
-                    {isFlagEditingEnabled ? 'Los campos están habilitados para edición' : 'Active el interruptor para editar estos valores'}
+                    ✨ Los valores se calculan automáticamente al cambiar la tarifa base. {isFlagEditingEnabled ? 'Edición manual habilitada.' : 'Active el interruptor para edición manual.'}
                   </p>
                 </div>
               </div>
@@ -417,14 +474,19 @@ export default function TariffModal({
               </div>
             </div>
 
-            {/* Tarifas fijas */}
-            <div className="space-y-4">
-              <h3 className="text-lg font-semibold text-gray-800">{t('tariffModal.fixedTariffs')}</h3>
+            {/* Tarifas Fijas Mensuales */}
+            <div className="bg-green-50 p-4 rounded-md border border-green-200 space-y-4">
+              <div>
+                <h3 className="text-lg font-semibold text-gray-800 mb-2">🧾 Tarifas Fijas Mensuales</h3>
+                <p className="text-sm text-gray-600">
+                  Estos son los costos fijos que aparecen en tu factura cada mes, independientemente del consumo
+                </p>
+              </div>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    {t('tariffModal.additionalFees')}
+                    💰 Tarifas Adicionales (R$)
                   </label>
                   <input
                     type="number"
@@ -438,12 +500,15 @@ export default function TariffModal({
                     placeholder="41.12"
                     disabled={isLoading}
                   />
+                  <p className="text-xs text-gray-500 mt-1">
+                    Ejemplo: Disponibilidade, Taxa de Fiscalização, etc.
+                  </p>
                   {errors.additional_fees && <p className="text-red-500 text-sm mt-1">{errors.additional_fees}</p>}
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    {t('tariffModal.publicLighting')}
+                    💡 Alumbrado Público (R$)
                   </label>
                   <input
                     type="number"
@@ -457,6 +522,9 @@ export default function TariffModal({
                     placeholder="15.00"
                     disabled={isLoading}
                   />
+                  <p className="text-xs text-gray-500 mt-1">
+                    Contribución para el alumbrado público municipal
+                  </p>
                   {errors.public_lighting_fee && <p className="text-red-500 text-sm mt-1">{errors.public_lighting_fee}</p>}
                 </div>
               </div>
