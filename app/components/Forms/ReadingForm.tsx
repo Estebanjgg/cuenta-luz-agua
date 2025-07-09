@@ -9,9 +9,16 @@ import { CameraCapture } from '../UI';
 interface ReadingFormProps {
   onAddReading: (date: string, value: number) => Promise<ValidationResult> | ValidationResult;
   currentReading: number;
+  currentMonth: {
+    month: string;
+    year: number;
+    readingDay?: number;
+    initialReading: number;
+  };
+  onUpdateReadingDay?: (newReadingDay: number) => void;
 }
 
-export default function ReadingForm({ onAddReading, currentReading }: ReadingFormProps) {
+export default function ReadingForm({ onAddReading, currentReading, currentMonth, onUpdateReadingDay }: ReadingFormProps) {
   const { t } = useLanguage();
   const [date, setDate] = useState('');
   const [reading, setReading] = useState('');
@@ -19,6 +26,8 @@ export default function ReadingForm({ onAddReading, currentReading }: ReadingFor
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showCamera, setShowCamera] = useState(false);
   const [showCameraMenu, setShowCameraMenu] = useState(false);
+  const [isEditingReadingDay, setIsEditingReadingDay] = useState(false);
+  const [editableReadingDay, setEditableReadingDay] = useState(currentMonth.readingDay || 1);
   const menuRef = useRef<HTMLDivElement>(null);
 
 
@@ -26,6 +35,11 @@ export default function ReadingForm({ onAddReading, currentReading }: ReadingFor
   useEffect(() => {
     setDate(new Date().toISOString().split('T')[0]);
   }, []);
+
+  // Actualizar editableReadingDay cuando cambie currentMonth.readingDay
+  useEffect(() => {
+    setEditableReadingDay(currentMonth.readingDay || 1);
+  }, [currentMonth.readingDay]);
 
   // Cerrar menú al hacer clic fuera
   useEffect(() => {
@@ -278,17 +292,76 @@ export default function ReadingForm({ onAddReading, currentReading }: ReadingFor
           )}
           
           <div className="bg-gradient-to-r from-blue-50 to-cyan-50 border-2 border-blue-200 rounded-xl p-4 shadow-sm">
-            <div className="flex items-center">
-              <div className="bg-blue-100 p-2 rounded-full mr-3">
+            <div className="flex items-start">
+              <div className="bg-blue-100 p-2 rounded-full mr-3 mt-1">
                 <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
               </div>
-              <div>
-                <p className="text-blue-800 font-semibold text-sm mb-1">{t('importantInfo')}</p>
-                <p className="text-blue-700 text-sm">
+              <div className="flex-1">
+                <p className="text-blue-800 font-semibold text-sm mb-2">{t('importantInfo')}</p>
+                <p className="text-blue-700 text-sm mb-2">
                   {t('currentMeterReading')} <span className="font-bold">{currentReading.toLocaleString()} kWh</span>
                 </p>
+                <div className="flex items-center space-x-2">
+                  <p className="text-blue-700 text-sm">
+                    {t('initialMeasurementDay')}:
+                  </p>
+                  {isEditingReadingDay ? (
+                    <div className="flex items-center space-x-2">
+                      <input
+                        type="number"
+                        min="1"
+                        max="31"
+                        value={editableReadingDay}
+                        onChange={(e) => setEditableReadingDay(parseInt(e.target.value) || 1)}
+                        className="w-16 px-2 py-1 text-sm border border-blue-300 rounded focus:ring-2 focus:ring-blue-200 focus:border-blue-500"
+                      />
+                      <button
+                         type="button"
+                         onClick={() => {
+                           if (onUpdateReadingDay) {
+                             onUpdateReadingDay(editableReadingDay);
+                           }
+                           setIsEditingReadingDay(false);
+                         }}
+                         className="text-green-600 hover:text-green-700 p-1"
+                         title="Guardar"
+                       >
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                        </svg>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setEditableReadingDay(currentMonth.readingDay || 1);
+                          setIsEditingReadingDay(false);
+                        }}
+                        className="text-red-600 hover:text-red-700 p-1"
+                        title="Cancelar"
+                      >
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="flex items-center space-x-2">
+                      <span className="font-bold text-blue-800">{currentMonth.readingDay || 1}</span>
+                      <button
+                        type="button"
+                        onClick={() => setIsEditingReadingDay(true)}
+                        className="text-blue-600 hover:text-blue-700 p-1"
+                        title="Editar día de medición"
+                      >
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                        </svg>
+                      </button>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           </div>

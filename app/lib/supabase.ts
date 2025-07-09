@@ -23,6 +23,7 @@ export interface Database {
           month: string
           year: number
           initial_reading: number
+          reading_day: number
           readings: any[]
           total_consumption: number
           estimated_cost: number
@@ -35,6 +36,7 @@ export interface Database {
           month: string
           year: number
           initial_reading: number
+          reading_day?: number
           readings?: any[]
           total_consumption?: number
           estimated_cost?: number
@@ -47,6 +49,7 @@ export interface Database {
           month?: string
           year?: number
           initial_reading?: number
+          reading_day?: number
           readings?: any[]
           total_consumption?: number
           estimated_cost?: number

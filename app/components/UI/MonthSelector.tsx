@@ -8,7 +8,7 @@ import { useLanguage } from '../../contexts/LanguageContext';
 interface MonthSelectorProps {
   currentMonth: string;
   currentYear: number;
-  onMonthChange: (month: string, year: number, initialReading: number) => void;
+  onMonthChange: (month: string, year: number, initialReading: number, readingDay?: number) => void;
   onSwitchToMonth: (month: string, year: number) => void;
   hasMonthData: (month: string, year: number) => boolean;
 }
@@ -18,6 +18,7 @@ export default function MonthSelector({ currentMonth, currentYear, onMonthChange
   const [selectedMonth, setSelectedMonth] = useState(currentMonth);
   const [selectedYear, setSelectedYear] = useState(currentYear);
   const [initialReading, setInitialReading] = useState(APP_CONFIG.defaultInitialReading);
+  const [readingDay, setReadingDay] = useState<number>(1);
   const [isOpen, setIsOpen] = useState(false);
   const [error, setError] = useState<string>('');
   
@@ -50,7 +51,7 @@ export default function MonthSelector({ currentMonth, currentYear, onMonthChange
     }
     
     setError('');
-    onMonthChange(selectedMonth, selectedYear, initialReading);
+    onMonthChange(selectedMonth, selectedYear, initialReading, readingDay);
     setIsOpen(false);
   };
 
@@ -238,6 +239,29 @@ export default function MonthSelector({ currentMonth, currentYear, onMonthChange
                     </p>
                   </div>
                 )}
+              </div>
+              
+              <div>
+                <label className="flex items-center text-sm font-medium text-gray-700 mb-2">
+                  <svg className="w-4 h-4 mr-2 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3a4 4 0 118 0v4m-4 12v-6m0 0V7m0 6h6m-6 0H6" />
+                  </svg>
+                  Día de medición
+                </label>
+                <select
+                  value={readingDay}
+                  onChange={(e) => setReadingDay(parseInt(e.target.value))}
+                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
+                >
+                  {Array.from({ length: 31 }, (_, i) => i + 1).map(day => (
+                    <option key={day} value={day}>
+                      Día {day}
+                    </option>
+                  ))}
+                </select>
+                <p className="text-xs text-gray-500 mt-1">
+                  💡 Selecciona el día del mes en que se realizó la medición de luz
+                </p>
               </div>
             </div>
             

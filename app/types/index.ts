@@ -60,6 +60,7 @@ export interface MonthData {
   month: string;
   year: number;
   initialReading: number;
+  readingDay?: number; // Día del mes en que se realizó la medición inicial
   readings: Reading[];
   totalConsumption: number;
   estimatedCost: number;

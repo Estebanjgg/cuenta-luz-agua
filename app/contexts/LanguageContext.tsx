@@ -184,6 +184,8 @@ const translations = {
     selectedDistributionCompany: 'la empresa distribuidora seleccionada',
     costVariationNote: 'y puede variar según la región, tipo de conexión y período de facturación.',
     monthlyFixedTariff: 'Tarifa fija mensual',
+    costBreakdownNote: 'Este desglose está basado en la estructura tarifaria de',
+    initialMeasurementDay: 'Día de medición inicial',
     
     // TariffFlagSelector
     tariffFlagSelector: {
@@ -726,6 +728,8 @@ const translations = {
     selectedDistributionCompany: 'a empresa distribuidora selecionada',
     costVariationNote: 'e pode variar conforme a região, tipo de conexão e período de faturamento.',
     monthlyFixedTariff: 'Tarifa fixa mensal',
+    costBreakdownNote: 'Este detalhamento está baseado na estrutura tarifária de',
+    initialMeasurementDay: 'Dia de medição inicial',
     
     // TariffFlagSelector
     tariffFlagSelector: {
