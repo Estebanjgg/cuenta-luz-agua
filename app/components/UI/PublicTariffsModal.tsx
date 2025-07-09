@@ -175,6 +175,14 @@ export default function PublicTariffsModal({
                           </div>
                           <p className="text-gray-600 mb-3">{tariff.company_name}</p>
                           
+                          {/* Tarifa Base */}
+                          <div className="mb-2">
+                            <div className="text-sm">
+                              <span className="text-gray-500">{t('tariffManager.baseTariff')}:</span>
+                              <span className="ml-1 font-medium">{formatKwhPrice(tariff.base_price_per_kwh || tariff.price_per_kwh_green)}</span>
+                            </div>
+                          </div>
+                          
                           <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-sm mb-2">
                             <div>
                               <span className="text-gray-500">🟢 {t('publicTariffsModal.green')}:</span>

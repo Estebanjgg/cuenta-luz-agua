@@ -275,6 +275,7 @@ export const convertLegacyTariff = (
     city,
     state,
     company_name: companyName,
+    base_price_per_kwh: legacyTariff.pricePerKwh, 
     price_per_kwh_green: legacyTariff.pricePerKwh,
     price_per_kwh_yellow: legacyTariff.pricePerKwh * 1.025, // Estimación +2.5%
     price_per_kwh_red_1: legacyTariff.pricePerKwh * 1.05,   // Estimación +5%

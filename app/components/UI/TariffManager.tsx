@@ -254,6 +254,14 @@ export default function TariffManager({
                     </div>
                     <p className="text-gray-600 mb-3 text-sm sm:text-base truncate">{tariff.company_name}</p>
                     
+                    {/* Tarifa Base */}
+                    <div className="mb-3 p-2 bg-blue-50 rounded-md border border-blue-200">
+                      <div className="flex flex-col xs:flex-row xs:items-center">
+                        <span className="text-blue-700 font-medium whitespace-nowrap">⚡ {t('tariffManager.baseTariff')}:</span>
+                        <span className="ml-0 xs:ml-2 font-bold text-blue-800 text-sm sm:text-base">{formatKwhPrice(tariff.base_price_per_kwh)}</span>
+                      </div>
+                    </div>
+                    
                     <div className="grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-4 gap-2 text-xs sm:text-sm">
                       <div className="flex flex-col xs:flex-row xs:items-center">
                         <span className="text-gray-500 whitespace-nowrap">🟢 {t('tariffManager.green')}:</span>
