@@ -4,16 +4,20 @@ import { useAuth } from '../../contexts/AuthContext';
 import { useLanguage } from '../../contexts/LanguageContext';
 import LanguageSelector from '../UI/LanguageSelector';
 import { useState } from 'react';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 
 interface NavbarProps {
   onLogout: () => void;
   onShowTariffManager?: () => void;
+  currentPage?: string;
 }
 
-export default function Navbar({ onLogout, onShowTariffManager }: NavbarProps) {
+export default function Navbar({ onLogout, onShowTariffManager, currentPage }: NavbarProps) {
   const { user } = useAuth();
   const { t } = useLanguage();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const pathname = usePathname();
 
   return (
     <nav className="relative z-50 bg-gradient-to-r from-blue-600 to-blue-800 shadow-lg">
@@ -21,21 +25,47 @@ export default function Navbar({ onLogout, onShowTariffManager }: NavbarProps) {
         <div className="flex justify-between items-center h-16">
           {/* Logo y título */}
           <div className="flex items-center space-x-2 sm:space-x-3 flex-1 min-w-0">
-            <div className="bg-white/10 p-1.5 sm:p-2 rounded-lg flex-shrink-0">
-              <span className="text-xl sm:text-2xl">⚡</span>
-            </div>
-            <div className="min-w-0 flex-1">
-              <h1 className="text-lg sm:text-xl font-bold text-white truncate">
-                {t('navbar.title')}
-              </h1>
-              <p className="text-blue-100 text-xs sm:text-sm hidden sm:block truncate">
-                {t('navbar.subtitle')}
-              </p>
-            </div>
+            <Link href="/" className="flex items-center space-x-2 sm:space-x-3">
+              <div className="bg-white/10 p-1.5 sm:p-2 rounded-lg flex-shrink-0">
+                <span className="text-xl sm:text-2xl">⚡</span>
+              </div>
+              <div className="min-w-0 flex-1">
+                <h1 className="text-lg sm:text-xl font-bold text-white truncate">
+                  {t('navbar.title')}
+                </h1>
+                <p className="text-blue-100 text-xs sm:text-sm hidden sm:block truncate">
+                  {t('navbar.subtitle')}
+                </p>
+              </div>
+            </Link>
           </div>
 
           {/* Desktop Menu */}
           <div className="hidden lg:flex items-center space-x-4">
+            {/* Navigation Links */}
+            <div className="flex items-center space-x-2">
+              <Link 
+                href="/"
+                className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                  pathname === '/' 
+                    ? 'bg-white/20 text-white' 
+                    : 'text-blue-100 hover:bg-white/10 hover:text-white'
+                }`}
+              >
+                📊 Dashboard
+              </Link>
+              <Link 
+                href="/calculadora"
+                className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                  pathname === '/calculadora' 
+                    ? 'bg-white/20 text-white' 
+                    : 'text-blue-100 hover:bg-white/10 hover:text-white'
+                }`}
+              >
+                🏠 Calculadora
+              </Link>
+            </div>
+            
             <LanguageSelector />
             
             {/* Avatar y datos del usuario */}
@@ -171,8 +201,41 @@ export default function Navbar({ onLogout, onShowTariffManager }: NavbarProps) {
                 </div>
               </div>
 
+              {/* Mobile Navigation Links */}
+              <div className="space-y-2 mb-4">
+                <Link 
+                  href="/"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className={`w-full text-left px-4 py-3 rounded-lg flex items-center space-x-3 transition-colors ${
+                    pathname === '/' 
+                      ? 'bg-white/20 text-white' 
+                      : 'text-blue-100 hover:bg-white/10 hover:text-white'
+                  }`}
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                  </svg>
+                  <span>📊 Dashboard</span>
+                </Link>
+                
+                <Link 
+                  href="/calculadora"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className={`w-full text-left px-4 py-3 rounded-lg flex items-center space-x-3 transition-colors ${
+                    pathname === '/calculadora' 
+                      ? 'bg-white/20 text-white' 
+                      : 'text-blue-100 hover:bg-white/10 hover:text-white'
+                  }`}
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                  </svg>
+                  <span>🏠 Calculadora de Eletrodomésticos</span>
+                </Link>
+              </div>
+
               {/* Mobile Menu Items */}
-              <div className="space-y-2">
+              <div className="space-y-2 border-t border-blue-500/30 pt-4">
                 <button className="w-full text-left px-4 py-3 text-white hover:bg-white/10 rounded-lg flex items-center space-x-3 transition-colors">
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
