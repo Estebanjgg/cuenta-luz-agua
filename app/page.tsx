@@ -2,183 +2,266 @@
 
 import { useAuth } from './contexts/AuthContext';
 import { useLanguage } from './contexts/LanguageContext';
-import { useSupabaseEnergyData } from './hooks/useSupabaseEnergyData';
-import { 
-  AuthComponent,
-  ReadingForm,
-  ReadingsList,
-  ConsumptionStats,
-  CostBreakdown,
-  PeriodNavigator,
-  ConsumptionChart,
-  Navbar,
-  TariffFlagSelector
-} from './components';
-import SessionStatus from './components/UI/SessionStatus';
-import TariffManager from './components/UI/TariffManager';
-import { useTariffs } from './hooks/useTariffs';
-import { APP_CONFIG } from './constants';
-import { useState, useEffect } from 'react';
-import { Tariff } from './types';
+import { AuthComponent, Navbar } from './components';
+import Link from 'next/link';
+import { useState } from 'react';
 
 export default function Home() {
   const { user, loading: authLoading, signOut } = useAuth();
   const { t } = useLanguage();
-  const {
-    currentMonth,
-    isLoading,
-    addReading,
-    deleteReading,
-    changeMonth,
-    switchToMonth,
-    hasMonthData,
-    resetMonth,
-    getCurrentReading,
-    getConsumptionStats,
-    tariff,
-    changeTariffFlag
-  } = useSupabaseEnergyData();
-  
-  // Hook para obtener tarifas
-  const { getMonthTariff, assignTariffToMonth } = useTariffs();
-
-  // Estados para los modales de tarifas (ya no se necesita showTariffManager)
-  
-  // Estado para la tarifa específica del mes
-  const [selectedMonthTariff, setSelectedMonthTariff] = useState<Tariff | null>(null);
-
-  // Cargar la tarifa específica del mes actual
-  useEffect(() => {
-    const loadMonthTariff = async () => {
-      if (user && currentMonth) {
-        const monthTariff = await getMonthTariff(currentMonth.month, currentMonth.year);
-        setSelectedMonthTariff(monthTariff);
-      }
-    };
-    
-    loadMonthTariff();
-  }, [user, currentMonth.month, currentMonth.year]);
+  const [hoveredCard, setHoveredCard] = useState<string | null>(null);
 
   // Si no hay usuario autenticado, mostrar componente de autenticación
   if (!user && !authLoading) {
     return <AuthComponent />;
   }
 
-  if (authLoading || isLoading) {
+  if (authLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">{t('loading')}</p>
+          <p className="text-gray-600">Cargando...</p>
         </div>
       </div>
     );
   }
 
-  const stats = getConsumptionStats();
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-100">
       {/* Navbar */}
       <Navbar 
         onLogout={signOut}
       />
       
-      <div className="max-w-6xl mx-auto p-4">
-
-        {/* Navegador de Período */}
-          <PeriodNavigator 
-            currentMonth={currentMonth.month}
-            currentYear={currentMonth.year}
-            onMonthChange={changeMonth}
-            onSwitchToMonth={switchToMonth}
-            hasMonthData={hasMonthData}
-            selectedMonthTariff={selectedMonthTariff}
-            onTariffSelect={async (tariff) => {
-              const success = await assignTariffToMonth(currentMonth.month, currentMonth.year, tariff.id);
-              if (success) {
-                setSelectedMonthTariff(tariff);
-              }
-            }}
-          />
-
-        {/* Selector de Bandera Tarifaria */}
-        <TariffFlagSelector 
-          selectedFlag={currentMonth.tariffFlag || 'GREEN'}
-          onFlagChange={changeTariffFlag}
-        />
-
-        {/* Formulario para agregar lectura */}
-        <ReadingForm 
-          onAddReading={addReading}
-          currentReading={getCurrentReading()}
-          currentMonth={currentMonth}
-          onUpdateReadingDay={(newReadingDay) => {
-            changeMonth(currentMonth.month, currentMonth.year, currentMonth.initialReading, newReadingDay);
-          }}
-        />
-
-        {/* Lista de lecturas */}
-        <ReadingsList 
-          readings={currentMonth.readings}
-          initialReading={currentMonth.initialReading}
-          onDeleteReading={deleteReading}
-        />
-
-        {/* Gráfico */}
-        <ConsumptionChart 
-          readings={currentMonth.readings} 
-          initialReading={currentMonth.initialReading}
-        />
-
-        {/* Estadísticas de Consumo */}
-        <ConsumptionStats 
-          stats={stats}
-          readings={currentMonth.readings}
-          currentMonth={currentMonth.month}
-          currentYear={currentMonth.year}
-        />
-
-        {/* Desglose detallado de costos */}
-        <CostBreakdown 
-          consumption={stats.totalConsumption}
-          tariff={tariff}
-          flagType={currentMonth.tariffFlag}
-          selectedTariff={selectedMonthTariff}
-        />
-
-        {/* Botón de Reiniciar Mes (si hay lecturas) */}
-        {currentMonth.readings.length > 0 && (
-          <div className="bg-white rounded-xl shadow-lg p-6 mt-6">
-            <div className="flex justify-between items-center">
-              <div>
-                <h3 className="text-lg font-semibold text-gray-800">{t('actions.resetMonth')}</h3>
-                <p className="text-sm text-gray-600">{t('actions.resetMonthDescription')}</p>
+      {/* Hero Section */}
+      <div className="relative overflow-hidden">
+        {/* Background Pattern */}
+        <div className="absolute inset-0 bg-grid-pattern opacity-5"></div>
+        
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-16">
+          <div className="text-center">
+            {/* Logo/Icon */}
+            <div className="flex justify-center mb-8">
+              <div className="relative">
+                <div className="w-24 h-24 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center shadow-2xl transform rotate-3 hover:rotate-0 transition-transform duration-300">
+                  <svg className="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                  </svg>
+                </div>
+                <div className="absolute -top-2 -right-2 w-6 h-6 bg-yellow-400 rounded-full animate-pulse"></div>
               </div>
-              <button
-                onClick={resetMonth}
-                className="bg-red-500 text-white px-4 py-3 rounded-lg hover:bg-red-600 transition-colors text-sm flex items-center space-x-2"
-              >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                </svg>
-                <span>{t('actions.resetMonth')}</span>
-              </button>
             </div>
-          </div>
-        )}
 
-        {/* Footer */}
-        <div className="text-center mt-8 text-gray-500 text-sm">
-          <p>{t('footer.message')}</p>
-          <p className="mt-1">{t('footer.tech')}</p>
+            {/* Title */}
+            <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6">
+              <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+                Control de Energía
+              </span>
+            </h1>
+            
+            {/* Subtitle */}
+            <p className="text-xl md:text-2xl text-gray-600 mb-8 max-w-3xl mx-auto leading-relaxed">
+              Gestiona tu consumo eléctrico de manera inteligente y ahorra en tu factura de luz
+            </p>
+            
+            {/* Description */}
+            <p className="text-lg text-gray-500 mb-12 max-w-2xl mx-auto">
+              Registra tus lecturas, analiza tu consumo y calcula costos con precisión usando nuestras herramientas avanzadas
+            </p>
+          </div>
         </div>
       </div>
-      
 
-      
-      {/* Componente de estado de sesión (solo en desarrollo) */}
-      <SessionStatus compact={true} position="bottom-right" />
+      {/* Features Section */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        <div className="grid md:grid-cols-2 gap-8 lg:gap-12">
+          
+          {/* Control de Consumo Card */}
+          <div 
+            className={`group relative bg-white rounded-3xl shadow-xl p-8 transition-all duration-300 hover:shadow-2xl hover:-translate-y-2 cursor-pointer ${
+              hoveredCard === 'consumption' ? 'ring-4 ring-blue-200' : ''
+            }`}
+            onMouseEnter={() => setHoveredCard('consumption')}
+            onMouseLeave={() => setHoveredCard(null)}
+          >
+            {/* Background Gradient */}
+            <div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-3xl opacity-50 group-hover:opacity-70 transition-opacity"></div>
+            
+            <div className="relative">
+              {/* Icon */}
+              <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                </svg>
+              </div>
+              
+              {/* Content */}
+              <h3 className="text-2xl font-bold text-gray-900 mb-4">Control de Consumo</h3>
+              <p className="text-gray-600 mb-6 leading-relaxed">
+                Registra tus lecturas mensuales, visualiza gráficos de consumo y obtén estadísticas detalladas para optimizar tu uso de energía.
+              </p>
+              
+              {/* Features List */}
+              <ul className="space-y-3 mb-8">
+                <li className="flex items-center text-sm text-gray-600">
+                  <svg className="w-4 h-4 text-green-500 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                  </svg>
+                  Registro de lecturas del medidor
+                </li>
+                <li className="flex items-center text-sm text-gray-600">
+                  <svg className="w-4 h-4 text-green-500 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                  </svg>
+                  Gráficos y estadísticas de consumo
+                </li>
+                <li className="flex items-center text-sm text-gray-600">
+                  <svg className="w-4 h-4 text-green-500 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                  </svg>
+                  Proyecciones mensuales
+                </li>
+                <li className="flex items-center text-sm text-gray-600">
+                  <svg className="w-4 h-4 text-green-500 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                  </svg>
+                  Desglose detallado de costos
+                </li>
+              </ul>
+              
+              {/* Button */}
+              <Link href="/control-consumo">
+                <button className="w-full bg-gradient-to-r from-blue-500 to-blue-600 text-white py-4 px-6 rounded-xl font-semibold hover:from-blue-600 hover:to-blue-700 transition-all duration-200 transform hover:scale-105 shadow-lg hover:shadow-xl">
+                  Ir al Control de Consumo
+                  <svg className="w-5 h-5 ml-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                  </svg>
+                </button>
+              </Link>
+            </div>
+          </div>
+
+          {/* Calculadora Card */}
+          <div 
+            className={`group relative bg-white rounded-3xl shadow-xl p-8 transition-all duration-300 hover:shadow-2xl hover:-translate-y-2 cursor-pointer ${
+              hoveredCard === 'calculator' ? 'ring-4 ring-indigo-200' : ''
+            }`}
+            onMouseEnter={() => setHoveredCard('calculator')}
+            onMouseLeave={() => setHoveredCard(null)}
+          >
+            {/* Background Gradient */}
+            <div className="absolute inset-0 bg-gradient-to-br from-indigo-50 to-purple-50 rounded-3xl opacity-50 group-hover:opacity-70 transition-opacity"></div>
+            
+            <div className="relative">
+              {/* Icon */}
+              <div className="w-16 h-16 bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                </svg>
+              </div>
+              
+              {/* Content */}
+              <h3 className="text-2xl font-bold text-gray-900 mb-4">Calculadora de Tarifas</h3>
+              <p className="text-gray-600 mb-6 leading-relaxed">
+                Calcula el costo exacto de tu consumo eléctrico con diferentes tarifas y banderas tarifarias del sistema brasileño.
+              </p>
+              
+              {/* Features List */}
+              <ul className="space-y-3 mb-8">
+                <li className="flex items-center text-sm text-gray-600">
+                  <svg className="w-4 h-4 text-green-500 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                  </svg>
+                  Cálculo con banderas tarifarias
+                </li>
+                <li className="flex items-center text-sm text-gray-600">
+                  <svg className="w-4 h-4 text-green-500 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                  </svg>
+                  Comparación de tarifas
+                </li>
+                <li className="flex items-center text-sm text-gray-600">
+                  <svg className="w-4 h-4 text-green-500 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                  </svg>
+                  Simulación de costos
+                </li>
+                <li className="flex items-center text-sm text-gray-600">
+                  <svg className="w-4 h-4 text-green-500 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                  </svg>
+                  Gestión de tarifas personalizadas
+                </li>
+              </ul>
+              
+              {/* Button */}
+              <Link href="/calculadora">
+                <button className="w-full bg-gradient-to-r from-indigo-500 to-indigo-600 text-white py-4 px-6 rounded-xl font-semibold hover:from-indigo-600 hover:to-indigo-700 transition-all duration-200 transform hover:scale-105 shadow-lg hover:shadow-xl">
+                  Ir a la Calculadora
+                  <svg className="w-5 h-5 ml-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                  </svg>
+                </button>
+              </Link>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Benefits Section */}
+      <div className="bg-white py-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+              ¿Por qué elegir nuestro sistema?
+            </h2>
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+              Herramientas profesionales para el control inteligente de tu consumo eléctrico
+            </p>
+          </div>
+          
+          <div className="grid md:grid-cols-3 gap-8">
+            <div className="text-center">
+              <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center mx-auto mb-4">
+                <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
+                </svg>
+              </div>
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">Ahorro Garantizado</h3>
+              <p className="text-gray-600">Optimiza tu consumo y reduce hasta un 30% en tu factura eléctrica</p>
+            </div>
+            
+            <div className="text-center">
+              <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center mx-auto mb-4">
+                <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">Precisión Total</h3>
+              <p className="text-gray-600">Cálculos exactos basados en las tarifas oficiales brasileñas</p>
+            </div>
+            
+            <div className="text-center">
+              <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center mx-auto mb-4">
+                <svg className="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                </svg>
+              </div>
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">Fácil de Usar</h3>
+              <p className="text-gray-600">Interface intuitiva y moderna para una experiencia excepcional</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Footer */}
+      <div className="bg-gray-50 py-12">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <p className="text-gray-600 mb-2">Gestiona tu consumo de energía de manera inteligente</p>
+          <p className="text-sm text-gray-500">Desarrollado con tecnología moderna para un mejor control energético</p>
+        </div>
+      </div>
     </div>
   );
 }

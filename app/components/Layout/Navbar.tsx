@@ -45,14 +45,14 @@ export default function Navbar({ onLogout, onShowTariffManager, currentPage }: N
             {/* Navigation Links */}
             <div className="flex items-center space-x-2">
               <Link 
-                href="/"
+                href="/control-consumo"
                 className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
                   pathname === '/' 
                     ? 'bg-white/20 text-white' 
                     : 'text-blue-100 hover:bg-white/10 hover:text-white'
                 }`}
               >
-                📊 Dashboard
+                📊 Control Consumo Energia
               </Link>
               <Link 
                 href="/calculadora"
