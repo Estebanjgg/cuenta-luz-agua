@@ -335,6 +335,7 @@ export const useTariffs = () => {
           city: publicTariff.city,
           state: publicTariff.state,
           company_name: publicTariff.company_name,
+          base_price_per_kwh: publicTariff.base_price_per_kwh,
           price_per_kwh_green: publicTariff.price_per_kwh_green,
           price_per_kwh_yellow: publicTariff.price_per_kwh_yellow,
           price_per_kwh_red_1: publicTariff.price_per_kwh_red_1,

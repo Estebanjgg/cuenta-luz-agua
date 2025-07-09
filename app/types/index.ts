@@ -15,6 +15,7 @@ export interface Tariff {
   city: string;
   state: string;
   company_name: string;
+  base_price_per_kwh: number; // Tarifa base que aparece en la factura
   price_per_kwh_green: number;
   price_per_kwh_yellow: number;
   price_per_kwh_red_1: number;
@@ -39,6 +40,7 @@ export interface TariffFormData {
   city: string;
   state: string;
   company_name: string;
+  base_price_per_kwh: number; // Tarifa base de la factura
   price_per_kwh_green: number;
   price_per_kwh_yellow: number;
   price_per_kwh_red_1: number;

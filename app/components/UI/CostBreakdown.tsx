@@ -18,48 +18,36 @@ export default function CostBreakdown({ consumption, tariff, flagType = 'GREEN',
     return null;
   }
 
+  // Obtener la tarifa base correcta
+  const baseTariff = selectedTariff?.base_price_per_kwh || tariff.baseConsumption || tariff.pricePerKwh;
+  
   // Calcular cada componente del costo
-  const baseCost = consumption * (tariff.baseConsumption || tariff.pricePerKwh);
-  const transmissionCost = consumption * (tariff.transmission || 0);
-  const sectorChargesCost = consumption * (tariff.sectorCharges || 0);
-  const taxesCost = consumption * (tariff.taxes || 0);
-  const publicLightingCost = tariff.publicLightingFee || tariff.additionalFees || 0;
-  
+  const baseCost = consumption * baseTariff;
   const flagSurcharge = consumption * TARIFF_FLAGS[flagType].surcharge;
+  const publicLightingCost = selectedTariff?.public_lighting_fee || selectedTariff?.additional_fees || tariff.publicLightingFee || tariff.additionalFees || 0;
   
-  const totalCost = tariff.calculateCost 
-    ? tariff.calculateCost(consumption, flagType)
-    : baseCost + transmissionCost + sectorChargesCost + taxesCost + publicLightingCost + flagSurcharge;
+  // Calcular el costo total sin aplicar impuestos automáticamente
+  const totalCost = baseCost + flagSurcharge + publicLightingCost;
 
   const costItems = [
     {
       label: t('baseConsumption'),
-      description: `${formatNumber(consumption)} kWh × ${formatCurrency(tariff.baseConsumption || tariff.pricePerKwh)}`,
+      description: `${formatNumber(consumption)} kWh × ${formatCurrency(baseTariff)}`,
       value: baseCost,
       percentage: (baseCost / totalCost) * 100,
       color: 'bg-blue-50 text-blue-700'
     },
-
     {
-      label: t('transmissionService'),
-      description: `${formatNumber(consumption)} kWh × ${formatCurrency(tariff.transmission || 0)}`,
-      value: transmissionCost,
-      percentage: (transmissionCost / totalCost) * 100,
-      color: 'bg-yellow-50 text-yellow-700'
-    },
-    {
-      label: t('sectoralCharges'),
-      description: `${formatNumber(consumption)} kWh × ${formatCurrency(tariff.sectorCharges || 0)}`,
-      value: sectorChargesCost,
-      percentage: (sectorChargesCost / totalCost) * 100,
-      color: 'bg-purple-50 text-purple-700'
-    },
-    {
-      label: t('taxesAndCharges'),
-      description: `${formatNumber(consumption)} kWh × ${formatCurrency(tariff.taxes || 0)}`,
-      value: taxesCost,
-      percentage: (taxesCost / totalCost) * 100,
-      color: 'bg-orange-50 text-orange-700'
+      label: `${t('tariffFlag')} ${t(`tariffManager.${flagType.toLowerCase().replace('_level_', '')}`)}`,
+      description: flagType === 'GREEN' 
+        ? `${formatCurrency(0)}/kWh (sin recargo)`
+        : `${formatNumber(consumption)} kWh × ${formatCurrency(TARIFF_FLAGS[flagType].surcharge)}`,
+      value: flagSurcharge,
+      percentage: flagSurcharge > 0 ? (flagSurcharge / totalCost) * 100 : 0,
+      color: flagType === 'GREEN' ? 'bg-emerald-50 text-emerald-700' : 
+             flagType === 'YELLOW' ? 'bg-amber-50 text-amber-700' : 
+             'bg-red-50 text-red-700',
+      showZero: flagType === 'GREEN'
     },
     {
       label: t('publicLightingContribution'),
@@ -67,34 +55,25 @@ export default function CostBreakdown({ consumption, tariff, flagType = 'GREEN',
       value: publicLightingCost,
       percentage: (publicLightingCost / totalCost) * 100,
       color: 'bg-green-50 text-green-700'
-    },
-    {
-      label: `${t('tariffFlag')} (${TARIFF_FLAGS[flagType].name})`,
-      description: `${formatNumber(consumption)} kWh × ${formatCurrency(TARIFF_FLAGS[flagType].surcharge)}`,
-      value: flagSurcharge,
-      percentage: (flagSurcharge / totalCost) * 100,
-      color: flagType === 'GREEN' ? 'bg-emerald-50 text-emerald-700' : 
-             flagType === 'YELLOW' ? 'bg-amber-50 text-amber-700' : 
-             'bg-red-50 text-red-700'
     }
-  ].filter(item => item.value > 0);
+  ].filter(item => item.value > 0 || item.showZero);
 
   return (
-    <div className="bg-white rounded-xl shadow-lg p-6">
-      <div className="mb-6">
-        <h2 className="text-xl font-bold text-gray-800 flex items-center mb-2">
+    <div className="bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
+      <div className="mb-8">
+        <h2 className="text-2xl font-bold text-gray-900 flex items-center mb-3">
           💰 {t('costBreakdown')}
           {selectedTariff && (
-            <span className="ml-2 text-base font-medium text-blue-600">
+            <span className="ml-3 text-lg font-medium text-blue-600">
               - {selectedTariff.company_name}
             </span>
           )}
         </h2>
         {selectedTariff && (
-          <p className="text-sm text-gray-600">
-            {t('appliedTariff')}: <span className="font-medium text-gray-800">{selectedTariff.company_name}</span>
+          <p className="text-base text-gray-600">
+            {t('appliedTariff')}: <span className="font-semibold text-gray-800">{selectedTariff.company_name}</span>
             {selectedTariff.city && selectedTariff.state && (
-              <span> • {selectedTariff.city}, {selectedTariff.state}</span>
+              <span className="text-gray-500"> • {selectedTariff.city}, {selectedTariff.state}</span>
             )}
           </p>
         )}
@@ -102,53 +81,48 @@ export default function CostBreakdown({ consumption, tariff, flagType = 'GREEN',
 
       {/* Información de la tarifa seleccionada */}
       {selectedTariff && (
-        <div className="mb-6 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg border border-blue-200">
+        <div className="mb-8 p-6 bg-gradient-to-r from-blue-50 via-indigo-50 to-purple-50 rounded-xl border border-blue-200 shadow-sm">
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="font-semibold text-blue-800 flex items-center">
+              <h3 className="font-bold text-blue-900 flex items-center text-lg">
                 ⚡ {t('activeTariff')}
               </h3>
-              <p className="text-sm text-blue-700 mt-1">
-                <span className="font-medium">{selectedTariff.company_name}</span>
+              <p className="text-blue-700 mt-2">
+                <span className="font-semibold">{selectedTariff.company_name}</span>
                 {selectedTariff.city && selectedTariff.state && (
                   <span className="text-blue-600"> • {selectedTariff.city}, {selectedTariff.state}</span>
                 )}
               </p>
             </div>
             <div className="text-right">
-              <p className="text-xs text-blue-600 uppercase tracking-wide font-medium">{t('tariffFlag')} {TARIFF_FLAGS[flagType].name}</p>
-              <p className="text-lg font-bold text-blue-800">
-                {formatCurrency(
-                  flagType === 'GREEN' ? selectedTariff.price_per_kwh_green :
-                  flagType === 'YELLOW' ? selectedTariff.price_per_kwh_yellow :
-                  flagType === 'RED_LEVEL_1' ? selectedTariff.price_per_kwh_red_1 :
-                  selectedTariff.price_per_kwh_red_2
-                )}/kWh
+              <p className="text-sm text-blue-600 uppercase tracking-wide font-semibold mb-1">Tarifa Base</p>
+              <p className="text-2xl font-bold text-blue-900">
+                {formatCurrency(baseTariff)}/kWh
               </p>
             </div>
           </div>
         </div>
       )}
 
-      <div className="space-y-4">
+      <div className="space-y-5">
         {costItems.map((item, index) => (
-          <div key={index} className={`p-4 rounded-lg ${item.color}`}>
-            <div className="flex items-center justify-between mb-2">
+          <div key={index} className={`p-5 rounded-xl ${item.color} border border-opacity-20 shadow-sm hover:shadow-md transition-all duration-200`}>
+            <div className="flex items-center justify-between mb-3">
               <div className="flex-1">
-                <h3 className="font-semibold text-sm">{item.label}</h3>
-                <p className="text-xs opacity-75">{item.description}</p>
+                <h3 className="font-bold text-base">{item.label}</h3>
+                <p className="text-sm opacity-80 mt-1">{item.description}</p>
               </div>
               <div className="text-right">
-                <p className="font-bold text-lg">{formatCurrency(item.value)}</p>
-                <p className="text-xs opacity-75">{formatNumber(item.percentage, 1)}%</p>
+                <p className="font-bold text-xl">{formatCurrency(item.value)}</p>
+                <p className="text-sm opacity-75 font-medium">{formatNumber(item.percentage, 1)}%</p>
               </div>
             </div>
             
-            {/* Barra de progreso */}
-            <div className="w-full bg-white bg-opacity-50 rounded-full h-2 mt-2">
+            {/* Barra de progreso mejorada */}
+            <div className="w-full bg-white bg-opacity-60 rounded-full h-3 mt-3">
               <div 
-                className="bg-current h-2 rounded-full transition-all duration-300"
-                style={{ width: `${Math.min(item.percentage, 100)}%`, opacity: 0.7 }}
+                className="bg-current h-3 rounded-full transition-all duration-500 ease-out"
+                style={{ width: `${Math.min(item.percentage, 100)}%`, opacity: 0.8 }}
               ></div>
             </div>
           </div>
@@ -156,15 +130,15 @@ export default function CostBreakdown({ consumption, tariff, flagType = 'GREEN',
       </div>
 
       {/* Total */}
-      <div className="mt-6 pt-4 border-t border-gray-200">
-        <div className="flex items-center justify-between bg-gray-50 p-4 rounded-lg">
+      <div className="mt-8 pt-6 border-t border-gray-200">
+        <div className="flex items-center justify-between bg-gradient-to-r from-gray-50 to-gray-100 p-6 rounded-xl border border-gray-200 shadow-sm">
           <div>
-            <h3 className="font-bold text-lg text-gray-800">{t('totalToPay')}</h3>
-            <p className="text-sm text-gray-600">{formatNumber(consumption)} kWh {t('consumed')}</p>
+            <h3 className="font-bold text-xl text-gray-900">{t('totalToPay')}</h3>
+            <p className="text-base text-gray-600 mt-1">{formatNumber(consumption)} kWh {t('consumed')}</p>
           </div>
           <div className="text-right">
-            <p className="font-bold text-2xl text-gray-800">{formatCurrency(totalCost)}</p>
-            <p className="text-sm text-gray-600">
+            <p className="font-bold text-3xl text-gray-900">{formatCurrency(totalCost)}</p>
+            <p className="text-base text-gray-600 font-medium mt-1">
               {formatCurrency(totalCost / consumption)} por kWh
             </p>
           </div>
@@ -172,11 +146,11 @@ export default function CostBreakdown({ consumption, tariff, flagType = 'GREEN',
       </div>
 
       {/* Nota informativa */}
-      <div className="mt-4 p-3 bg-blue-50 rounded-lg">
-        <p className="text-xs text-blue-700">
+      <div className="mt-6 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl border border-blue-200">
+        <p className="text-sm text-blue-800 leading-relaxed">
           💡 <strong>{t('note')}:</strong> {t('costBreakdownNote')}{' '}
           {selectedTariff ? (
-            <span className="font-medium">
+            <span className="font-semibold">
               {selectedTariff.company_name}
               {selectedTariff.city && selectedTariff.state && (
                 <span> ({selectedTariff.city}, {selectedTariff.state})</span>
