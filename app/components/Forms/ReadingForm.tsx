@@ -305,7 +305,7 @@ export default function ReadingForm({ onAddReading, currentReading, currentMonth
                 </p>
                 <div className="flex items-center space-x-2">
                   <p className="text-blue-700 text-sm">
-                    Día de medición inicial:
+                    {t('initialMeasurementDay')}:
                   </p>
                   {isEditingReadingDay ? (
                     <div className="flex items-center space-x-2">
