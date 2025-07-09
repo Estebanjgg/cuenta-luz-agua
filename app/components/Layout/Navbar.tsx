@@ -52,7 +52,7 @@ export default function Navbar({ onLogout, onShowTariffManager, currentPage }: N
                     : 'text-blue-100 hover:bg-white/10 hover:text-white'
                 }`}
               >
-                📊 Control Consumo Energia
+                📊 {t('navbar.consumptionControl')}
               </Link>
               <Link 
                 href="/calculadora"
@@ -62,7 +62,7 @@ export default function Navbar({ onLogout, onShowTariffManager, currentPage }: N
                     : 'text-blue-100 hover:bg-white/10 hover:text-white'
                 }`}
               >
-                🏠 Calculadora
+                🏠 {t('navbar.applianceCalculator')}
               </Link>
             </div>
             
@@ -159,7 +159,7 @@ export default function Navbar({ onLogout, onShowTariffManager, currentPage }: N
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               className="bg-white/10 hover:bg-white/20 rounded-lg p-2 transition-colors duration-200"
-              aria-label="Abrir menú"
+              aria-label={t('navbar.openMenu')}
             >
               <svg 
                 className={`w-6 h-6 text-white transition-transform duration-200 ${isMobileMenuOpen ? 'rotate-90' : ''}`} 
@@ -204,7 +204,7 @@ export default function Navbar({ onLogout, onShowTariffManager, currentPage }: N
               {/* Mobile Navigation Links */}
               <div className="space-y-2 mb-4">
                 <Link 
-                  href="/"
+                  href="/control-consumo"
                   onClick={() => setIsMobileMenuOpen(false)}
                   className={`w-full text-left px-4 py-3 rounded-lg flex items-center space-x-3 transition-colors ${
                     pathname === '/' 
@@ -215,7 +215,7 @@ export default function Navbar({ onLogout, onShowTariffManager, currentPage }: N
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                   </svg>
-                  <span>📊 Dashboard</span>
+                  <span>📊 {t('navbar.consumptionControl')}</span>
                 </Link>
                 
                 <Link 
@@ -230,7 +230,7 @@ export default function Navbar({ onLogout, onShowTariffManager, currentPage }: N
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
                   </svg>
-                  <span>🏠 Calculadora de Eletrodomésticos</span>
+                  <span>🏠 {t('navbar.applianceCalculator')}</span>
                 </Link>
               </div>
 

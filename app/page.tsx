@@ -21,7 +21,7 @@ export default function Home() {
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Cargando...</p>
+          <p className="text-gray-600">{t('homePage.loading')}</p>
         </div>
       </div>
     );
@@ -56,18 +56,18 @@ export default function Home() {
             {/* Title */}
             <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6">
               <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
-                Control de Energía
+                {t('homePage.title')}
               </span>
             </h1>
             
             {/* Subtitle */}
             <p className="text-xl md:text-2xl text-gray-600 mb-8 max-w-3xl mx-auto leading-relaxed">
-              Gestiona tu consumo eléctrico de manera inteligente y ahorra en tu factura de luz
+              {t('homePage.subtitle')}
             </p>
             
             {/* Description */}
             <p className="text-lg text-gray-500 mb-12 max-w-2xl mx-auto">
-              Registra tus lecturas, analiza tu consumo y calcula costos con precisión usando nuestras herramientas avanzadas
+              {t('homePage.description')}
             </p>
           </div>
         </div>
@@ -97,9 +97,9 @@ export default function Home() {
               </div>
               
               {/* Content */}
-              <h3 className="text-2xl font-bold text-gray-900 mb-4">Control de Consumo</h3>
+              <h3 className="text-2xl font-bold text-gray-900 mb-4">{t('homePage.consumptionControl.title')}</h3>
               <p className="text-gray-600 mb-6 leading-relaxed">
-                Registra tus lecturas mensuales, visualiza gráficos de consumo y obtén estadísticas detalladas para optimizar tu uso de energía.
+                {t('homePage.consumptionControl.description')}
               </p>
               
               {/* Features List */}
@@ -108,32 +108,32 @@ export default function Home() {
                   <svg className="w-4 h-4 text-green-500 mr-3" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                   </svg>
-                  Registro de lecturas del medidor
+                  {t('homePage.consumptionControl.features.meterReadings')}
                 </li>
                 <li className="flex items-center text-sm text-gray-600">
                   <svg className="w-4 h-4 text-green-500 mr-3" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                   </svg>
-                  Gráficos y estadísticas de consumo
+                  {t('homePage.consumptionControl.features.consumptionGraphs')}
                 </li>
                 <li className="flex items-center text-sm text-gray-600">
                   <svg className="w-4 h-4 text-green-500 mr-3" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                   </svg>
-                  Proyecciones mensuales
+                  {t('homePage.consumptionControl.features.monthlyProjections')}
                 </li>
                 <li className="flex items-center text-sm text-gray-600">
                   <svg className="w-4 h-4 text-green-500 mr-3" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                   </svg>
-                  Desglose detallado de costos
+                  {t('homePage.consumptionControl.features.costBreakdown')}
                 </li>
               </ul>
               
               {/* Button */}
               <Link href="/control-consumo">
                 <button className="w-full bg-gradient-to-r from-blue-500 to-blue-600 text-white py-4 px-6 rounded-xl font-semibold hover:from-blue-600 hover:to-blue-700 transition-all duration-200 transform hover:scale-105 shadow-lg hover:shadow-xl">
-                  Ir al Control de Consumo
+                  {t('homePage.consumptionControl.button')}
                   <svg className="w-5 h-5 ml-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
                   </svg>
@@ -162,9 +162,9 @@ export default function Home() {
               </div>
               
               {/* Content */}
-              <h3 className="text-2xl font-bold text-gray-900 mb-4">Calculadora de Tarifas</h3>
+              <h3 className="text-2xl font-bold text-gray-900 mb-4">{t('homePage.calculator.title')}</h3>
               <p className="text-gray-600 mb-6 leading-relaxed">
-                Calcula el costo exacto de tu consumo eléctrico con diferentes tarifas y banderas tarifarias del sistema brasileño.
+                {t('homePage.calculator.description')}
               </p>
               
               {/* Features List */}
@@ -173,32 +173,32 @@ export default function Home() {
                   <svg className="w-4 h-4 text-green-500 mr-3" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                   </svg>
-                  Cálculo con banderas tarifarias
+                  {t('homePage.calculator.features.tariffFlags')}
                 </li>
                 <li className="flex items-center text-sm text-gray-600">
                   <svg className="w-4 h-4 text-green-500 mr-3" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                   </svg>
-                  Comparación de tarifas
+                  {t('homePage.calculator.features.tariffComparison')}
                 </li>
                 <li className="flex items-center text-sm text-gray-600">
                   <svg className="w-4 h-4 text-green-500 mr-3" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                   </svg>
-                  Simulación de costos
+                  {t('homePage.calculator.features.costSimulation')}
                 </li>
                 <li className="flex items-center text-sm text-gray-600">
                   <svg className="w-4 h-4 text-green-500 mr-3" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                   </svg>
-                  Gestión de tarifas personalizadas
+                  {t('homePage.calculator.features.customTariffs')}
                 </li>
               </ul>
               
               {/* Button */}
               <Link href="/calculadora">
                 <button className="w-full bg-gradient-to-r from-indigo-500 to-indigo-600 text-white py-4 px-6 rounded-xl font-semibold hover:from-indigo-600 hover:to-indigo-700 transition-all duration-200 transform hover:scale-105 shadow-lg hover:shadow-xl">
-                  Ir a la Calculadora
+                  {t('homePage.calculator.button')}
                   <svg className="w-5 h-5 ml-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
                   </svg>
@@ -214,10 +214,10 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              ¿Por qué elegir nuestro sistema?
+              {t('homePage.benefits.title')}
             </h2>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              Herramientas profesionales para el control inteligente de tu consumo eléctrico
+              {t('homePage.benefits.subtitle')}
             </p>
           </div>
           
@@ -228,8 +228,8 @@ export default function Home() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
                 </svg>
               </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">Ahorro Garantizado</h3>
-              <p className="text-gray-600">Optimiza tu consumo y reduce hasta un 30% en tu factura eléctrica</p>
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">{t('homePage.benefits.guaranteedSavings.title')}</h3>
+              <p className="text-gray-600">{t('homePage.benefits.guaranteedSavings.description')}</p>
             </div>
             
             <div className="text-center">
@@ -238,8 +238,8 @@ export default function Home() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
               </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">Precisión Total</h3>
-              <p className="text-gray-600">Cálculos exactos basados en las tarifas oficiales brasileñas</p>
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">{t('homePage.benefits.totalPrecision.title')}</h3>
+              <p className="text-gray-600">{t('homePage.benefits.totalPrecision.description')}</p>
             </div>
             
             <div className="text-center">
@@ -248,8 +248,8 @@ export default function Home() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
                 </svg>
               </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">Fácil de Usar</h3>
-              <p className="text-gray-600">Interface intuitiva y moderna para una experiencia excepcional</p>
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">{t('homePage.benefits.easyToUse.title')}</h3>
+              <p className="text-gray-600">{t('homePage.benefits.easyToUse.description')}</p>
             </div>
           </div>
         </div>

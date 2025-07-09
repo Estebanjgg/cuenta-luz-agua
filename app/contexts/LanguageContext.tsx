@@ -34,7 +34,10 @@ const translations = {
       profile: 'Mi Perfil',
       settings: 'Configuración',
       manageTariffs: 'Gestionar Tarifas',
-      logout: 'Cerrar Sesión'
+      logout: 'Cerrar Sesión',
+      consumptionControl: 'Control de Consumo',
+      applianceCalculator: 'Calculadora de Electrodomésticos',
+      openMenu: 'Abrir menú'
     },
     
     // Actions object
@@ -47,6 +50,58 @@ const translations = {
     footer: {
       message: 'Gestiona tu consumo de energía de manera inteligente',
       tech: 'Desarrollado con tecnología moderna para un mejor control energético'
+    },
+    
+    // Home page
+    homePage: {
+      loading: 'Cargando...',
+      title: 'Control de Energía',
+      subtitle: 'Gestiona tu consumo eléctrico de manera inteligente y ahorra en tu factura de luz',
+      description: 'Registra tus lecturas, analiza tu consumo y calcula costos con precisión usando nuestras herramientas avanzadas',
+      
+      // Consumption Control Card
+      consumptionControl: {
+        title: 'Control de Consumo',
+        description: 'Registra tus lecturas mensuales, visualiza gráficos de consumo y obtén estadísticas detalladas para optimizar tu uso de energía.',
+        features: {
+          meterReadings: 'Registro de lecturas del medidor',
+          consumptionGraphs: 'Gráficos y estadísticas de consumo',
+          monthlyProjections: 'Proyecciones mensuales',
+          costBreakdown: 'Desglose detallado de costos'
+        },
+        button: 'Ir al Control de Consumo'
+      },
+      
+      // Calculator Card
+      calculator: {
+        title: 'Calculadora de Tarifas',
+        description: 'Calcula el costo exacto de tu consumo eléctrico con diferentes tarifas y banderas tarifarias del sistema brasileño.',
+        features: {
+          tariffFlags: 'Cálculo con banderas tarifarias',
+          tariffComparison: 'Comparación de tarifas',
+          costSimulation: 'Simulación de costos',
+          customTariffs: 'Gestión de tarifas personalizadas'
+        },
+        button: 'Ir a la Calculadora'
+      },
+      
+      // Benefits Section
+      benefits: {
+        title: '¿Por qué elegir nuestro sistema?',
+        subtitle: 'Herramientas profesionales para el control inteligente de tu consumo eléctrico',
+        guaranteedSavings: {
+          title: 'Ahorro Garantizado',
+          description: 'Optimiza tu consumo y reduce hasta un 30% en tu factura eléctrica'
+        },
+        totalPrecision: {
+          title: 'Precisión Total',
+          description: 'Cálculos exactos basados en las tarifas oficiales brasileñas'
+        },
+        easyToUse: {
+          title: 'Fácil de Usar',
+          description: 'Interface intuitiva y moderna para una experiencia excepcional'
+        }
+      }
     },
     
     // Main page
@@ -592,7 +647,10 @@ const translations = {
       profile: 'Meu Perfil',
       settings: 'Configurações',
       manageTariffs: 'Gerenciar Tarifas',
-      logout: 'Sair'
+      logout: 'Sair',
+      consumptionControl: 'Controle de Consumo',
+      applianceCalculator: 'Calculadora de Eletrodomésticos',
+      openMenu: 'Abrir menu'
     },
     
     // Actions object
@@ -605,6 +663,58 @@ const translations = {
     footer: {
       message: 'Gerencie seu consumo de energia de forma inteligente',
       tech: 'Desenvolvido com tecnologia moderna para um melhor controle energético'
+    },
+    
+    // Home page
+    homePage: {
+      loading: 'Carregando...',
+      title: 'Controle de Energia',
+      subtitle: 'Gerencie seu consumo elétrico de forma inteligente e economize na sua conta de luz',
+      description: 'Registre suas leituras, analise seu consumo e calcule custos com precisão usando nossas ferramentas avançadas',
+      
+      // Consumption Control Card
+      consumptionControl: {
+        title: 'Controle de Consumo',
+        description: 'Registre suas leituras mensais, visualize gráficos de consumo e obtenha estatísticas detalhadas para otimizar seu uso de energia.',
+        features: {
+          meterReadings: 'Registro de leituras do medidor',
+          consumptionGraphs: 'Gráficos e estatísticas de consumo',
+          monthlyProjections: 'Projeções mensais',
+          costBreakdown: 'Detalhamento detalhado de custos'
+        },
+        button: 'Ir ao Controle de Consumo'
+      },
+      
+      // Calculator Card
+      calculator: {
+        title: 'Calculadora de Tarifas',
+        description: 'Calcule o custo exato do seu consumo elétrico com diferentes tarifas e bandeiras tarifárias do sistema brasileiro.',
+        features: {
+          tariffFlags: 'Cálculo com bandeiras tarifárias',
+          tariffComparison: 'Comparação de tarifas',
+          costSimulation: 'Simulação de custos',
+          customTariffs: 'Gestão de tarifas personalizadas'
+        },
+        button: 'Ir à Calculadora'
+      },
+      
+      // Benefits Section
+      benefits: {
+        title: 'Por que escolher nosso sistema?',
+        subtitle: 'Ferramentas profissionais para o controle inteligente do seu consumo elétrico',
+        guaranteedSavings: {
+          title: 'Economia Garantida',
+          description: 'Otimize seu consumo e reduza até 30% na sua conta elétrica'
+        },
+        totalPrecision: {
+          title: 'Precisão Total',
+          description: 'Cálculos exatos baseados nas tarifas oficiais brasileiras'
+        },
+        easyToUse: {
+          title: 'Fácil de Usar',
+          description: 'Interface intuitiva e moderna para uma experiência excepcional'
+        }
+      }
     },
     
     // Main page
