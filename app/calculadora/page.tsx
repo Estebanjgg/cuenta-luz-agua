@@ -32,7 +32,6 @@ export default function CalculadoraPage() {
       {/* Navbar */}
       <Navbar 
         onLogout={signOut}
-        currentPage="calculadora"
       />
       
       <div className="max-w-6xl mx-auto p-4">
