@@ -118,12 +118,30 @@ export const VALIDATION_LIMITS = {
   maxDailyConsumption: 1000 // kWh por día
 };
 
+// Función para obtener el mes actual de forma segura (evita problemas de hidratación)
+export const getCurrentMonth = () => {
+  if (typeof window !== 'undefined') {
+    return MONTH_KEYS[new Date().getMonth()];
+  }
+  // Fallback para SSR - usar mes actual del servidor
+  return MONTH_KEYS[new Date().getMonth()];
+};
+
+// Función para obtener el año actual de forma segura
+export const getCurrentYear = () => {
+  if (typeof window !== 'undefined') {
+    return new Date().getFullYear();
+  }
+  // Fallback para SSR
+  return new Date().getFullYear();
+};
+
 // Configuración de la aplicación
 export const APP_CONFIG = {
   name: 'Control de Consumo Eléctrico',
   version: '1.0.0',
-  defaultYear: 2025, // Año fijo para evitar problemas de hidratación
-  defaultMonth: 'julio',
+  defaultYear: getCurrentYear(),
+  defaultMonth: getCurrentMonth(),
   defaultInitialReading: 65788
 };
 

@@ -111,6 +111,8 @@ export default function PeriodNavigator({
       document.addEventListener('click', handleClickOutside);
       return () => document.removeEventListener('click', handleClickOutside);
     }
+    
+    return () => {};
   }, [isMonthDropdownOpen, isYearDropdownOpen]);
 
   return (
@@ -434,7 +436,7 @@ export default function PeriodNavigator({
               </div>
               <TariffManager 
                 showSelectButton={true}
-                selectedTariffId={selectedMonthTariff?.id}
+                selectedTariffId={selectedMonthTariff?.id || ''}
                 onTariffSelect={(tariff) => {
                   if (onTariffSelect) {
                     onTariffSelect(tariff);

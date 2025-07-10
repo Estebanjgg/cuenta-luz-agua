@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useLanguage } from '../../contexts/LanguageContext';
+
 import { DEFAULT_TARIFF } from '../../constants';
 import TariffSettings from './TariffSettings';
 
@@ -43,7 +43,6 @@ const COMMON_APPLIANCES = [
 ];
 
 export default function ApplianceCalculator() {
-  const { t } = useLanguage();
   const [appliances, setAppliances] = useState<Appliance[]>([]);
   const [showForm, setShowForm] = useState(false);
   const [currentTariff, setCurrentTariff] = useState(DEFAULT_TARIFF.baseConsumption);

@@ -45,8 +45,7 @@ export default function TariffModal({
   isOpen, 
   onClose, 
   onSave, 
-  tariff, 
-  title = 'Nueva Tarifa' 
+  tariff
 }: TariffModalProps) {
   const { t } = useLanguage();
   const [formData, setFormData] = useState<TariffFormData>(initialFormData);
@@ -192,10 +191,7 @@ export default function TariffModal({
     }));
   };
 
-  // Función para calcular solo los recargos de bandeira
-  const calculateBandeiraCharge = (flag: 'yellow' | 'red_1' | 'red_2') => {
-    return ANEEL_BANDEIRA_VALUES[flag];
-  };
+
 
   // Función para habilitar/deshabilitar la edición de banderas
   const toggleFlagEditing = () => {

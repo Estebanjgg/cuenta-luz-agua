@@ -453,8 +453,8 @@ export function AnimatedLoginForm({ onToggleMode }: AnimatedLoginFormProps) {
 
     try {
       await signIn(email, password);
-    } catch (err: any) {
-      setError(err.message || t('auth.loginError'));
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : t('auth.loginError'));
     } finally {
       setLoading(false);
     }

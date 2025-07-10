@@ -131,20 +131,24 @@ export default function CameraCapture({ onReadingExtracted, isProcessing = false
           stopCamera();
         }
       }, 10000); // 10 segundos timeout
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Error accessing camera:', err);
       setIsCapturing(false); // Asegurar que el estado se resetee
       setIsLoadingCamera(false); // Ocultar indicador de carga
       
       // Mensajes de error específicos
-      if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
-        setError(t('cameraCapture.permissionDenied'));
-      } else if (err.name === 'NotFoundError' || err.name === 'DevicesNotFoundError') {
-        setError(t('cameraCapture.noCameraFound'));
-      } else if (err.name === 'NotSupportedError') {
-        setError(t('cameraCapture.cameraNotSupported'));
-      } else if (err.name === 'NotReadableError' || err.name === 'TrackStartError') {
-        setError(t('cameraCapture.cameraInUse'));
+      if (err instanceof Error) {
+        if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
+          setError(t('cameraCapture.permissionDenied'));
+        } else if (err.name === 'NotFoundError' || err.name === 'DevicesNotFoundError') {
+          setError(t('cameraCapture.noCameraFound'));
+        } else if (err.name === 'NotSupportedError') {
+          setError(t('cameraCapture.cameraNotSupported'));
+        } else if (err.name === 'NotReadableError' || err.name === 'TrackStartError') {
+          setError(t('cameraCapture.cameraInUse'));
+        } else {
+          setError(t('cameraCapture.cameraError'));
+        }
       } else {
         setError(t('cameraCapture.cameraError'));
       }
@@ -162,40 +166,7 @@ export default function CameraCapture({ onReadingExtracted, isProcessing = false
     setCapturedImage(null);
   }, [stream]);
 
-  // Optimizar imagen para OCR
-  const optimizeImageForOCR = (canvas: HTMLCanvasElement, context: CanvasRenderingContext2D): string => {
-    // Calcular dimensiones optimizadas (máximo 1920x1080 para mejor rendimiento)
-    const maxWidth = 1920;
-    const maxHeight = 1080;
-    const currentWidth = canvas.width;
-    const currentHeight = canvas.height;
-    
-    let newWidth = currentWidth;
-    let newHeight = currentHeight;
-    
-    if (currentWidth > maxWidth || currentHeight > maxHeight) {
-      const ratio = Math.min(maxWidth / currentWidth, maxHeight / currentHeight);
-      newWidth = Math.round(currentWidth * ratio);
-      newHeight = Math.round(currentHeight * ratio);
-      
-      // Crear canvas temporal para redimensionar
-      const tempCanvas = document.createElement('canvas');
-      const tempContext = tempCanvas.getContext('2d');
-      if (!tempContext) return canvas.toDataURL('image/jpeg', 0.8);
-      
-      tempCanvas.width = newWidth;
-      tempCanvas.height = newHeight;
-      
-      // Redimensionar con suavizado
-      tempContext.imageSmoothingEnabled = true;
-      tempContext.imageSmoothingQuality = 'high';
-      tempContext.drawImage(canvas, 0, 0, newWidth, newHeight);
-      
-      return tempCanvas.toDataURL('image/jpeg', 0.85);
-    }
-    
-    return canvas.toDataURL('image/jpeg', 0.85);
-  };
+
 
   // Capturar foto con mejor calidad
   const capturePhoto = useCallback(() => {
@@ -398,16 +369,20 @@ export default function CameraCapture({ onReadingExtracted, isProcessing = false
         // Asegurar que el worker se termine siempre
         await worker.terminate();
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('OCR Error:', err);
       
       // Mensajes de error más específicos
-      if (err.message?.includes('network') || err.message?.includes('fetch')) {
-        setError(t('cameraCapture.networkError'));
-      } else if (err.message?.includes('memory') || err.message?.includes('allocation')) {
-        setError(t('cameraCapture.memoryError'));
-      } else if (err.message?.includes('read image')) {
-        setError(t('cameraCapture.imageReadError'));
+      if (err instanceof Error) {
+        if (err.message?.includes('network') || err.message?.includes('fetch')) {
+          setError(t('cameraCapture.networkError'));
+        } else if (err.message?.includes('memory') || err.message?.includes('allocation')) {
+          setError(t('cameraCapture.memoryError'));
+        } else if (err.message?.includes('read image')) {
+          setError(t('cameraCapture.imageReadError'));
+        } else {
+          setError(t('cameraCapture.ocrError'));
+        }
       } else {
         setError(t('cameraCapture.ocrError'));
       }

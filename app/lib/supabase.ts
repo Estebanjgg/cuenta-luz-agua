@@ -1,5 +1,6 @@
 import { createClient } from '@supabase/supabase-js'
 import { createBrowserClient } from '@supabase/ssr'
+import { Reading } from '@/app/types'
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
@@ -7,9 +8,22 @@ const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 // Cliente para el lado del servidor
 export const supabase = createClient(supabaseUrl, supabaseAnonKey)
 
-// Cliente para el lado del navegador
+// Instancia singleton para el navegador para evitar múltiples clientes
+let browserClient: ReturnType<typeof createBrowserClient> | null = null;
+
+// Cliente para el lado del navegador (singleton)
 export const createSupabaseBrowserClient = () => {
-  return createBrowserClient(supabaseUrl, supabaseAnonKey)
+  if (typeof window === 'undefined') {
+    // En el servidor, crear una nueva instancia
+    return createBrowserClient(supabaseUrl, supabaseAnonKey)
+  }
+  
+  // En el navegador, usar singleton
+  if (!browserClient) {
+    browserClient = createBrowserClient(supabaseUrl, supabaseAnonKey)
+  }
+  
+  return browserClient
 }
 
 // Tipos para la base de datos
@@ -24,9 +38,10 @@ export interface Database {
           year: number
           initial_reading: number
           reading_day: number
-          readings: any[]
+          readings: Reading[]
           total_consumption: number
           estimated_cost: number
+          tariff_flag: string
           created_at: string
           updated_at: string
         }
@@ -37,9 +52,10 @@ export interface Database {
           year: number
           initial_reading: number
           reading_day?: number
-          readings?: any[]
+          readings?: Reading[]
           total_consumption?: number
           estimated_cost?: number
+          tariff_flag?: string
           created_at?: string
           updated_at?: string
         }
@@ -50,9 +66,10 @@ export interface Database {
           year?: number
           initial_reading?: number
           reading_day?: number
-          readings?: any[]
+          readings?: Reading[]
           total_consumption?: number
           estimated_cost?: number
+          tariff_flag?: string
           created_at?: string
           updated_at?: string
         }

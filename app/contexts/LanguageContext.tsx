@@ -1266,11 +1266,11 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
   // Función de traducción
   const t = (key: string): string => {
     const keys = key.split('.');
-    let value: any = translations[language];
+    let value: unknown = translations[language];
     
     for (const k of keys) {
-      if (value && typeof value === 'object' && k in value) {
-        value = value[k];
+      if (value && typeof value === 'object' && value !== null && k in value) {
+        value = (value as Record<string, unknown>)[k];
       } else {
         return key; // Retorna la clave original si no se encuentra
       }
