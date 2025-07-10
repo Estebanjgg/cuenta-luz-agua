@@ -80,15 +80,21 @@ export default function Dashboard() {
     }
   }, [user, isLoading, currentMonth, hasCheckedInitialData]);
 
-  // Resetear el flag cuando el componente se desmonte, el usuario cambie o se navegue a la página
+  // Resetear el flag cuando el componente se monte o el usuario cambie
   useEffect(() => {
-    // Resetear el flag cada vez que se monta el componente
+    // Resetear el flag cada vez que se monta el componente o cambia el usuario
     setHasCheckedInitialData(false);
     
     return () => {
       setHasCheckedInitialData(false);
     };
-  }, [user]);
+  }, [user]); // Solo depende del usuario, no de la ruta
+
+  // Efecto adicional para resetear cuando se navega a la página
+  useEffect(() => {
+    // Siempre resetear el flag cuando el componente se monta
+    setHasCheckedInitialData(false);
+  }, []); // Se ejecuta solo al montar el componente
 
   // Funciones para manejar el modal inicial
   const handleInitialMonthSelect = async (month: string, year: number, initialReading?: number, readingDay?: number) => {
