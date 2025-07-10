@@ -25,7 +25,9 @@ const DEFAULT_MONTH_DATA: MonthData = {
 export const useSupabaseEnergyData = () => {
   const { user } = useAuth()
   const [monthsData, setMonthsData] = useState<Record<string, MonthData>>({})
+  
   const [currentMonthKey, setCurrentMonthKey] = useState<string>(`${getCurrentMonth()}-${getCurrentYear()}`)
+  const [userPreferencesLoaded, setUserPreferencesLoaded] = useState(false)
   const [tariff, setTariff] = useState<TariffConfig>(DEFAULT_TARIFF)
   const [isLoading, setIsLoading] = useState(true)
   const supabase = createSupabaseBrowserClient()
@@ -43,9 +45,12 @@ export const useSupabaseEnergyData = () => {
     if (user) {
       loadUserData()
       loadUserTariff()
+      loadUserPreferences()
     } else {
       setMonthsData({})
       setTariff(DEFAULT_TARIFF)
+      setCurrentMonthKey(`${getCurrentMonth()}-${getCurrentYear()}`)
+      setUserPreferencesLoaded(false)
       setIsLoading(false)
     }
   }, [user])
@@ -111,6 +116,55 @@ export const useSupabaseEnergyData = () => {
       }
     } catch (error) {
       console.error('Error loading user tariff:', error)
+    }
+  }
+
+  const loadUserPreferences = async () => {
+    if (!user) return
+
+    try {
+      const { data, error } = await supabase
+        .from('user_preferences')
+        .select('selected_month_key')
+        .eq('user_id', user.id)
+        .single()
+
+      if (error && error.code !== 'PGRST116') {
+        console.error('Error loading user preferences:', error)
+        setUserPreferencesLoaded(true)
+        return
+      }
+
+      if (data && data.selected_month_key) {
+        setCurrentMonthKey(data.selected_month_key)
+      }
+      
+      setUserPreferencesLoaded(true)
+    } catch (error) {
+      console.error('Error loading user preferences:', error)
+      setUserPreferencesLoaded(true)
+    }
+  }
+
+  const saveUserPreferences = async (selectedMonthKey: string) => {
+    if (!user) return
+
+    try {
+      const { error } = await supabase
+        .from('user_preferences')
+        .upsert({
+          user_id: user.id,
+          selected_month_key: selectedMonthKey,
+          updated_at: new Date().toISOString()
+        }, {
+          onConflict: 'user_id'
+        })
+
+      if (error) {
+        console.error('Error saving user preferences:', error)
+      }
+    } catch (error) {
+      console.error('Error saving user preferences:', error)
     }
   }
 
@@ -247,6 +301,9 @@ export const useSupabaseEnergyData = () => {
   const switchToMonth = (month: string, year: number): void => {
     const newMonthKey = getMonthKey(month, year)
     setCurrentMonthKey(newMonthKey)
+    
+    // Guardar la selección en la base de datos
+    saveUserPreferences(newMonthKey)
   }
 
   // Cambiar mes (crear nuevo si no existe)
@@ -287,6 +344,9 @@ export const useSupabaseEnergyData = () => {
       
       // Cambiar al mes seleccionado
       setCurrentMonthKey(newMonthKey)
+      
+      // Guardar la selección en la base de datos
+      saveUserPreferences(newMonthKey)
     } catch (error) {
       console.error('Error changing month:', error);
     }
@@ -367,6 +427,7 @@ export const useSupabaseEnergyData = () => {
     currentMonth,
     tariff,
     isLoading,
+    userPreferencesLoaded,
     
     // Acciones
     addReading,
