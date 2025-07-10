@@ -3,7 +3,7 @@
 import { useEffect, useRef } from 'react';
 import { Reading } from '../../types';
 import { CHART_CONFIG } from '../../constants';
-import { formatNumber, formatDate } from '../../utils/calculations';
+import { formatNumber } from '../../utils/calculations';
 
 interface ConsumptionChartProps {
   readings: Reading[];

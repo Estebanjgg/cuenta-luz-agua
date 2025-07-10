@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Tariff } from '../../types';
+import { Tariff, TariffFormData } from '../../types';
 import { useTariffs } from '../../hooks/useTariffs';
 import { useLanguage } from '../../contexts/LanguageContext';
 import TariffModal from './Forms/TariffModal';
@@ -27,8 +27,7 @@ export default function TariffManager({
     createTariff,
     updateTariff,
     deleteTariff,
-    copyPublicTariff,
-    refreshTariffs
+    copyPublicTariff
   } = useTariffs();
   const { t } = useLanguage();
 
@@ -43,7 +42,7 @@ export default function TariffManager({
   const [selectedTariffForConfirmation, setSelectedTariffForConfirmation] = useState<Tariff | null>(null);
 
 
-  const handleCreateTariff = async (tariffData: any) => {
+  const handleCreateTariff = async (tariffData: TariffFormData) => {
     const newTariff = await createTariff(tariffData);
     if (newTariff) {
       setIsCreateModalOpen(false);
@@ -54,7 +53,7 @@ export default function TariffManager({
     return false;
   };
 
-  const handleUpdateTariff = async (tariffData: any) => {
+  const handleUpdateTariff = async (tariffData: TariffFormData) => {
     if (!editingTariff) return false;
     
     const success = await updateTariff(editingTariff.id, tariffData);

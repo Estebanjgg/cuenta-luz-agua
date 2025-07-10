@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { createSupabaseBrowserClient } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
-import { Tariff, TariffFormData, UserMonthlyTariff } from '../types';
+import { Tariff, TariffFormData } from '../types';
 
 export const useTariffs = () => {
   const { user } = useAuth();
@@ -180,7 +180,7 @@ export const useTariffs = () => {
 
     try {
       // Primero intentar obtener el registro existente
-      const { data: existingData, error: selectError } = await supabase
+      const { data: existingData, error: _ } = await supabase
         .from('user_energy_data')
         .select('id')
         .eq('user_id', user.id)
@@ -272,9 +272,17 @@ export const useTariffs = () => {
         .eq('user_id', user.id)
         .eq('month', month)
         .eq('year', year)
-        .single();
+        .maybeSingle(); // Usar maybeSingle() en lugar de single() para evitar errores
 
-      if (energyError || !energyData) {
+      if (energyError) {
+        // Solo loggear errores reales, no "no rows found"
+        if (energyError.code !== 'PGRST116') {
+          console.error('Error getting energy data:', energyError);
+        }
+        return null;
+      }
+
+      if (!energyData) {
         // Si no existe el registro de energy_data, no hay tarifa asignada
         return null;
       }
@@ -287,10 +295,10 @@ export const useTariffs = () => {
         `)
         .eq('user_id', user.id)
         .eq('energy_data_id', energyData.id)
-        .single();
+        .maybeSingle(); // Usar maybeSingle() para evitar errores 406
 
       if (error) {
-        // PGRST116 significa "no rows found", que es normal si no hay tarifa asignada
+        // Solo loggear errores reales
         if (error.code !== 'PGRST116') {
           console.error('Error getting month tariff:', error);
         }
@@ -299,7 +307,6 @@ export const useTariffs = () => {
 
       // Validar que data existe y tiene la estructura esperada
       if (!data || !data.tariff) {
-        console.warn('No tariff data found for month:', month, year);
         return null;
       }
 

@@ -1,15 +1,15 @@
 'use client'
 
 import React, { createContext, useContext, useEffect, useState } from 'react'
-import { User, Session } from '@supabase/supabase-js'
-import { createSupabaseBrowserClient } from '../lib/supabase'
+import { User, Session, AuthError } from '@supabase/supabase-js'
+import { createSupabaseBrowserClient } from '@/app/lib/supabase'
 
 interface AuthContextType {
   user: User | null
   session: Session | null
   loading: boolean
-  signIn: (email: string, password: string) => Promise<{ error: any }>
-  signUp: (email: string, password: string) => Promise<{ error: any }>
+  signIn: (email: string, password: string) => Promise<{ error: AuthError | null }>
+  signUp: (email: string, password: string) => Promise<{ error: AuthError | null }>
   signOut: () => Promise<void>
 }
 
@@ -28,7 +28,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [session, setSession] = useState<Session | null>(null)
   const [loading, setLoading] = useState(true)
   const [mounted, setMounted] = useState(false)
-  const supabase = createSupabaseBrowserClient()
+  
+  // Usar useMemo para evitar recrear el cliente en cada render
+  const supabase = React.useMemo(() => createSupabaseBrowserClient(), [])
 
   useEffect(() => {
     setMounted(true)
@@ -45,7 +47,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     // Escuchar cambios de autenticación
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
+      async (_: any, session: Session | null) => {
         setSession(session)
         setUser(session?.user ?? null)
         setLoading(false)

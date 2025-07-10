@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Tariff } from '../../types';
+import { Tariff, TariffFormData } from '../../types';
 import { useTariffs } from '../../hooks/useTariffs';
 import { useLanguage } from '../../contexts/LanguageContext';
 import TariffModal from './Forms/TariffModal';
@@ -105,7 +105,7 @@ export default function TariffSelector({
     }
   };
 
-  const handleCreateTariff = async (tariffData: any) => {
+  const handleCreateTariff = async (tariffData: TariffFormData) => {
     const newTariff = await createTariff(tariffData);
     if (newTariff) {
       setIsCreateModalOpen(false);
@@ -156,12 +156,7 @@ export default function TariffSelector({
     return `R$ ${value.toFixed(4)}/kWh`;
   };
 
-  const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat('pt-BR', {
-      style: 'currency',
-      currency: 'BRL'
-    }).format(value);
-  };
+
 
   if (isLoading) {
     return (

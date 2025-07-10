@@ -15,9 +15,7 @@ import {
   TariffFlagSelector
 } from '../components';
 import SessionStatus from '../components/UI/SessionStatus';
-import TariffManager from '../components/UI/TariffManager';
 import { useTariffs } from '../hooks/useTariffs';
-import { APP_CONFIG } from '../constants';
 import { useState, useEffect } from 'react';
 import { Tariff } from '../types';
 
@@ -143,7 +141,7 @@ export default function Dashboard() {
         <CostBreakdown 
           consumption={stats.totalConsumption}
           tariff={tariff}
-          flagType={currentMonth.tariffFlag}
+          flagType={currentMonth.tariffFlag || 'GREEN'}
           selectedTariff={selectedMonthTariff}
         />
 

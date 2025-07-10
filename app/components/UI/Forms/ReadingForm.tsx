@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { ValidationResult } from '../../../types';
-import { formatNumber } from '../../../utils/calculations';
+
 import { useLanguage } from '../../../contexts/LanguageContext';
 import { CameraCapture } from '..';
 import TooltipHelper from '../TooltipHelper';
@@ -106,55 +106,7 @@ export default function ReadingForm({ onAddReading, currentReading, currentMonth
     }
   };
 
-  // Procesar imagen subida
-  const processUploadedImage = async (file: File) => {
-    try {
-      // Crear un canvas para procesar la imagen
-      const canvas = document.createElement('canvas');
-      const ctx = canvas.getContext('2d');
-      const img = new Image();
-      
-      img.onload = async () => {
-        // Configurar el canvas con las dimensiones de la imagen
-        canvas.width = img.width;
-        canvas.height = img.height;
-        
-        // Dibujar la imagen en el canvas
-        ctx?.drawImage(img, 0, 0);
-        
-        // Obtener los datos de la imagen
-        const imageData = canvas.toDataURL('image/jpeg', 0.9);
-        
-        // Aquí podrías integrar OCR (Tesseract.js u otro)
-        // Por ahora, simularemos la extracción
-        console.log('Procesando imagen subida para OCR...');
-        
-        // Placeholder para OCR - en una implementación real usarías Tesseract.js
-        // const { data: { text } } = await Tesseract.recognize(imageData, 'eng');
-        // const extractedReading = extractMeterReading(text);
-        
-        // Por ahora, solo mostramos un mensaje
-        alert('Funcionalidad de OCR para imágenes subidas en desarrollo. Por favor, ingresa la lectura manualmente.');
-      };
-      
-      // Cargar la imagen
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        img.src = e.target?.result as string;
-      };
-      reader.readAsDataURL(file);
-      
-    } catch (error) {
-      console.error('Error procesando imagen:', error);
-      alert('Error al procesar la imagen. Por favor, intenta de nuevo.');
-    }
-  };
 
-  const handleCameraCapture = (imageSrc: string) => {
-    setShowCamera(false);
-    // Aquí puedes procesar la imagen capturada
-    console.log('Imagen capturada:', imageSrc);
-  };
 
   return (
     <div className="bg-gradient-to-br from-blue-50 to-indigo-100 border-2 border-blue-200 rounded-2xl shadow-xl p-8 mb-8 relative overflow-hidden">

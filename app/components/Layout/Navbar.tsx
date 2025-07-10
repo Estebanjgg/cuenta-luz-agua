@@ -10,10 +10,9 @@ import { usePathname } from 'next/navigation';
 interface NavbarProps {
   onLogout: () => void;
   onShowTariffManager?: () => void;
-  currentPage?: string;
 }
 
-export default function Navbar({ onLogout, onShowTariffManager, currentPage }: NavbarProps) {
+export default function Navbar({ onLogout, onShowTariffManager }: NavbarProps) {
   const { user } = useAuth();
   const { t } = useLanguage();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);

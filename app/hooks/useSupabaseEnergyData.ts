@@ -1,11 +1,11 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { createSupabaseBrowserClient } from '../lib/supabase'
+import { createSupabaseBrowserClient, Database } from '../lib/supabase'
 import { useAuth } from '../contexts/AuthContext'
 import { MonthData, TariffConfig, Reading, ConsumptionStats, ValidationResult, TariffFlagType } from '../types'
 import { validateReading, calculateConsumptionStats } from '../utils/calculations'
-import { APP_CONFIG } from '../constants'
+import { getCurrentMonth, getCurrentYear } from '../constants'
 
 const DEFAULT_TARIFF: TariffConfig = {
   pricePerKwh: 0.795,
@@ -13,8 +13,8 @@ const DEFAULT_TARIFF: TariffConfig = {
 }
 
 const DEFAULT_MONTH_DATA: MonthData = {
-  month: APP_CONFIG.defaultMonth,
-  year: APP_CONFIG.defaultYear,
+  month: getCurrentMonth(),
+  year: getCurrentYear(),
   initialReading: 0,
   readings: [],
   totalConsumption: 0,
@@ -25,7 +25,7 @@ const DEFAULT_MONTH_DATA: MonthData = {
 export const useSupabaseEnergyData = () => {
   const { user } = useAuth()
   const [monthsData, setMonthsData] = useState<Record<string, MonthData>>({})
-  const [currentMonthKey, setCurrentMonthKey] = useState<string>(`${APP_CONFIG.defaultMonth}-${APP_CONFIG.defaultYear}`)
+  const [currentMonthKey, setCurrentMonthKey] = useState<string>(`${getCurrentMonth()}-${getCurrentYear()}`)
   const [tariff, setTariff] = useState<TariffConfig>(DEFAULT_TARIFF)
   const [isLoading, setIsLoading] = useState(true)
   const supabase = createSupabaseBrowserClient()
@@ -65,7 +65,7 @@ export const useSupabaseEnergyData = () => {
       }
 
       const userMonthsData: Record<string, MonthData> = {}
-      data?.forEach((record) => {
+      data?.forEach((record: Database['public']['Tables']['user_energy_data']['Row']) => {
         const monthKey = getMonthKey(record.month, record.year)
         userMonthsData[monthKey] = {
           month: record.month,
@@ -75,7 +75,7 @@ export const useSupabaseEnergyData = () => {
           readings: record.readings || [],
           totalConsumption: record.total_consumption,
           estimatedCost: record.estimated_cost,
-          tariffFlag: record.tariff_flag || 'GREEN'
+          tariffFlag: (record.tariff_flag as TariffFlagType) || 'GREEN'
         }
       })
 
@@ -253,30 +253,43 @@ export const useSupabaseEnergyData = () => {
   const changeMonth = async (month: string, year: number, initialReading: number, readingDay?: number): Promise<void> => {
     const newMonthKey = getMonthKey(month, year)
     
-    // Si el mes no existe, crearlo
-    if (!monthsData[newMonthKey]) {
-      const newMonthData: MonthData = {
-        month,
-        year,
-        initialReading,
-        readingDay: readingDay || 1,
-        readings: [],
-        totalConsumption: 0,
-        estimatedCost: tariff.publicLightingFee || tariff.additionalFees || 0,
-        tariffFlag: 'GREEN'
-      }
-      
-      setMonthsData({
-        ...monthsData,
-        [newMonthKey]: newMonthData
-      })
-
-      // Guardar en Supabase
-      await saveMonthData(newMonthData)
+    // Evitar cambios innecesarios
+    if (newMonthKey === currentMonthKey) return;
+    
+    // Validar que el año es válido
+    if (isNaN(year) || year < 2020 || year > 2030) {
+      console.error('Invalid year:', year);
+      return;
     }
     
-    // Cambiar al mes seleccionado
-    setCurrentMonthKey(newMonthKey)
+    try {
+      // Si el mes no existe, crearlo
+      if (!monthsData[newMonthKey]) {
+        const newMonthData: MonthData = {
+          month,
+          year,
+          initialReading,
+          readingDay: readingDay || 1,
+          readings: [],
+          totalConsumption: 0,
+          estimatedCost: tariff.publicLightingFee || tariff.additionalFees || 0,
+          tariffFlag: 'GREEN'
+        }
+        
+        setMonthsData({
+          ...monthsData,
+          [newMonthKey]: newMonthData
+        })
+
+        // Guardar en Supabase
+        await saveMonthData(newMonthData)
+      }
+      
+      // Cambiar al mes seleccionado
+      setCurrentMonthKey(newMonthKey)
+    } catch (error) {
+      console.error('Error changing month:', error);
+    }
   }
 
   // Reiniciar mes actual

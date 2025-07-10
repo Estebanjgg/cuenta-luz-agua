@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { Reading } from '../../types';
-import { formatNumber, formatDate, calculateConsumptionBetween } from '../../utils/calculations';
+import { formatNumber, formatDate } from '../../utils/calculations';
 import { useLanguage } from '../../contexts/LanguageContext';
 
 interface ReadingsListProps {
