@@ -154,7 +154,7 @@ export default function TariffSettings({ currentTariff, onTariffChange }: Tariff
             <div className="mt-3 p-3 bg-yellow-50 rounded-lg">
               <p className="text-xs text-yellow-800">
                 <strong>💡 Dica:</strong> Você pode encontrar sua tarifa na conta de luz, 
-                geralmente expressa como "Tarifa de Energia" ou "TE" + "TUSD".
+                geralmente expressa como &quot;Tarifa de Energia&quot; ou &quot;TE&quot; + &quot;TUSD&quot;.
               </p>
             </div>
           </div>

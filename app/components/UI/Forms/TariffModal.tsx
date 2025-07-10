@@ -301,7 +301,7 @@ export default function TariffModal({
                   disabled={isLoading}
                 />
                 <p className="text-xs text-gray-500 mt-1">
-                  Ejemplo: Si tu factura dice "Energia Elétrica: R$ 0,795/kWh", ingresa 0.795
+                  Ejemplo: Si tu factura dice &quot;Energia Elétrica: R$ 0,795/kWh&quot;, ingresa 0.795
                 </p>
                 {errors.base_price_per_kwh && <p className="text-red-500 text-sm mt-1">{errors.base_price_per_kwh}</p>}
               </div>
