@@ -12,7 +12,8 @@ import {
   PeriodNavigator,
   ConsumptionChart,
   Navbar,
-  TariffFlagSelector
+  TariffFlagSelector,
+  InitialMonthModal
 } from '../components';
 import SessionStatus from '../components/UI/SessionStatus';
 import { useTariffs } from '../hooks/useTariffs';
@@ -44,6 +45,10 @@ export default function Dashboard() {
   
   // Estado para la tarifa específica del mes
   const [selectedMonthTariff, setSelectedMonthTariff] = useState<Tariff | null>(null);
+  
+  // Estado para el modal inicial
+  const [showInitialModal, setShowInitialModal] = useState(false);
+  const [hasCheckedInitialData, setHasCheckedInitialData] = useState(false);
 
   // Cargar la tarifa específica del mes actual
   useEffect(() => {
@@ -56,6 +61,59 @@ export default function Dashboard() {
     
     loadMonthTariff();
   }, [user, currentMonth.month, currentMonth.year]);
+
+  // Mostrar modal inicial cuando el usuario entre y no tenga datos
+  useEffect(() => {
+    if (user && !isLoading && !hasCheckedInitialData) {
+      // Verificar si el usuario tiene algún dato guardado en el mes actual
+      const hasCurrentMonthData = currentMonth && 
+                                 (currentMonth.readings.length > 0 || 
+                                  (currentMonth.initialReading > 0 && currentMonth.initialReading !== 65788));
+      
+      // Si no tiene datos en el mes actual, mostrar el modal
+      if (!hasCurrentMonthData) {
+        setShowInitialModal(true);
+      }
+      
+      // Marcar que ya se verificó
+      setHasCheckedInitialData(true);
+    }
+  }, [user, isLoading, currentMonth, hasCheckedInitialData]);
+
+  // Resetear el flag cuando el componente se desmonte, el usuario cambie o se navegue a la página
+  useEffect(() => {
+    // Resetear el flag cada vez que se monta el componente
+    setHasCheckedInitialData(false);
+    
+    return () => {
+      setHasCheckedInitialData(false);
+    };
+  }, [user]);
+
+  // Funciones para manejar el modal inicial
+  const handleInitialMonthSelect = async (month: string, year: number, initialReading?: number, readingDay?: number) => {
+    try {
+      await changeMonth(month, year, initialReading || 0, readingDay);
+      setShowInitialModal(false);
+      
+      // Mostrar mensaje de éxito
+      console.log(`✅ Período ${month} ${year} creado exitosamente`);
+    } catch (error) {
+      console.error('Error al crear el período:', error);
+    }
+  };
+
+  const handleInitialSwitchToMonth = (month: string, year: number) => {
+    try {
+      switchToMonth(month, year);
+      setShowInitialModal(false);
+      
+      // Mostrar mensaje de éxito
+      console.log(`✅ Mes ${month} ${year} cargado exitosamente`);
+    } catch (error) {
+      console.error('Error al cargar el mes:', error);
+    }
+  };
 
   // Si no hay usuario autenticado, mostrar componente de autenticación
   if (!user && !authLoading) {
@@ -177,6 +235,15 @@ export default function Dashboard() {
       
       {/* Componente de estado de sesión (solo en desarrollo) */}
       <SessionStatus compact={true} position="bottom-right" />
+      
+      {/* Modal inicial para selección de mes */}
+      <InitialMonthModal
+        isOpen={showInitialModal}
+        onClose={() => setShowInitialModal(false)}
+        onMonthSelect={handleInitialMonthSelect}
+        hasMonthData={hasMonthData}
+        onSwitchToMonth={handleInitialSwitchToMonth}
+      />
     </div>
   );
 }

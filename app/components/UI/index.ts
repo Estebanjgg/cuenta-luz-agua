@@ -8,3 +8,4 @@ export { default as TariffManager } from './TariffManager';
 export { default as PublicTariffsModal } from './PublicTariffsModal';
 export { default as LanguageSelector } from './LanguageSelector';
 export { default as CameraCapture } from './CameraCapture';
+export { default as InitialMonthModal } from './InitialMonthModal';

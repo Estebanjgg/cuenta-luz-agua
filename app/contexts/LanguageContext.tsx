@@ -594,6 +594,32 @@ const translations = {
       later: 'Más Tarde'
     },
 
+    // Exit confirmation
+    confirmExit: 'Confirmar salida',
+    confirmExitMessage: '¿Estás seguro de que no quieres cargar ningún mes? Serás redirigido a la página principal.',
+    cancel: 'Cancelar',
+    confirm: 'Confirmar',
+
+    // Initial Month Modal
+    initialMonthModal: {
+      welcomeTitle: '¡Bienvenido al Control de Consumo!',
+      welcomeSubtitle: 'Selecciona el período que deseas gestionar',
+      selectYear: 'Selecciona el año',
+      selectMonth: 'Selecciona el mes',
+      current: 'Actual',
+      withData: 'Con datos',
+      infoTitle: 'Información:',
+      monthsWithData: 'Meses con datos guardados - Se cargarán automáticamente',
+      monthsWithoutData: 'Meses sin datos - Podrás crear un nuevo período',
+      createNewPeriod: 'Crear nuevo período',
+      importantNote: 'Importante: Necesitas ingresar la lectura inicial del medidor para este período.',
+      measurementDay: 'Día de medición',
+      measurementDayHelp: 'Selecciona el día del mes en que se realizó la medición de luz',
+      dayLabel: 'Día',
+      back: 'Volver',
+      createPeriod: 'Crear período'
+    },
+
     // CameraCapture
     cameraCapture: {
       title: 'Captura Automática',
@@ -749,18 +775,18 @@ const translations = {
     
     // Months array
     months: {
-      janeiro: 'janeiro',
-      fevereiro: 'fevereiro',
-      março: 'março',
+      enero: 'janeiro',
+      febrero: 'fevereiro',
+      marzo: 'março',
       abril: 'abril',
-      maio: 'maio',
-      junho: 'junho',
-      julho: 'julho',
+      mayo: 'maio',
+      junio: 'junho',
+      julio: 'julho',
       agosto: 'agosto',
-      setembro: 'setembro',
-      outubro: 'outubro',
-      novembro: 'novembro',
-      dezembro: 'dezembro'
+      septiembre: 'setembro',
+      octubre: 'outubro',
+      noviembre: 'novembro',
+      diciembre: 'dezembro'
     },
     
     // ReadingForm
@@ -1205,6 +1231,32 @@ const translations = {
       tariffCreatedMessage: 'Sua nova tarifa para {city}, {state} - {company} foi criada com sucesso. Deseja usá-la agora?',
       useNow: 'Usar Agora',
       later: 'Mais Tarde'
+    },
+
+    // Exit confirmation
+    confirmExit: 'Tem certeza?',
+    confirmExitMessage: 'Tem certeza de que não quer carregar nenhum mês? Você será redirecionado para a página principal.',
+    cancel: 'Cancelar',
+    confirm: 'Confirmar',
+
+    // Initial Month Modal
+    initialMonthModal: {
+      welcomeTitle: 'Bem-vindo ao Controle de Consumo!',
+      welcomeSubtitle: 'Selecione o período que deseja gerenciar',
+      selectYear: 'Selecione o ano',
+      selectMonth: 'Selecione o mês',
+      current: 'Atual',
+      withData: 'Com dados',
+      infoTitle: 'Informação:',
+      monthsWithData: 'Meses com dados salvos - Serão carregados automaticamente',
+      monthsWithoutData: 'Meses sem dados - Você poderá criar um novo período',
+      createNewPeriod: 'Criar novo período',
+      importantNote: 'Importante: Você precisa inserir a leitura inicial do medidor para este período.',
+      measurementDay: 'Dia de medição',
+      measurementDayHelp: 'Selecione o dia do mês em que foi realizada a medição de luz',
+      dayLabel: 'Dia',
+      back: 'Voltar',
+      createPeriod: 'Criar período'
     },
 
     // CameraCapture
