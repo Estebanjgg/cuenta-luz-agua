@@ -4,12 +4,15 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { MONTH_KEYS, APP_CONFIG } from '../../constants';
 import { useLanguage } from '../../contexts/LanguageContext';
-import { ValidationResult } from '../../types';
+import { Tariff, ValidationResult } from '../../types';
+import { useTariffs } from '../../hooks/useTariffs';
+import TariffModal from './Forms/TariffModal';
+import PublicTariffsModal from './PublicTariffsModal';
 
 interface InitialMonthModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onMonthSelect: (month: string, year: number, initialReading?: number, readingDay?: number) => void;
+  onMonthSelect: (month: string, year: number, initialReading?: number, readingDay?: number, selectedTariff?: Tariff) => void;
   hasMonthData: (month: string, year: number) => boolean;
   onSwitchToMonth: (month: string, year: number) => void;
 }
@@ -23,6 +26,13 @@ export default function InitialMonthModal({
 }: InitialMonthModalProps) {
   const { t } = useLanguage();
   const router = useRouter();
+  const {
+    userTariffs,
+    publicTariffs,
+    createTariff,
+    copyPublicTariff
+  } = useTariffs();
+  
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
   const [selectedMonth, setSelectedMonth] = useState('');
   const [initialReading, setInitialReading] = useState(APP_CONFIG.defaultInitialReading);
@@ -30,6 +40,11 @@ export default function InitialMonthModal({
   const [error, setError] = useState<string>('');
   const [showNewMonthForm, setShowNewMonthForm] = useState(false);
   const [showConfirmExit, setShowConfirmExit] = useState(false);
+  
+  // Estados para selección de tarifas
+  const [selectedTariff, setSelectedTariff] = useState<Tariff | null>(null);
+  const [isCreateTariffModalOpen, setIsCreateTariffModalOpen] = useState(false);
+  const [isPublicTariffsModalOpen, setIsPublicTariffsModalOpen] = useState(false);
   
   // Generar años dinámicamente (año actual - 1 hasta año actual + 2)
   const currentYearNow = new Date().getFullYear();
@@ -66,6 +81,11 @@ export default function InitialMonthModal({
   };
 
   const handleCreateNewPeriod = () => {
+    if (!selectedTariff) {
+      setError('Debes seleccionar una tarifa para continuar');
+      return;
+    }
+
     const validation = validateInitialReading(initialReading);
     
     if (!validation.isValid) {
@@ -74,10 +94,50 @@ export default function InitialMonthModal({
     }
     
     setError('');
-    onMonthSelect(selectedMonth, selectedYear, initialReading, readingDay);
+    onMonthSelect(selectedMonth, selectedYear, initialReading, readingDay, selectedTariff);
     onClose();
     setShowNewMonthForm(false);
   };
+
+  const handleTariffSelect = (tariff: Tariff) => {
+    setSelectedTariff(tariff);
+    setError('');
+  };
+
+  const handleCreateTariff = async (tariffData: any): Promise<boolean> => {
+    try {
+      const newTariff = await createTariff(tariffData);
+      if (newTariff) {
+        setSelectedTariff(newTariff);
+        setIsCreateTariffModalOpen(false);
+        setError('');
+        return true;
+      } else {
+        setError('Error al crear la tarifa');
+        return false;
+      }
+    } catch (error) {
+      setError('Error al crear la tarifa');
+      return false;
+    }
+  };
+
+  const handlePublicTariffSelect = async (tariffId: string) => {
+    try {
+      const copiedTariff = await copyPublicTariff(tariffId);
+      if (copiedTariff) {
+        setSelectedTariff(copiedTariff);
+        setIsPublicTariffsModalOpen(false);
+        setError('');
+      } else {
+        setError('Error al copiar la tarifa pública');
+      }
+    } catch (error) {
+      setError('Error al copiar la tarifa pública');
+    }
+  };
+
+
 
   const handleInitialReadingChange = (value: string) => {
     const numValue = parseFloat(value);
@@ -91,7 +151,20 @@ export default function InitialMonthModal({
 
 
   const handleClose = () => {
-    setShowConfirmExit(true);
+    setSelectedMonth('');
+    setSelectedYear(new Date().getFullYear());
+    setInitialReading(APP_CONFIG.defaultInitialReading);
+    setReadingDay(1);
+    setError('');
+    setShowNewMonthForm(false);
+    setShowConfirmExit(false);
+    
+    // Resetear estados de tarifas
+    setSelectedTariff(null);
+    setIsCreateTariffModalOpen(false);
+    setIsPublicTariffsModalOpen(false);
+    
+    onClose();
   };
 
   const handleConfirmExit = () => {
@@ -287,6 +360,72 @@ export default function InitialMonthModal({
                     💡 {t('initialMonthModal.measurementDayHelp')}
                   </p>
                 </div>
+
+                {/* Selección de Tarifa */}
+                <div>
+                  <label className="flex items-center text-sm font-medium text-gray-700 mb-2">
+                    <svg className="w-4 h-4 mr-2 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
+                    </svg>
+                    Seleccionar Tarifa *
+                  </label>
+                  
+                  {selectedTariff ? (
+                    <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <h4 className="font-medium text-green-800">{selectedTariff.name}</h4>
+                          <p className="text-sm text-green-600">{selectedTariff.description}</p>
+                        </div>
+                        <button
+                          onClick={() => setSelectedTariff(null)}
+                          className="text-green-600 hover:text-green-800 p-1"
+                        >
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                          </svg>
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="space-y-3">
+                      {/* Tarifas del usuario */}
+                      {userTariffs.length > 0 && (
+                        <div>
+                          <p className="text-xs text-gray-600 mb-2">Mis tarifas:</p>
+                          <div className="space-y-2">
+                            {userTariffs.map((tariff: Tariff) => (
+                              <button
+                                key={tariff.id}
+                                onClick={() => handleTariffSelect(tariff)}
+                                className="w-full text-left p-3 border border-gray-200 rounded-lg hover:bg-blue-50 hover:border-blue-300 transition-colors"
+                              >
+                                <div className="font-medium text-gray-800">{tariff.name}</div>
+                                <div className="text-sm text-gray-600">{tariff.description}</div>
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                      
+                      {/* Botones de acción */}
+                      <div className="flex space-x-2">
+                        <button
+                          onClick={() => setIsCreateTariffModalOpen(true)}
+                          className="flex-1 px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium"
+                        >
+                          + Crear Nueva
+                        </button>
+                        <button
+                          onClick={() => setIsPublicTariffsModalOpen(true)}
+                          className="flex-1 px-4 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors text-sm font-medium"
+                        >
+                          📋 Usar Plantilla
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
               </div>
 
               <div className="flex justify-between space-x-3 pt-4 border-t border-gray-100">
@@ -301,9 +440,9 @@ export default function InitialMonthModal({
                 </button>
                 <button
                   onClick={handleCreateNewPeriod}
-                  disabled={!!error || !initialReading || initialReading === 0}
+                  disabled={!!error || !initialReading || initialReading === 0 || !selectedTariff}
                   className={`px-6 py-3 rounded-lg transition-all duration-200 font-medium shadow-lg hover:shadow-xl flex items-center ${
-                    error || !initialReading || initialReading === 0
+                    error || !initialReading || initialReading === 0 || !selectedTariff
                       ? 'bg-gradient-to-r from-gray-300 to-gray-400 text-gray-600 cursor-not-allowed'
                       : 'bg-gradient-to-r from-blue-600 to-blue-700 text-white hover:from-blue-700 hover:to-blue-800'
                   }`}
@@ -346,6 +485,21 @@ export default function InitialMonthModal({
           </div>
         </div>
       )}
+
+      {/* Modal para crear tarifa */}
+      <TariffModal
+        isOpen={isCreateTariffModalOpen}
+        onClose={() => setIsCreateTariffModalOpen(false)}
+        onSave={handleCreateTariff}
+      />
+
+      {/* Modal de tarifas públicas */}
+      <PublicTariffsModal
+        isOpen={isPublicTariffsModalOpen}
+        onClose={() => setIsPublicTariffsModalOpen(false)}
+        onCopyTariff={handlePublicTariffSelect}
+        publicTariffs={publicTariffs}
+      />
     </div>
   );
 }

@@ -272,6 +272,8 @@ export const convertLegacyTariff = (
   companyName: string = 'Energisa'
 ): Omit<Tariff, 'id' | 'user_id' | 'created_at' | 'updated_at'> => {
   return {
+    name: `Tarifa ${companyName} - ${city}`,
+    description: `Tarifa convertida automáticamente para ${city}, ${state}`,
     city,
     state,
     company_name: companyName,

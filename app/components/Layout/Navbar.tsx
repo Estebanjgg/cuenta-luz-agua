@@ -10,9 +10,10 @@ import { usePathname } from 'next/navigation';
 interface NavbarProps {
   onLogout: () => void;
   onShowTariffManager?: () => void;
+  onShowConsumptionControl?: () => void;
 }
 
-export default function Navbar({ onLogout, onShowTariffManager }: NavbarProps) {
+export default function Navbar({ onLogout, onShowTariffManager, onShowConsumptionControl }: NavbarProps) {
   const { user } = useAuth();
   const { t } = useLanguage();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -43,16 +44,29 @@ export default function Navbar({ onLogout, onShowTariffManager }: NavbarProps) {
           <div className="hidden lg:flex items-center space-x-4">
             {/* Navigation Links */}
             <div className="flex items-center space-x-2">
-              <Link 
-                href="/control-consumo"
-                className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                  pathname === '/' 
-                    ? 'bg-white/20 text-white' 
-                    : 'text-blue-100 hover:bg-white/10 hover:text-white'
-                }`}
-              >
-                📊 {t('navbar.consumptionControl')}
-              </Link>
+              {onShowConsumptionControl ? (
+                <button 
+                  onClick={onShowConsumptionControl}
+                  className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                    pathname === '/control-consumo' 
+                      ? 'bg-white/20 text-white' 
+                      : 'text-blue-100 hover:bg-white/10 hover:text-white'
+                  }`}
+                >
+                  📊 {t('navbar.consumptionControl')}
+                </button>
+              ) : (
+                <Link 
+                  href="/control-consumo"
+                  className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                    pathname === '/control-consumo' 
+                      ? 'bg-white/20 text-white' 
+                      : 'text-blue-100 hover:bg-white/10 hover:text-white'
+                  }`}
+                >
+                  📊 {t('navbar.consumptionControl')}
+                </Link>
+              )}
               <Link 
                 href="/calculadora"
                 className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
@@ -202,20 +216,39 @@ export default function Navbar({ onLogout, onShowTariffManager }: NavbarProps) {
 
               {/* Mobile Navigation Links */}
               <div className="space-y-2 mb-4">
-                <Link 
-                  href="/control-consumo"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className={`w-full text-left px-4 py-3 rounded-lg flex items-center space-x-3 transition-colors ${
-                    pathname === '/' 
-                      ? 'bg-white/20 text-white' 
-                      : 'text-blue-100 hover:bg-white/10 hover:text-white'
-                  }`}
-                >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                  </svg>
-                  <span>📊 {t('navbar.consumptionControl')}</span>
-                </Link>
+                {onShowConsumptionControl ? (
+                  <button 
+                    onClick={() => {
+                      onShowConsumptionControl();
+                      setIsMobileMenuOpen(false);
+                    }}
+                    className={`w-full text-left px-4 py-3 rounded-lg flex items-center space-x-3 transition-colors ${
+                      pathname === '/control-consumo' 
+                        ? 'bg-white/20 text-white' 
+                        : 'text-blue-100 hover:bg-white/10 hover:text-white'
+                    }`}
+                  >
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                    </svg>
+                    <span>📊 {t('navbar.consumptionControl')}</span>
+                  </button>
+                ) : (
+                  <Link 
+                    href="/control-consumo"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className={`w-full text-left px-4 py-3 rounded-lg flex items-center space-x-3 transition-colors ${
+                      pathname === '/control-consumo' 
+                        ? 'bg-white/20 text-white' 
+                        : 'text-blue-100 hover:bg-white/10 hover:text-white'
+                    }`}
+                  >
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                    </svg>
+                    <span>📊 {t('navbar.consumptionControl')}</span>
+                  </Link>
+                )}
                 
                 <Link 
                   href="/calculadora"

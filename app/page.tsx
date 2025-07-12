@@ -5,11 +5,40 @@ import { useLanguage } from './contexts/LanguageContext';
 import { AuthComponent, Navbar } from './components';
 import Link from 'next/link';
 import { useState } from 'react';
+import InitialMonthModal from './components/UI/InitialMonthModal';
+import { useSupabaseEnergyData } from './hooks/useSupabaseEnergyData';
 
 export default function Home() {
   const { user, loading: authLoading, signOut } = useAuth();
   const { t } = useLanguage();
   const [hoveredCard, setHoveredCard] = useState<string | null>(null);
+  const [showInitialModal, setShowInitialModal] = useState(false);
+  
+  // Hook para acceder a los datos de energía
+  const { hasMonthData, switchToMonth } = useSupabaseEnergyData();
+
+  const handleShowConsumptionControl = () => {
+    setShowInitialModal(true);
+  };
+
+  const handleCloseModal = () => {
+    setShowInitialModal(false);
+  };
+
+  const handleMonthSelect = (month: string, year: number, _initialReading?: number, _readingDay?: number, _selectedTariff?: any) => {
+    // Cerrar el modal primero
+    setShowInitialModal(false);
+    // Redirigir a la página de control de consumo
+    window.location.href = `/control-consumo?month=${month}&year=${year}`;
+  };
+
+  const handleSwitchToMonth = (month: string, year: number) => {
+    // Cerrar el modal primero
+    setShowInitialModal(false);
+    // Cambiar al mes seleccionado y redirigir
+    switchToMonth(month, year);
+    window.location.href = `/control-consumo`;
+  };
 
   // Si no hay usuario autenticado, mostrar componente de autenticación
   if (!user && !authLoading) {
@@ -32,6 +61,7 @@ export default function Home() {
       {/* Navbar */}
       <Navbar 
         onLogout={signOut}
+        onShowConsumptionControl={handleShowConsumptionControl}
       />
       
       {/* Hero Section */}
@@ -131,14 +161,15 @@ export default function Home() {
               </ul>
               
               {/* Button */}
-              <Link href="/control-consumo">
-                <button className="w-full bg-gradient-to-r from-blue-500 to-blue-600 text-white py-4 px-6 rounded-xl font-semibold hover:from-blue-600 hover:to-blue-700 transition-all duration-200 transform hover:scale-105 shadow-lg hover:shadow-xl">
-                  {t('homePage.consumptionControl.button')}
-                  <svg className="w-5 h-5 ml-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                  </svg>
-                </button>
-              </Link>
+              <button 
+                onClick={handleShowConsumptionControl}
+                className="w-full bg-gradient-to-r from-blue-500 to-blue-600 text-white py-4 px-6 rounded-xl font-semibold hover:from-blue-600 hover:to-blue-700 transition-all duration-200 transform hover:scale-105 shadow-lg hover:shadow-xl"
+              >
+                {t('homePage.consumptionControl.button')}
+                <svg className="w-5 h-5 ml-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                </svg>
+              </button>
             </div>
           </div>
 
@@ -262,6 +293,17 @@ export default function Home() {
           <p className="text-sm text-gray-500">Desarrollado con tecnología moderna para un mejor control energético</p>
         </div>
       </div>
+
+      {/* Initial Month Modal */}
+      {showInitialModal && (
+        <InitialMonthModal
+          isOpen={showInitialModal}
+          onClose={handleCloseModal}
+          onMonthSelect={handleMonthSelect}
+          hasMonthData={hasMonthData}
+          onSwitchToMonth={handleSwitchToMonth}
+        />
+      )}
     </div>
   );
 }

@@ -12,6 +12,8 @@ export interface TariffFlag {
 export interface Tariff {
   id: string;
   user_id?: string; // null para tarifas públicas del sistema
+  name: string; // Nombre descriptivo de la tarifa
+  description: string; // Descripción de la tarifa
   city: string;
   state: string;
   company_name: string;
@@ -37,6 +39,8 @@ export interface UserMonthlyTariff {
 }
 
 export interface TariffFormData {
+  name: string; // Nombre descriptivo de la tarifa
+  description: string; // Descripción de la tarifa
   city: string;
   state: string;
   company_name: string;

@@ -66,9 +66,9 @@ export default function Dashboard() {
   useEffect(() => {
     if (user && !isLoading && !hasCheckedInitialData) {
       // Verificar si el usuario tiene algún dato guardado en el mes actual
-      const hasCurrentMonthData = currentMonth && 
+      const hasCurrentMonthData = hasMonthData(currentMonth.month, currentMonth.year) && 
                                  (currentMonth.readings.length > 0 || 
-                                  (currentMonth.initialReading > 0 && currentMonth.initialReading !== 65788));
+                                  currentMonth.initialReading > 0);
       
       // Si no tiene datos en el mes actual, mostrar el modal
       if (!hasCurrentMonthData) {
@@ -78,7 +78,7 @@ export default function Dashboard() {
       // Marcar que ya se verificó
       setHasCheckedInitialData(true);
     }
-  }, [user, isLoading, currentMonth, hasCheckedInitialData]);
+  }, [user, isLoading, currentMonth, hasCheckedInitialData, hasMonthData]);
 
   // Resetear el flag cuando el componente se monte o el usuario cambie
   useEffect(() => {
@@ -97,9 +97,19 @@ export default function Dashboard() {
   }, []); // Se ejecuta solo al montar el componente
 
   // Funciones para manejar el modal inicial
-  const handleInitialMonthSelect = async (month: string, year: number, initialReading?: number, readingDay?: number) => {
+  const handleInitialMonthSelect = async (month: string, year: number, initialReading?: number, readingDay?: number, selectedTariff?: any) => {
     try {
       await changeMonth(month, year, initialReading || 0, readingDay);
+      
+      // Si se seleccionó una tarifa, asignarla al mes creado
+      if (selectedTariff) {
+        const success = await assignTariffToMonth(month, year, selectedTariff.id);
+        if (success) {
+          setSelectedMonthTariff(selectedTariff);
+          console.log(`✅ Tarifa "${selectedTariff.name}" asignada al período ${month} ${year}`);
+        }
+      }
+      
       setShowInitialModal(false);
       
       // Mostrar mensaje de éxito
@@ -119,6 +129,11 @@ export default function Dashboard() {
     } catch (error) {
       console.error('Error al cargar el mes:', error);
     }
+  };
+
+  // Función para abrir el modal desde el navbar
+  const handleShowConsumptionControl = () => {
+    setShowInitialModal(true);
   };
 
   // Si no hay usuario autenticado, mostrar componente de autenticación
@@ -144,6 +159,7 @@ export default function Dashboard() {
       {/* Navbar */}
       <Navbar 
         onLogout={signOut}
+        onShowConsumptionControl={handleShowConsumptionControl}
       />
       
       <div className="max-w-6xl mx-auto p-4">

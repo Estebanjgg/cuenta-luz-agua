@@ -28,6 +28,8 @@ const DEFAULT_TARIFF_VALUES = {
 };
 
 const initialFormData: TariffFormData = {
+  name: '',
+  description: '',
   city: '',
   state: '',
   company_name: '',
@@ -57,6 +59,8 @@ export default function TariffModal({
   useEffect(() => {
     if (tariff) {
       setFormData({
+        name: tariff.name || '',
+        description: tariff.description || '',
         city: tariff.city,
         state: tariff.state,
         company_name: tariff.company_name,
@@ -81,6 +85,14 @@ export default function TariffModal({
 
   const validateForm = (): boolean => {
     const newErrors: Record<string, string> = {};
+
+    if (!formData.name.trim()) {
+      newErrors.name = 'El nombre de la tarifa es requerido';
+    }
+
+    if (!formData.description.trim()) {
+      newErrors.description = 'La descripción de la tarifa es requerida';
+    }
 
     if (!formData.city.trim()) {
       newErrors.city = 'La ciudad es requerida';
@@ -224,6 +236,43 @@ export default function TariffModal({
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
+            {/* Información de la tarifa */}
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Nombre de la tarifa *
+                </label>
+                <input
+                  type="text"
+                  value={formData.name}
+                  onChange={(e) => handleInputChange('name', e.target.value)}
+                  className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                    errors.name ? 'border-red-500' : 'border-gray-300'
+                  }`}
+                  placeholder="Ej: Tarifa Residencial Energisa SP"
+                  disabled={isLoading}
+                />
+                {errors.name && <p className="text-red-500 text-sm mt-1">{errors.name}</p>}
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Descripción *
+                </label>
+                <textarea
+                  value={formData.description}
+                  onChange={(e) => handleInputChange('description', e.target.value)}
+                  className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                    errors.description ? 'border-red-500' : 'border-gray-300'
+                  }`}
+                  placeholder="Ej: Tarifa residencial para Bragança Paulista, SP con valores actualizados 2025"
+                  rows={3}
+                  disabled={isLoading}
+                />
+                {errors.description && <p className="text-red-500 text-sm mt-1">{errors.description}</p>}
+              </div>
+            </div>
+
             {/* Información básica */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
