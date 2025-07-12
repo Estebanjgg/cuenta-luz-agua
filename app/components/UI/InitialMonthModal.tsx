@@ -374,8 +374,13 @@ export default function InitialMonthModal({
                     <div className="bg-green-50 border border-green-200 rounded-lg p-4">
                       <div className="flex items-center justify-between">
                         <div>
-                          <h4 className="font-medium text-green-800">{selectedTariff.name}</h4>
-                          <p className="text-sm text-green-600">{selectedTariff.description}</p>
+                          <h4 className="font-medium text-green-800">
+                            {selectedTariff.city}, {selectedTariff.state}
+                          </h4>
+                          <p className="text-sm text-green-600">{selectedTariff.company_name}</p>
+                          <p className="text-xs text-green-500 mt-1">
+                            🟢 R$ {selectedTariff.price_per_kwh_green?.toFixed(4)}/kWh
+                          </p>
                         </div>
                         <button
                           onClick={() => setSelectedTariff(null)}
@@ -400,8 +405,15 @@ export default function InitialMonthModal({
                                 onClick={() => handleTariffSelect(tariff)}
                                 className="w-full text-left p-3 border border-gray-200 rounded-lg hover:bg-blue-50 hover:border-blue-300 transition-colors"
                               >
-                                <div className="font-medium text-gray-800">{tariff.name}</div>
-                                <div className="text-sm text-gray-600">{tariff.description}</div>
+                                <div className="font-medium text-gray-800">
+                                  {tariff.city}, {tariff.state}
+                                </div>
+                                <div className="text-sm text-gray-600">
+                                  {tariff.company_name}
+                                </div>
+                                <div className="text-xs text-gray-500 mt-1">
+                                  🟢 R$ {tariff.price_per_kwh_green?.toFixed(4)}/kWh
+                                </div>
                               </button>
                             ))}
                           </div>
@@ -418,9 +430,10 @@ export default function InitialMonthModal({
                         </button>
                         <button
                           onClick={() => setIsPublicTariffsModalOpen(true)}
-                          className="flex-1 px-4 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors text-sm font-medium"
+                          className="flex-1 px-4 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm font-medium"
+                          title="Tarifas creadas por usuarios de diferentes estados y ciudades"
                         >
-                          📋 Usar Plantilla
+                          🌐 Tarifas Públicas
                         </button>
                       </div>
                     </div>
