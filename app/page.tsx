@@ -5,12 +5,14 @@ import { useLanguage } from './contexts/LanguageContext';
 import { AuthComponent, Navbar } from './components';
 import Link from 'next/link';
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import InitialMonthModal from './components/UI/InitialMonthModal';
 import { useSupabaseEnergyData } from './hooks/useSupabaseEnergyData';
 
 export default function Home() {
   const { user, loading: authLoading, signOut } = useAuth();
   const { t } = useLanguage();
+  const router = useRouter();
   const [hoveredCard, setHoveredCard] = useState<string | null>(null);
   const [showInitialModal, setShowInitialModal] = useState(false);
   
@@ -25,11 +27,11 @@ export default function Home() {
     setShowInitialModal(false);
   };
 
-  const handleMonthSelect = (month: string, year: number, _initialReading?: number, _readingDay?: number, _selectedTariff?: any) => {
+  const handleMonthSelect = (month: string, year: number) => {
     // Cerrar el modal primero
     setShowInitialModal(false);
-    // Redirigir a la página de control de consumo
-    window.location.href = `/control-consumo?month=${month}&year=${year}`;
+    // Redirigir a la página de control de consumo usando router.push
+    router.push(`/control-consumo?month=${month}&year=${year}`);
   };
 
   const handleSwitchToMonth = (month: string, year: number) => {
@@ -37,7 +39,7 @@ export default function Home() {
     setShowInitialModal(false);
     // Cambiar al mes seleccionado y redirigir
     switchToMonth(month, year);
-    window.location.href = `/control-consumo`;
+    router.push('/control-consumo');
   };
 
   // Si no hay usuario autenticado, mostrar componente de autenticación

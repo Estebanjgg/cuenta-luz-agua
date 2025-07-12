@@ -165,12 +165,24 @@ export default function InitialMonthModal({
     setIsPublicTariffsModalOpen(false);
     
     onClose();
+    
+    // Si no estamos en la página principal, redirigir a home
+    if (typeof window !== 'undefined' && window.location.pathname !== '/') {
+      // Usar setTimeout para evitar el flash visual
+      setTimeout(() => {
+        router.push('/');
+      }, 100);
+    }
   };
 
   const handleConfirmExit = () => {
     setShowConfirmExit(false);
     onClose();
-    router.push('/');
+    // Siempre redirigir a home cuando se confirma la salida
+    // Usar setTimeout para evitar el flash visual
+    setTimeout(() => {
+      router.push('/');
+    }, 100);
   };
 
   const handleCancelExit = () => {
