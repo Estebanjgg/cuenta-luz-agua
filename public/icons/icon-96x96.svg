@@ -1,0 +1,20 @@
+<svg width="96" height="96" viewBox="0 0 96 96" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="96" height="96" rx="12" fill="#3b82f6"/>
+  <g transform="translate(12, 12)">
+    <!-- Lightning bolt icon -->
+    <path d="M36 6L27 36H41L32 66L45 36H32L36 6Z" fill="#fbbf24" stroke="#f59e0b" stroke-width="1"/>
+    
+    <!-- Water drop icon -->
+    <path d="M18 48C18 48 9 36 9 24C9 17 13 12 18 12C23 12 27 17 27 24C27 36 18 48 18 48Z" fill="#06b6d4" stroke="#0891b2" stroke-width="1"/>
+    
+    <!-- Gauge/meter background -->
+    <circle cx="45" cy="60" r="9" fill="none" stroke="#e5e7eb" stroke-width="2"/>
+    <circle cx="45" cy="60" r="9" fill="none" stroke="#10b981" stroke-width="2" stroke-dasharray="57" stroke-dashoffset="28" transform="rotate(-90 45 60)"/>
+    
+    <!-- Center dot -->
+    <circle cx="45" cy="60" r="2" fill="#374151"/>
+    
+    <!-- Text elements -->
+    <text x="27" y="72" font-family="Arial, sans-serif" font-size="8" font-weight="bold" fill="white" text-anchor="middle">kWh</text>
+  </g>
+</svg>

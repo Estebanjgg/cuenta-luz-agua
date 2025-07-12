@@ -2,7 +2,7 @@
 
 import { useAuth } from './contexts/AuthContext';
 import { useLanguage } from './contexts/LanguageContext';
-import { AuthComponent, Navbar } from './components';
+import { AuthComponent, Navbar, InstallPrompt } from './components';
 import Link from 'next/link';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
@@ -285,6 +285,13 @@ export default function Home() {
               <p className="text-gray-600">{t('homePage.benefits.easyToUse.description')}</p>
             </div>
           </div>
+        </div>
+      </div>
+
+      {/* Install PWA Section */}
+      <div className="bg-gradient-to-r from-green-50 to-blue-50 py-12">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          <InstallPrompt />
         </div>
       </div>
 
