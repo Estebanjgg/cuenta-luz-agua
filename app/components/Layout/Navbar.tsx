@@ -22,15 +22,15 @@ export default function Navbar({ onLogout, onShowTariffManager, onShowConsumptio
   return (
     <nav className="relative z-50 bg-gradient-to-r from-blue-600 to-blue-800 shadow-lg">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
+        <div className="flex justify-between items-center h-16 gap-2">
           {/* Logo y título */}
-          <div className="flex items-center space-x-2 sm:space-x-3 flex-1 min-w-0">
-            <Link href="/" className="flex items-center space-x-2 sm:space-x-3">
+          <div className="flex items-center space-x-2 sm:space-x-3 flex-1 min-w-0 pr-4">
+            <Link href="/" className="flex items-center space-x-2 sm:space-x-3 max-w-full">
               <div className="bg-white/10 p-1.5 sm:p-2 rounded-lg flex-shrink-0">
                 <span className="text-xl sm:text-2xl">⚡</span>
               </div>
               <div className="min-w-0 flex-1">
-                <h1 className="text-lg sm:text-xl font-bold text-white truncate">
+                <h1 className="text-base sm:text-lg lg:text-xl font-bold text-white truncate">
                   {t('navbar.title')}
                 </h1>
                 <p className="text-blue-100 text-xs sm:text-sm hidden sm:block truncate">
@@ -167,15 +167,15 @@ export default function Navbar({ onLogout, onShowTariffManager, onShowConsumptio
           </div>
 
           {/* Mobile Menu Button */}
-          <div className="lg:hidden flex items-center space-x-2">
-            <LanguageSelector className="scale-90" />
+          <div className="lg:hidden flex items-center space-x-1 sm:space-x-2 flex-shrink-0">
+            <LanguageSelector className="scale-75 sm:scale-90" />
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="bg-white/10 hover:bg-white/20 rounded-lg p-2 transition-colors duration-200"
+              className="bg-white/10 hover:bg-white/20 rounded-lg p-1.5 sm:p-2 transition-colors duration-200 flex-shrink-0"
               aria-label={t('navbar.openMenu')}
             >
               <svg 
-                className={`w-6 h-6 text-white transition-transform duration-200 ${isMobileMenuOpen ? 'rotate-90' : ''}`} 
+                className={`w-5 h-5 sm:w-6 sm:h-6 text-white transition-transform duration-200 ${isMobileMenuOpen ? 'rotate-90' : ''}`} 
                 fill="none" 
                 stroke="currentColor" 
                 viewBox="0 0 24 24"
